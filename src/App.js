@@ -6,15 +6,16 @@ import './App.css';
 import Book from './component/Book';
 import BookList from './component/BookList';
 import NewsList from './component/NewsList';
+import BookCatalogPage from "./component/BookCatalogPage";
 
 class App extends Component {
   render() {
     return (
       <div>
           <Switch>
-              <Route exact path='/' component={BookList}/>
+              <Route exact path='/' component={BookCatalogPage}/>
               <Route path='/book/:bookId' component={Book}/>
-              <Route path='/bookList' component={BookList}/>
+              <Route path='/catalog' component={BookCatalogPage}/>
               <Route path='/newsList' component={NewsList}/>
           </Switch>
       </div>
