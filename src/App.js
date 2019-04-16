@@ -7,6 +7,7 @@ import Book from './component/Book';
 import BookList from './component/BookList';
 import NewsList from './component/NewsList';
 import BookCatalogPage from "./component/BookCatalogPage";
+import SignIn from "./component/SignIn";
 
 class App extends Component {
   render() {
@@ -17,6 +18,7 @@ class App extends Component {
               <Route path='/book/:bookId' component={Book}/>
               <Route path='/catalog' component={BookCatalogPage}/>
               <Route path='/newsList' component={NewsList}/>
+              <Route path='/signIn' component={SignIn}/>
           </Switch>
       </div>
     );

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Dropdown from 'react-bootstrap/Dropdown'
-
-const DEFAULT_LANGUAGE = 'English';
+import {DEFAULT_LANGUAGE} from "../context";
 
 class Language extends Component {
 
@@ -13,9 +12,9 @@ class Language extends Component {
             localStorage: props.localStorage,
             selectedLang: null
         };
-        console.log(this.state);
+        this.changeLang = this.changeLang.bind(this);
+        this.getLanguageFromLocalStorage = this.getLanguageFromLocalStorage.bind(this);
         this.setState({selectedLang: this.getLanguageFromLocalStorage()});
-        console.log(this.state);
     }
 
     getLanguageFromLocalStorage() {
@@ -33,10 +32,9 @@ class Language extends Component {
         return selectedLang;
     }
 
-    changeLang() {
-        console.log('hello');
-        localStorage.setItem(this.state.localStorage, JSON.stringify(this.state.selectedLang));
-        //this.setState({selectedLang: this.getLanguageFromLocalStorage()})
+    changeLang(lang) {
+        localStorage.setItem(this.state.localStorage, JSON.stringify(lang));
+        this.setState({selectedLang: lang})
     }
 
     parseJSONfromLocalStorage(name) {
@@ -55,14 +53,14 @@ class Language extends Component {
     render() {
         return (
             <Dropdown>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                <Dropdown.Toggle variant="warning" id="dropdown-basic">
                     {this.state.buttonName}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                     {this.state.langs !== null ? this.state.langs.map(lang =>
                         <Dropdown.Item
                             key={lang.id}
-                            onClick={this.changeLang}
+                            onClick={()=>this.changeLang(lang)}
                             active={this.state.selectedLang !== null && this.state.selectedLang.name === lang.name ? true : false}
                         >
                             {lang.name}

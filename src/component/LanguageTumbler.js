@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import Language from "./Language";
+import {LOCAL_STORAGE_BOOK_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../context";
+import Row from "react-bootstrap/Row";
 
 class LanguageTumbler extends Component {
 
@@ -26,16 +28,14 @@ class LanguageTumbler extends Component {
 
     render() {
         let body =
-            (<div>
+            (<React.Fragment>
                 <span>
-                    UI language:
-                    <Language langs={this.state.langs} localStorage={'uiLang'}/>
+                    <Language buttonName={'UI language'} langs={this.state.langs} localStorage={LOCAL_STORAGE_UI_LANGUAGE}/>
                 </span>
-                <span>
-                    BOOK language:
-                    <Language langs={this.state.langs} localStorage={'bookLang'}/>
+                <span style={{marginRight: 20}}>
+                    <Language buttonName={'Book language'}langs={this.state.langs} localStorage={LOCAL_STORAGE_BOOK_LANGUAGE}/>
                 </span>
-            </div>);
+            </React.Fragment>);
         return this.state.langs !== null ? body : false;
     }
 }

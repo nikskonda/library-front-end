@@ -12,7 +12,9 @@ class BookList extends Component {
         this.state = {
             // searchString: props.match.params.searchString || null : null,
             // genres: props.match.params.genres || null,
-            books: []
+            books: [],
+            currentPage: 0,
+            currentSize: 1
         };
     }
 
@@ -62,19 +64,25 @@ class BookList extends Component {
 
     render() {
         return (
-            <div className='card-columns'>
-                {/*<LanguageSelect/>*/}
-                {/*<InfiniteScroll*/}
-                {/*    loadMore={this.loadNextTenBooks.bind(this)}*/}
-                {/*    hasMore={this.state.hasMore}*/}
-                {/*    loader={<div className="loader">Loading ...</div>}>*/}
+            <div>
+                <div className='card-columns'>
+                    {/*<LanguageSelect/>*/}
+                    {/*<InfiniteScroll*/}
+                    {/*    loadMore={this.loadNextTenBooks.bind(this)}*/}
+                    {/*    hasMore={this.state.hasMore}*/}
+                    {/*    loader={<div className="loader">Loading ...</div>}>*/}
 
-                {/*    <div className="tracks">*/}
-                {/*        {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id} bookCover={book}/>) : false}*/}
-                {/*    </div>*/}
-                {/*</InfiniteScroll>*/}
-                {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id}
-                                                                                      bookCover={book}/>) : false}
+                    {/*    <div className="tracks">*/}
+                    {/*        {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id} bookCover={book}/>) : false}*/}
+                    {/*    </div>*/}
+                    {/*</InfiniteScroll>*/}
+                    {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id}
+                                                                                          bookCover={book}/>) : false}
+
+                </div>
+                <div>
+
+                </div>
             </div>
 
         );

@@ -6,22 +6,26 @@ import BookList from "./BookList";
 import GenreList from "./GenreList"
 import LanguageTumbler from "./LanguageTumbler";
 import Row from "react-bootstrap/Row";
+import Header from "./Header";
 
 class BookCatalogPage extends Component {
 
     render() {
         return (
-           <Container>
-               {/*<LanguageTumbler/>*/}
-               <Row>
-                   <Col lg={3}>
-                       <GenreList/>
-                   </Col>
-                   <Col>
-                       <BookList/>
-                   </Col>
-               </Row>
-           </Container>
+            <React.Fragment>
+                <Header/>
+                <Container>
+
+                   <Row>
+                       <Col lg={3}>
+                           <GenreList/>
+                       </Col>
+                       <Col>
+                           <BookList/>
+                       </Col>
+                   </Row>
+               </Container>
+            </React.Fragment>
         );
     }
 }
