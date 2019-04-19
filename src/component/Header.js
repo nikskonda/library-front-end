@@ -95,7 +95,7 @@ class Header extends Component {
                         <Navbar.Collapse id="responsive-navbar-nav">
                             <Nav className="mr-auto">
                                 <Nav.Link >
-                                    <NavLink to={`newsList`}
+                                    <NavLink to={`news`}
                                                     style={{
                                                         textDecoration: 'none',
                                                         color: 'inhabit'

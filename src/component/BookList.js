@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 //https://github.com/axios/axios
 import axios from 'axios';
 import BookCover from "./BookCover";
-import InfiniteScroll from "react-infinite-scroller"
+import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../context";
+import Pagination from 'react-paginate';
 
 class BookList extends Component {
 
@@ -13,47 +14,53 @@ class BookList extends Component {
             // searchString: props.match.params.searchString || null : null,
             // genres: props.match.params.genres || null,
             books: [],
-            currentPage: 0,
-            currentSize: 1
+            activePage: 0,
+            size: 20,
+            totalElements: 0,
+            totalPages: 0,
+            pageRangeDisplayed: 5
         };
+        this.loadBooks = this.loadBooks.bind(this);
+        this.handlePageChange = this.handlePageChange.bind(this);
     }
 
     componentDidMount() {
-        axios
-            .get(`http://localhost:8888/book`, {
-                params: {
-                    number: 0,
-                    size: 10,
-                    genres: this.state.genres
-                }
-            })
-            .then(res => {
-                console.log(res);
-                this.setState({books: this.state.books.concat(res.data.content)});
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        // this.setState({page: this.state.page+1});
+        this.loadBooks();
     }
 
-    loadNextTenBooks() {
-        console.log('hell');
+    handlePageChange(data) {
+        this.setState({activePage: data.selected}, this.loadBooks);
+    }
+
+    getLangTagFromLocalStorage() {
+        let lang = localStorage.getItem(LOCAL_STORAGE_BOOK_LANGUAGE);
+        if (lang !== null) {
+            lang = JSON.parse(lang);
+        }
+        if (lang === null || lang.tag === undefined) {
+            return DEFAULT_LANGUAGE_TAG;
+        }
+        return lang.tag;
+    }
+
+    loadBooks() {
         axios
-            .get(`http://localhost:8888/book`, {
+            .get(BACK_END_SERVER_URL + `book`, {
                 params: {
-                    number: this.state.lastPage,
-                    size: 10,
-                    genres: this.state.genres
+                    sort: 'rating',
+                    direction: 'DESC',
+                    number: this.state.activePage,
+                    size: this.state.size,
+                    bookLangTag: this.getLangTagFromLocalStorage(),
                 }
             })
             .then(res => {
                 console.log(res);
                 this.setState({
-                    books: this.state.books.concat(res.data.content),
-                    lastPage: res.data.pageable.pageNumber + 1,
-                    hasMore: !res.data.last,
-                    total: res.data.total
+                    books: res.data.content,
+                    size: res.data.size,
+                    totalElements: res.data.totalElements,
+                    totalPages: res.data.totalPages,
                 });
             })
             .catch(function (error) {
@@ -66,27 +73,34 @@ class BookList extends Component {
         return (
             <div>
                 <div className='card-columns'>
-                    {/*<LanguageSelect/>*/}
-                    {/*<InfiniteScroll*/}
-                    {/*    loadMore={this.loadNextTenBooks.bind(this)}*/}
-                    {/*    hasMore={this.state.hasMore}*/}
-                    {/*    loader={<div className="loader">Loading ...</div>}>*/}
-
-                    {/*    <div className="tracks">*/}
-                    {/*        {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id} bookCover={book}/>) : false}*/}
-                    {/*    </div>*/}
-                    {/*</InfiniteScroll>*/}
                     {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id}
                                                                                           bookCover={book}/>) : false}
-
                 </div>
-                <div>
-
-                </div>
+                <Pagination
+                    previousLabel={'<'}
+                    nextLabel={'>'}
+                    breakLabel={'...'}
+                    pageCount={this.state.totalPages}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={this.handlePageChange}
+                    containerClassName={'pagination'}
+                    pageClassName={'page-item'}
+                    pageLinkClassName={'page-link'}
+                    activeClassName={'active'}
+                    previousClassName={'page-item'}
+                    previousLinkClassName={'page-link'}
+                    nextClassName={'page-item'}
+                    nextLinkClassName={'page-link'}
+                    breakClassName={'page-item'}
+                    breakLinkClassName={'page-link'}
+                />
             </div>
 
         );
     }
+
+
 }
 
 export default BookList;

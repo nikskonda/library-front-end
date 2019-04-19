@@ -34,7 +34,8 @@ class Language extends Component {
 
     changeLang(lang) {
         localStorage.setItem(this.state.localStorage, JSON.stringify(lang));
-        this.setState({selectedLang: lang})
+        window.location.reload();
+        // this.setState({selectedLang: lang})
     }
 
     parseJSONfromLocalStorage(name) {

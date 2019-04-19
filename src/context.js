@@ -1,3 +1,5 @@
+export const BACK_END_SERVER_URL = 'http://localhost:8888/';
+
 export const LOCAL_STORAGE_BOOK_LANGUAGE = 'bookLang';
 export const LOCAL_STORAGE_UI_LANGUAGE = 'uiLang';
 export const LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN = 'access_token';
@@ -9,3 +11,4 @@ export const OAUTH2_CLIENT_ID = 'devglan-client';
 export const OAUTH2_CLIENT_SECRET = 'devglan-secret';
 
 export const DEFAULT_LANGUAGE = 'English';
+export const DEFAULT_LANGUAGE_TAG = 'US_en';

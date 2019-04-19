@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {
+    BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN,
-    LOCAL_STORAGE_UI_LANGUAGE,
     OAUTH2_CLIENT_ID,
     OAUTH2_CLIENT_SECRET,
-    OAUTH2_GRANT_TYPE_PASSWORD, OAUTH2_GRANT_TYPE_REFRESH_TOKEN
+    OAUTH2_GRANT_TYPE_PASSWORD,
+    OAUTH2_GRANT_TYPE_REFRESH_TOKEN
 } from "../context";
 import axios from "axios";
 
@@ -76,7 +77,7 @@ class SignIn extends Component {
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         axios
             .post(
-                `http://localhost:8888/oauth/token`,
+                BACK_END_SERVER_URL+`oauth/token`,
                 this.formBody(details)
                 ,
                 {
@@ -131,7 +132,7 @@ class SignIn extends Component {
 
             axios
                 .post(
-                    `http://localhost:8888/oauth/token`,
+                    BACK_END_SERVER_URL+`oauth/token`,
                     this.formBody(data)
                     ,
                     {

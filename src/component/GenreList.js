@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from "axios";
 import ListGroup from 'react-bootstrap/ListGroup'
 import {NavLink} from "react-router-dom";
+import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../context";
 
 class GenreList extends Component {
 
@@ -12,13 +13,25 @@ class GenreList extends Component {
         }
     }
 
+    getLangFromLocalStorage() {
+        let lang = localStorage.getItem(LOCAL_STORAGE_BOOK_LANGUAGE);
+        if (lang !== null) {
+            lang = JSON.parse(lang);
+            if (lang.id !== undefined || lang.tag !== undefined || lang.name !== undefined) {
+                return lang;
+            }
+        }
+        return {name:DEFAULT_LANGUAGE, tag: DEFAULT_LANGUAGE_TAG};
+
+
+    }
+
     componentDidMount() {
-        let lang = JSON.parse(localStorage.getItem('bookLang'))
         axios({
                 method: 'get',
-                url: 'http://localhost:8888/book/genre/popular',
+                url: BACK_END_SERVER_URL+'book/genre/popular',
                 headers: { 'Content-Type' : 'application/json' },
-                params: lang
+                params: this.getLangFromLocalStorage()
             })
             .then(res => {
                 console.log(res);
