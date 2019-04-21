@@ -12,3 +12,9 @@ export const OAUTH2_CLIENT_SECRET = 'devglan-secret';
 
 export const DEFAULT_LANGUAGE = 'English';
 export const DEFAULT_LANGUAGE_TAG = 'US_en';
+
+
+
+export const BOOK_TYPE = [ { name: 'BOOK'}, {name: 'COMICS'}, {name: 'MAGAZINE'} ];
+export const BOOK_STATUS = [ { name: 'IN_STOCK'}, {name: 'ON_HAND'}, {name: 'UNKNOWN'} ];
+export const BOOK_YEAR_MIN = 1801;
