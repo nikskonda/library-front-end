@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import {
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
@@ -11,6 +9,7 @@ import {
     OAUTH2_GRANT_TYPE_REFRESH_TOKEN
 } from "../context";
 import axios from "axios";
+import {Button, Container, Divider, Form, Grid, SegmentGroup} from "semantic-ui-react";
 
 class SignIn extends Component {
 
@@ -26,33 +25,12 @@ class SignIn extends Component {
         this.signIn = this.signIn.bind(this);
     }
 
-    changeUsernameHandler(event) {
-        this.setState({username: event.target.value});
+    changeUsernameHandler(event, {value}) {
+        this.setState({username: value});
     }
 
-    changePasswordHandler(event) {
-        this.setState({password: event.target.value});
-    }
-
-    render() {
-        return (
-            <Form>
-                <Form.Group controlId="formBasicUsername">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Username" value={this.state.username}
-                                  onChange={this.changeUsernameHandler}/>
-                </Form.Group>
-
-                <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" value={this.state.password}
-                                  onChange={this.changePasswordHandler}/>
-                </Form.Group>
-                <Button variant="primary" type="button" onClick={this.signIn}>
-                    Submit
-                </Button>
-            </Form>
-        );
+    changePasswordHandler(event, {value}) {
+        this.setState({password: value});
     }
 
     formBody(obj) {
@@ -77,7 +55,7 @@ class SignIn extends Component {
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         axios
             .post(
-                BACK_END_SERVER_URL+`oauth/token`,
+                BACK_END_SERVER_URL + `oauth/token`,
                 this.formBody(details)
                 ,
                 {
@@ -90,7 +68,7 @@ class SignIn extends Component {
             )
             .then(res => {
                 console.log(res);
-                localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.acces_token);
+                localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.access_token);
                 localStorage.setItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, res.data.refresh_token);
 
                 this.setState({expires_in: res.data.expires_in});
@@ -114,7 +92,7 @@ class SignIn extends Component {
     }
 
     startRefreshCycle() {
-        setTimeout(this.refreshToken.bind(this), (this.state.expires_in - 15) *1000);
+        setTimeout(this.refreshToken.bind(this), (this.state.expires_in - 15) * 1000);
     }
 
     refreshToken() {
@@ -132,7 +110,7 @@ class SignIn extends Component {
 
             axios
                 .post(
-                    BACK_END_SERVER_URL+`oauth/token`,
+                    BACK_END_SERVER_URL + `oauth/token`,
                     this.formBody(data)
                     ,
                     {
@@ -158,6 +136,51 @@ class SignIn extends Component {
                     console.log(error);
                 });
         }
+    }
+
+    render() {
+        return (<Container >
+            <SegmentGroup  placeholder>
+                <Grid columns={2} relaxed='very' stackable>
+                    <Grid.Column >
+                        <Form style={{margin: 30}}>
+                            <Form.Input
+                                icon='user'
+                                iconPosition='left'
+                                label='Username'
+                                placeholder='Username'
+                                value={this.state.username}
+                                onChange={this.changeUsernameHandler}
+                            />
+                            <Form.Input
+                                icon='lock'
+                                iconPosition='left'
+                                label='Password'
+                                type='password'
+                                value={this.state.password}
+                                onChange={this.changePasswordHandler}
+                            />
+
+                            <Button
+                                content='Login'
+                                primary
+                                onClick={this.signIn}
+                            />
+                        </Form>
+                    </Grid.Column>
+
+                    <Grid.Column verticalAlign='middle' textAlign='center'>
+                        <Button content='Sign up'
+                                icon='signup'
+                                size='big'
+                                onClick={this.signIn}
+                        />
+                    </Grid.Column>
+                </Grid>
+
+                <Divider vertical>Or</Divider>
+            </SegmentGroup>
+        </Container>);
     }
 }
 
