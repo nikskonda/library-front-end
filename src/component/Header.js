@@ -118,7 +118,7 @@ class Header extends Component {
                                 </Nav.Link>
                                 <NavDropdown title="Book" id="collasible-nav-dropdown-book">
                                     <NavDropdown.Item>
-                                        <NavLink to={`editBook`}
+                                        <NavLink to={`book/edit`}
                                                  style={{
                                                      textDecoration: 'none',
                                                      color: 'inhabit'

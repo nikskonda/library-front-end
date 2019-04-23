@@ -25,7 +25,7 @@ class Book extends Component {
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL + `book/${this.state.id}`)
+            .get(BACK_END_SERVER_URL + `/book/${this.state.id}`)
             .then(res => {
                 console.log(res);
                 this.setState({book: res.data});

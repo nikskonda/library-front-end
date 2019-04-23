@@ -32,7 +32,7 @@ class NewsList extends Component {
 
     loadNews(){
         axios
-            .get(BACK_END_SERVER_URL+`news`, {
+            .get(BACK_END_SERVER_URL+`/news`, {
                 params: {
                     sort: 'creationDate',
                     direction: 'DESC',

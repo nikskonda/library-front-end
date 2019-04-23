@@ -1,4 +1,4 @@
-export const BACK_END_SERVER_URL = 'http://localhost:8888/';
+export const BACK_END_SERVER_URL = 'http://localhost:8888';
 
 export const LOCAL_STORAGE_BOOK_LANGUAGE = 'bookLang';
 export const LOCAL_STORAGE_UI_LANGUAGE = 'uiLang';
@@ -17,4 +17,5 @@ export const DEFAULT_LANGUAGE_TAG = 'US_en';
 
 export const BOOK_TYPE = [ { name: 'BOOK'}, {name: 'COMICS'}, {name: 'MAGAZINE'} ];
 export const BOOK_STATUS = [ { name: 'IN_STOCK'}, {name: 'ON_HAND'}, {name: 'UNKNOWN'} ];
+export const URL_DOWNLOAD_FILE = '/file/download/';
 export const BOOK_YEAR_MIN = 1801;

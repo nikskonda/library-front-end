@@ -15,7 +15,7 @@ class LanguageTumbler extends Component {
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL+`language`)
+            .get(BACK_END_SERVER_URL+`/language`)
             .then(res => {
                 this.setState({langs: res.data});
             })

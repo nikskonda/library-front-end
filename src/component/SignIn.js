@@ -55,7 +55,7 @@ class SignIn extends Component {
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         axios
             .post(
-                BACK_END_SERVER_URL + `oauth/token`,
+                BACK_END_SERVER_URL + `/oauth/token`,
                 this.formBody(details)
                 ,
                 {
@@ -110,7 +110,7 @@ class SignIn extends Component {
 
             axios
                 .post(
-                    BACK_END_SERVER_URL + `oauth/token`,
+                    BACK_END_SERVER_URL + `/oauth/token`,
                     this.formBody(data)
                     ,
                     {

@@ -29,7 +29,7 @@ class GenreList extends Component {
     componentDidMount() {
         axios({
                 method: 'get',
-                url: BACK_END_SERVER_URL+'book/genre/popular',
+                url: BACK_END_SERVER_URL+'/book/genre/popular',
                 headers: { 'Content-Type' : 'application/json' },
                 params: this.getLangFromLocalStorage()
             })

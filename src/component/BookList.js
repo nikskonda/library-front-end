@@ -4,6 +4,8 @@ import axios from 'axios';
 import BookCover from "./BookCover";
 import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../context";
 import Pagination from 'react-paginate';
+import {Input, Select} from "semantic-ui-react";
+import {Button} from "react-bootstrap";
 
 class BookList extends Component {
 
@@ -18,7 +20,12 @@ class BookList extends Component {
             size: 20,
             totalElements: 0,
             totalPages: 0,
-            pageRangeDisplayed: 5
+            pageRangeDisplayed: 5,
+            options: [
+                { key: 'all', text: 'All', value: 'all' },
+                { key: 'genre', text: 'genre', value: 'genre' },
+                { key: 'author', text: 'author', value: 'author' },
+            ]
         };
         this.loadBooks = this.loadBooks.bind(this);
         this.handlePageChange = this.handlePageChange.bind(this);
@@ -45,7 +52,7 @@ class BookList extends Component {
 
     loadBooks() {
         axios
-            .get(BACK_END_SERVER_URL + `book`, {
+            .get(BACK_END_SERVER_URL + `/book`, {
                 params: {
                     sort: 'rating',
                     direction: 'DESC',
@@ -71,7 +78,12 @@ class BookList extends Component {
 
     render() {
         return (
-            <div>
+            <React.Fragment>
+                <Input className='w-100' type='text' placeholder='Search...' action>
+                    <input />
+                    <Select compact options={this.state.options} defaultValue='all' />
+                    <Button type='submit'>Search</Button>
+                </Input>
                 <div className='card-columns'>
                     {this.state.books != null ? this.state.books.map((book) => <BookCover key={book.id}
                                                                                           bookCover={book}/>) : false}
@@ -95,7 +107,7 @@ class BookList extends Component {
                     breakClassName={'page-item'}
                     breakLinkClassName={'page-link'}
                 />
-            </div>
+            </React.Fragment>
 
         );
     }

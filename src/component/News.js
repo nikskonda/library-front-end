@@ -22,7 +22,7 @@ class News extends Component {
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL+`news/${this.state.id}`)
+            .get(BACK_END_SERVER_URL+`/news/${this.state.id}`)
             .then(res => {
                 console.log(res);
                 this.setState({news: res.data});
