@@ -3,17 +3,16 @@ import axios from "axios";
 import ListGroup from 'react-bootstrap/ListGroup'
 import {NavLink} from "react-router-dom";
 import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../context";
+import {Menu} from "semantic-ui-react";
 
 class GenreList extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            genres:null
-        }
-    }
+    state = {
+        genres: [],
+        activeGenre: null,
+    };
 
-    getLangFromLocalStorage() {
+    getLangFromLocalStorage = () => {
         let lang = localStorage.getItem(LOCAL_STORAGE_BOOK_LANGUAGE);
         if (lang !== null) {
             lang = JSON.parse(lang);
@@ -21,45 +20,40 @@ class GenreList extends Component {
                 return lang;
             }
         }
-        return {name:DEFAULT_LANGUAGE, tag: DEFAULT_LANGUAGE_TAG};
+        return {name: DEFAULT_LANGUAGE, tag: DEFAULT_LANGUAGE_TAG};
+    };
 
-
-    }
-
-    componentDidMount() {
+    componentWillMount() {
         axios({
-                method: 'get',
-                url: BACK_END_SERVER_URL+'/book/genre/popular',
-                headers: { 'Content-Type' : 'application/json' },
-                params: this.getLangFromLocalStorage()
-            })
+            method: 'get',
+            url: BACK_END_SERVER_URL + '/book/genre/popular',
+            headers: {'Content-Type': 'application/json'},
+            params: this.getLangFromLocalStorage()
+        })
             .then(res => {
-                console.log(res);
                 this.setState({genres: res.data});
             })
             .catch(function (error) {
                 console.log(error);
             });
-    }
+    };
 
-
+    handleItemClick = (e, {name}) => {
+        this.setState({activeGenre: name});
+    };
 
     render() {
         return (
-            <ListGroup>
-                {this.state.genres !== null ? this.state.genres.map(genre =>
-                    <ListGroup.Item key={genre.id}>
-                        <NavLink to={`catalog?genres=${genre.name}`}
-                                 style={{
-                                     textDecoration: 'none',
-                                     color: 'inhabit'
-                                 }}
-                                 activeClassName="active"
-                        >
-                            {genre.name}
-                        </NavLink>
-                    </ListGroup.Item>) : false }
-            </ListGroup>
+            <Menu fluid vertical tabular>
+                {this.state.genres.map(genre =>
+                    <Menu.Item
+                        key={genre.id}
+                        name={genre.name}
+                        active={this.state.activeGenre === genre.name}
+                        onClick={this.handleItemClick}
+                    />)
+                }
+            </Menu>
         );
     }
 }

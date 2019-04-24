@@ -1,21 +1,16 @@
 import React, {Component} from 'react';
-import {NavLink} from 'react-router-dom'
-import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import {Link} from 'react-router-dom'
+import {Card, Icon, Image} from "semantic-ui-react";
 
 class NewsCover extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            newsCover: props.newsCover
-        };
-        this.userSign = this.userSign.bind(this);
-        this.dateSign = this.dateSign.bind(this);
-    }
 
-    dateSign() {
+    state = {
+        newsCover: this.props.newsCover
+    };
+
+
+    dateSign = () => {
         // return this.state.news.modificationDate === undefined ? this.state.news.creationDate : 'm:' + this.state.news.modificationDate;
         let date = new Date(this.state.newsCover.creationDate);
         let now = new Date();
@@ -24,9 +19,9 @@ class NewsCover extends Component {
         } else {
             return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
         }
-    }
+    };
 
-    userSign() {
+    userSign = () => {
         if (this.state.newsCover.creator.firstName === undefined && this.state.newsCover.creator.lastName === undefined) {
             return this.state.newsCover.creator.username;
         }
@@ -37,30 +32,25 @@ class NewsCover extends Component {
             return this.state.newsCover.creator.firstName;
         }
         return this.state.newsCover.creator.firstName + ' ' + this.state.newsCover.creator.lastName;
-    }
+    };
 
     render() {
         return (
             <Card>
-
-                <Card.Img variant="top" src="img/news.jpg"/>
-                <Card.Body>
-                    <NavLink to={`news/${this.state.newsCover.id}`}
-                             style={{
-                                 textDecoration: 'none',
-                                 color: 'inhabit'
-                             }}
-                             activeClassName="active"
-                    >
-                        <Card.Title>{this.state.newsCover.title}</Card.Title>
-                    </NavLink>
-                </Card.Body>
-                <Card.Footer className="text-muted">
-                    <Row>
-                        <Col>{this.dateSign()}</Col>
-                        <Col>{this.userSign()}</Col>
-                    </Row>
-                </Card.Footer>
+                <Image src='img/news.jpg'/>
+                <Card.Content>
+                    <Card.Header>
+                        <Link to={'news/' + this.state.newsCover.id}>{this.state.newsCover.title}</Link>
+                    </Card.Header>
+                    <Card.Meta>Added {this.dateSign()}</Card.Meta>
+                    <Card.Description>Daniel is a comedian living in Nashville.</Card.Description>
+                </Card.Content>
+                <Card.Content extra>
+                    <a>
+                        <Icon name='user'/>
+                        {this.userSign()}
+                    </a>
+                </Card.Content>
             </Card>
         );
     }

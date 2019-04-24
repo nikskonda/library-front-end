@@ -10,7 +10,7 @@ import {
 } from "../context";
 
 // https://react.semantic-ui.com
-import {Button, Container, Dropdown, Form, Image, Input, Radio, TextArea} from "semantic-ui-react";
+import {Button, Container, Dropdown, Form, Image, Input, TextArea} from "semantic-ui-react";
 import './BookEdit.css'
 
 
@@ -192,7 +192,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(g => array.push({key: g.id, text: g.name, value: g}));
                 this.setState({genreList: array});
@@ -217,7 +216,6 @@ class BookEdit extends Component {
                     }
                 )
                 .then(res => {
-                    console.log(res);
                     this.setState({
                         genreList: [{
                             key: res.data.id,
@@ -275,7 +273,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(a => array.push({key: a.id, text: a.firstName + ' ' + a.lastName, value: a}));
                 this.setState({authorList: array});
@@ -300,7 +297,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(a => array.push({key: a.id, text: a.firstName + ' ' + a.lastName, value: a}));
                 this.setState({translatorList: array});
@@ -329,7 +325,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(ph => array.push({key: ph.id, text: ph.title, value: ph}));
                 this.setState({publishingHouseList: array});
@@ -362,7 +357,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(org => array.push({key: org.id, text: org.title, value: org}));
                 this.setState({producerList: array});
@@ -387,7 +381,6 @@ class BookEdit extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 let array = [];
                 res.data.map(org => array.push({key: org.id, text: org.title, value: org}));
                 this.setState({importerList: array});
@@ -423,7 +416,6 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     pictureUrl: res.data.fileName
                 })
@@ -447,7 +439,6 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     thumbnailUrl: res.data.fileName
                 })
@@ -471,7 +462,6 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     pdfUrl: res.data.fileName
                 })
@@ -511,12 +501,11 @@ class BookEdit extends Component {
                 {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'form/data',
+                        'Content-type': 'application/json',
                         // 'Accept-Language': locale.tag || ''
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     pdfUrl: res.data.fileName
                 })
@@ -524,7 +513,7 @@ class BookEdit extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-    }
+    };
 
     render() {
         return (
@@ -765,7 +754,7 @@ class BookEdit extends Component {
                             control={this.ImporterDropdown}/>
                     </Form.Group>
 
-                    <Button size='big' color='purple' fluid>Create BOOK!!!!</Button>
+                    <Button size='big' color='purple' fluid onClick={this.handleButtonSubmit}>Create BOOK!!!!</Button>
                 </Form>
             </Container>
         );

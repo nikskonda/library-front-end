@@ -9,7 +9,6 @@ class NewsPage extends Component {
         this.state = {
             id: props.match.params.newsId,
         };
-        console.log(props);
     }
 
     render() {

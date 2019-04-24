@@ -2,48 +2,46 @@ import React, {Component} from 'react';
 import axios from "axios";
 import {BACK_END_SERVER_URL} from "../context";
 import NewsCover from "./NewsCover";
-import Pagination from 'react-paginate';
-import CardColumns from "react-bootstrap/CardColumns";
+import {Card, Icon, Pagination} from "semantic-ui-react";
 
 class NewsList extends Component {
 
-    constructor(props) {
-        super(props);
-        // console.log(props);
-        this.state = {
-            news: [],
-            activePage: 0,
-            size: 20,
-            totalElements: 0,
-            totalPages: 0,
-            pageRangeDisplayed: 5
-        };
-        this.loadNews = this.loadNews.bind(this);
-        this.handlePageChange = this.handlePageChange.bind(this);
-    }
 
-    componentDidMount() {
+    state = {
+        itemPerRow:2,
+        column: 7,
+        activePage: 1,
+        boundaryRange: 2,
+        siblingRange: 1,
+        totalPages: 0,
+        newsList: [],
+        size: 0,
+    };
+
+    componentWillMount() {
         this.loadNews();
     }
 
-    handlePageChange(data) {
-        this.setState({activePage: data.selected}, this.loadNews);
-    }
+    handlePaginationChange = (event, {activePage}) => {
+        console.log(activePage);
+        this.setState({activePage: activePage}, this.loadNews);
+    };
 
-    loadNews(){
+    loadNews = () => {
         axios
-            .get(BACK_END_SERVER_URL+`/news`, {
+            .get(BACK_END_SERVER_URL + `/news`, {
                 params: {
                     sort: 'creationDate',
                     direction: 'DESC',
-                    number: this.state.activePage,
-                    size: this.state.size
+                    number: this.state.activePage-1,
+                    size: this.state.itemPerRow * this.state.column,
                 }
             })
             .then(res => {
                 console.log(res);
                 this.setState({
-                    news: res.data.content,
+                    activePage: res.data.number,
+                    newsList: res.data.content,
                     size: res.data.size,
                     totalElements: res.data.totalElements,
                     totalPages: res.data.totalPages,
@@ -52,33 +50,28 @@ class NewsList extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-    }
+    };
 
     render() {
         return (
             <React.Fragment>
-                <CardColumns>
-                    {this.state.news != null ? this.state.news.map((news) => <NewsCover key={news.id} newsCover={news}/>) : false}
-                </CardColumns>
-                    <Pagination
-                        previousLabel={'<'}
-                        nextLabel={'>'}
-                        breakLabel={'...'}
-                        pageCount={this.state.totalPages}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={5}
-                        onPageChange={this.handlePageChange}
-                        containerClassName={'pagination'}
-                        pageClassName={'page-item'}
-                        pageLinkClassName={'page-link'}
-                        activeClassName={'active'}
-                        previousClassName={'page-item'}
-                        previousLinkClassName={'page-link'}
-                        nextClassName={'page-item'}
-                        nextLinkClassName={'page-link'}
-                        breakClassName={'page-item'}
-                        breakLinkClassName={'page-link'}
-                    />
+                <Card.Group itemsPerRow={this.state.itemPerRow}>
+                    {this.state.newsList.map((news) => <NewsCover key={news.id} newsCover={news}/>)}
+                </Card.Group>
+                <Pagination
+                    activePage={this.state.activePage+1}
+                    boundaryRange={this.state.boundaryRange}
+                    onPageChange={this.handlePaginationChange}
+                    size='middle'
+                    siblingRange={this.state.siblingRange}
+                    totalPages={this.state.totalPages}
+                    ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+                    firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+                    lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+                    prevItem={{ content: <Icon name='angle left' />, icon: true }}
+                    nextItem={{ content: <Icon name='angle right' />, icon: true }}
+
+                />
             </React.Fragment>
         );
     }

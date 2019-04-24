@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
-import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
 import BookList from "./BookList";
 import GenreList from "./GenreList"
-import Row from "react-bootstrap/Row";
 import Header from "./Header";
+import {Container, Grid, Segment} from "semantic-ui-react";
 
 class BookCatalogPage extends Component {
 
@@ -13,16 +11,17 @@ class BookCatalogPage extends Component {
             <React.Fragment>
                 <Header/>
                 <Container>
-
-                   <Row>
-                       <Col lg={3}>
-                           <GenreList/>
-                       </Col>
-                       <Col>
-                           <BookList/>
-                       </Col>
-                   </Row>
-               </Container>
+                    <Grid>
+                        <Grid.Column width={3}>
+                            <GenreList/>
+                        </Grid.Column>
+                        <Grid.Column stretched width={13}>
+                            <Segment>
+                                <BookList/>
+                            </Segment>
+                        </Grid.Column>
+                    </Grid>
+                </Container>
             </React.Fragment>
         );
     }

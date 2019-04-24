@@ -24,7 +24,6 @@ class News extends Component {
         axios
             .get(BACK_END_SERVER_URL+`/news/${this.state.id}`)
             .then(res => {
-                console.log(res);
                 this.setState({news: res.data});
             })
             .catch(function (error) {

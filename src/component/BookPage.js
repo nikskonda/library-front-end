@@ -9,7 +9,6 @@ class BookPage extends Component {
         this.state = {
             id: props.match.params.bookId,
         };
-        console.log(props);
     }
 
     render() {

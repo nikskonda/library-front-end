@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
-    LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN,
+    LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, LOCAL_STORAGE_USER_DATA,
     OAUTH2_CLIENT_ID,
     OAUTH2_CLIENT_SECRET,
     OAUTH2_GRANT_TYPE_PASSWORD,
@@ -10,6 +10,8 @@ import {
 } from "../context";
 import axios from "axios";
 import {Button, Container, Divider, Form, Grid, SegmentGroup} from "semantic-ui-react";
+
+const jwt = require('jsonwebtoken');
 
 class SignIn extends Component {
 
@@ -67,10 +69,14 @@ class SignIn extends Component {
                 }
             )
             .then(res => {
-                console.log(res);
-                localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.access_token);
+                  localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.access_token);
                 localStorage.setItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, res.data.refresh_token);
-
+                let decoded = jwt.decode(res.data.access_token);
+                let userData = {
+                    username: decoded.user_name,
+                    authorities: decoded.authorities,
+                };
+                localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
                 this.setState({expires_in: res.data.expires_in});
                 this.startRefreshCycle();
                 // this.setState({books: this.state.books.concat(res.data.content)});
@@ -122,10 +128,14 @@ class SignIn extends Component {
                     }
                 )
                 .then(res => {
-                    console.log(res);
                     localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.acces_token);
                     localStorage.setItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, res.data.refresh_token);
-
+                    let decoded = jwt.decode(res.data.access_token);
+                    let userData = {
+                        username: decoded.user_name,
+                        authorities: decoded.authorities,
+                    };
+                    localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
                     current.setState({expires_in: res.data.expires_in});
                     current.startRefreshCycle();
                     console.log('success');

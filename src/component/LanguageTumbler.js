@@ -9,15 +9,17 @@ class LanguageTumbler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            langs: null
+            languageList: null
         }
     }
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL+`/language`)
+            .get(BACK_END_SERVER_URL + `/language`)
             .then(res => {
-                this.setState({langs: res.data});
+                let array = [];
+                res.data.map((lang) => array.push({key: lang.tag, text: lang.name, value: lang}));
+                this.setState({languageList: array});
             })
             .catch(function (error) {
                 console.log(error);
@@ -29,13 +31,18 @@ class LanguageTumbler extends Component {
         let body =
             (<React.Fragment>
                 <span>
-                    <Language buttonName={'UI language'} langs={this.state.langs} localStorage={LOCAL_STORAGE_UI_LANGUAGE}/>
+                     <Language
+                         buttonName={'UI language'}
+                         languageList={this.state.languageList}
+                         localStorage={LOCAL_STORAGE_UI_LANGUAGE}/>
+                    <Language
+                        buttonName={'Book language'}
+                        languageList={this.state.languageList}
+                        localStorage={LOCAL_STORAGE_BOOK_LANGUAGE}/>
                 </span>
-                <span style={{marginRight: 20}}>
-                    <Language buttonName={'Book language'}langs={this.state.langs} localStorage={LOCAL_STORAGE_BOOK_LANGUAGE}/>
-                </span>
+
             </React.Fragment>);
-        return this.state.langs !== null ? body : false;
+        return this.state.languageList !== null ? body : false;
     }
 }
 

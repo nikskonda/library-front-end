@@ -27,7 +27,6 @@ class Book extends Component {
         axios
             .get(BACK_END_SERVER_URL + `/book/${this.state.id}`)
             .then(res => {
-                console.log(res);
                 this.setState({book: res.data});
             })
             .catch(function (error) {
@@ -38,7 +37,7 @@ class Book extends Component {
     getAuthor(author){
         let popover =(
             <Popover id="popover-basic" title={author.name}>
-                <a href='#'>{author.description}</a>
+                <a href='/book/author'>{author.description}</a>
             </Popover>)
         ;
 
