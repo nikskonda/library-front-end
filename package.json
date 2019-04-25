@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "faker": "^4.1.0",
     "jquery": "^3.4.0",
     "jsonwebtoken": "^8.5.1",
     "popper.js": "^1.15.0",
+    "query-string": "^6.4.2",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.8",
     "react-dom": "^16.8.6",
@@ -36,5 +38,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "babel-install": "2.1.0"
+  }
 }

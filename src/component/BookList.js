@@ -8,8 +8,12 @@ import {Button, Card, Icon, Input, Pagination, Select} from "semantic-ui-react";
 class BookList extends Component {
 
     state = {
+        params: this.props.params,
+        sort: 'rating',
+        direction: 'DESC',
         itemPerRow: 4,
         column: 7,
+        defaultPage: 1,
         activePage: 1,
         boundaryRange: 2,
         siblingRange: 1,
@@ -27,13 +31,13 @@ class BookList extends Component {
     };
 
 
-    componentDidMount() {
+    componentWillMount() {
         this.loadBooks();
     }
 
     handlePaginationChange = (event, {activePage}) => {
-        console.log(activePage);
-        this.setState({activePage: activePage}, this.loadNews);
+        console.log('ap:' + activePage);
+        this.loadBooks(activePage);
     };
 
     getLangTagFromLocalStorage = () => {
@@ -47,26 +51,44 @@ class BookList extends Component {
         return lang.tag;
     };
 
-    loadBooks = () => {
+    loadBooks = (activePage) => {
+        console.log("ap" + activePage);
+        let params;
+        if (activePage) {
+            params = {
+                number: activePage,
+                direction: this.state.direction,
+                sort: this.state.sort,
+                size: this.state.itemPerRow * this.state.column,
+                bookLangTag: this.getLangTagFromLocalStorage(),
+            };
+            console.log("1");
+            console.log(params);
+        } else {
+            params = {
+                number: this.state.params.number || 1,
+                direction: this.state.direction,
+                sort: this.state.sort,
+                size: this.state.itemPerRow * this.state.column,
+                bookLangTag: this.getLangTagFromLocalStorage(),
+            };
+            console.log("2");
+            console.log(params);
+        }
+
+
         axios
-            .get(BACK_END_SERVER_URL + `/book`,
-                {
-                    params: {
-                        sort: 'rating',
-                        direction: 'DESC',
-                        number: this.state.activePage - 1,
-                        size: this.state.itemPerRow * this.state.column,
-                        bookLangTag: this.getLangTagFromLocalStorage(),
-                    }
-                })
+            .get(BACK_END_SERVER_URL + `/book`,{params})
             .then(res => {
+                console.log(res.data);
                 this.setState({
-                    activePage: res.data.number,
+                    activePage: res.data.number + 1,
                     books: res.data.content,
                     size: res.data.size,
                     totalElements: res.data.totalElements,
                     totalPages: res.data.totalPages,
                 });
+                this.props.changeUrl(params);
             })
             .catch(function (error) {
                 console.log(error);
@@ -91,10 +113,10 @@ class BookList extends Component {
                 </div>
                 <div>
                     <Pagination
-                        activePage={this.state.activePage + 1}
+                        activePage={this.state.activePage}
                         boundaryRange={this.state.boundaryRange}
                         onPageChange={this.handlePaginationChange}
-                        size='middle'
+                        size='small'
                         siblingRange={this.state.siblingRange}
                         totalPages={this.state.totalPages}
                         ellipsisItem={{content: <Icon name='ellipsis horizontal'/>, icon: true}}
@@ -102,7 +124,6 @@ class BookList extends Component {
                         lastItem={{content: <Icon name='angle double right'/>, icon: true}}
                         prevItem={{content: <Icon name='angle left'/>, icon: true}}
                         nextItem={{content: <Icon name='angle right'/>, icon: true}}
-
                     />
                 </div>
             </React.Fragment>

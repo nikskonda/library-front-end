@@ -80,21 +80,11 @@ class SignIn extends Component {
                 this.setState({expires_in: res.data.expires_in});
                 this.startRefreshCycle();
                 // this.setState({books: this.state.books.concat(res.data.content)});
+                this.props.history.push('/');
             })
             .catch(function (error) {
                 console.log(error);
             });
-        //     let current = this;
-        //     return this.http(req).then(response => {
-        //     current.localStorage.access_token = response.data.access_token;
-        //     current.localStorage.refresh_token = response.data.refresh_token;
-        //     let tokenInfo = current.tokenService.getInfo();
-        //     current.localStorage.username = tokenInfo.user_name;
-        //     current.localStorage.authorities = tokenInfo.authorities;
-        //     current.delay = response.data.expires_in;
-        //     current.startRefreshCycle();
-        //     return response;
-        // });
     }
 
     startRefreshCycle() {
@@ -103,7 +93,6 @@ class SignIn extends Component {
 
     refreshToken() {
         console.log('try to get refresh token ' + new Date());
-        // let locale = this.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN) !== null &&
             localStorage.getItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN) !== undefined) {
@@ -139,7 +128,6 @@ class SignIn extends Component {
                     current.setState({expires_in: res.data.expires_in});
                     current.startRefreshCycle();
                     console.log('success');
-                    // this.setState({books: this.state.books.concat(res.data.content)});
                 })
                 .catch(function (error) {
                     console.log('refresh failed');

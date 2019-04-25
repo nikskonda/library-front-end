@@ -22,7 +22,7 @@ const options = [
 const Authorize = props => (
     <Dropdown trigger={<Trigger username={props.username}/>} options={options} pointing='top left'/>);
 
-const NotAuthorize = (<Link to='signIn'> Sign In / Sing Up </Link>);
+const NotAuthorize = () => (<Link to='signIn'> Sign In / Sing Up </Link>);
 
 class UserIcon extends Component {
 

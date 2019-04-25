@@ -614,10 +614,7 @@ class BookEdit extends Component {
                             </div>
                         </div>
                     </Form.Group>
-                    {this.state.thumbnailUrl !== null ?
-                        <div>
-                            <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl}/>
-                        </div> : false}
+                    {this.state.thumbnailUrl !== null ? <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl} size='small'/> : false}
                     <br/>
                     <Form.Group>
                         <div className="input-group file-loader">
