@@ -9,10 +9,6 @@ class BookList extends Component {
 
     state = {
         params: this.props.params,
-        sort: 'rating',
-        direction: 'DESC',
-        itemPerRow: 4,
-        column: 7,
         defaultPage: 1,
         activePage: 1,
         boundaryRange: 2,
@@ -23,72 +19,59 @@ class BookList extends Component {
         books: [],
         totalElements: 0,
         pageRangeDisplayed: 5,
-        searchOptions: [
-            {key: 'all', text: 'All', value: 'all'},
-            {key: 'genre', text: 'genre', value: 'genre'},
-            {key: 'author', text: 'author', value: 'author'},
-        ]
+
     };
 
 
-    componentWillMount() {
+    // shouldComponentUpdate(nextProps, nextState){
+    //     console.log("shouldComponentUpdate");
+    // }
+    componentWillUpdate(nextProps, nextState){
+        console.log("componentWillUpdate");
+    }
+    //
+    // componentDidUpdate(prevProps, prevState){
+    //     console.log("componentDidUpdate");
+    // }
+
+    componentWillReceiveProps(nextProps){
+        console.log("componentWillReceiveProps");
+    }
+
+    componentWillMount(){
+        console.log("componentWillMount");
         this.loadBooks();
     }
 
+
     handlePaginationChange = (event, {activePage}) => {
-        console.log('ap:' + activePage);
-        this.loadBooks(activePage);
+        this.props.setActivePage(activePage);
     };
 
-    getLangTagFromLocalStorage = () => {
-        let lang = localStorage.getItem(LOCAL_STORAGE_BOOK_LANGUAGE);
-        if (lang !== null) {
-            lang = JSON.parse(lang);
-        }
-        if (lang === null || lang.tag === undefined) {
-            return DEFAULT_LANGUAGE_TAG;
-        }
-        return lang.tag;
-    };
+    loadBooks = () => {
+        let params = {
+            searchString: this.state.params.searchString,
+            number: this.state.params.number,
+            size: this.state.params.size,
 
-    loadBooks = (activePage) => {
-        console.log("ap" + activePage);
-        let params;
-        if (activePage) {
-            params = {
-                number: activePage,
-                direction: this.state.direction,
-                sort: this.state.sort,
-                size: this.state.itemPerRow * this.state.column,
-                bookLangTag: this.getLangTagFromLocalStorage(),
-            };
-            console.log("1");
-            console.log(params);
-        } else {
-            params = {
-                number: this.state.params.number || 1,
-                direction: this.state.direction,
-                sort: this.state.sort,
-                size: this.state.itemPerRow * this.state.column,
-                bookLangTag: this.getLangTagFromLocalStorage(),
-            };
-            console.log("2");
-            console.log(params);
-        }
+            direction: this.state.params.direction,
+            sort: this.state.params.sort,
 
+            bookLangTag: this.props.lang,
+            genres: this.state.params.genres,
+            authors: this.state.params.authors,
+        };
 
         axios
-            .get(BACK_END_SERVER_URL + `/book`,{params})
+            .get(BACK_END_SERVER_URL + `/book`, {params: params})
             .then(res => {
                 console.log(res.data);
                 this.setState({
                     activePage: res.data.number + 1,
                     books: res.data.content,
-                    size: res.data.size,
                     totalElements: res.data.totalElements,
                     totalPages: res.data.totalPages,
                 });
-                this.props.changeUrl(params);
             })
             .catch(function (error) {
                 console.log(error);
@@ -97,35 +80,25 @@ class BookList extends Component {
 
 
     render() {
+        console.log("render");
         return (
             <React.Fragment>
-                <div>
-                    <Input className='w-100' type='text' placeholder='Search...' action>
-                        <input/>
-                        <Select compact options={this.state.searchOptions} defaultValue='all'/>
-                        <Button type='submit'>Search</Button>
-                    </Input>
-                </div>
-                <div>
-                    <Card.Group itemsPerRow={this.state.itemPerRow}>
-                        {this.state.books.map((book) => <BookCover key={book.id} bookCover={book}/>)}
-                    </Card.Group>
-                </div>
-                <div>
-                    <Pagination
-                        activePage={this.state.activePage}
-                        boundaryRange={this.state.boundaryRange}
-                        onPageChange={this.handlePaginationChange}
-                        size='small'
-                        siblingRange={this.state.siblingRange}
-                        totalPages={this.state.totalPages}
-                        ellipsisItem={{content: <Icon name='ellipsis horizontal'/>, icon: true}}
-                        firstItem={{content: <Icon name='angle double left'/>, icon: true}}
-                        lastItem={{content: <Icon name='angle double right'/>, icon: true}}
-                        prevItem={{content: <Icon name='angle left'/>, icon: true}}
-                        nextItem={{content: <Icon name='angle right'/>, icon: true}}
-                    />
-                </div>
+                <Card.Group itemsPerRow={this.state.itemPerRow}>
+                    {this.state.books.map((book) => <BookCover key={book.id} bookCover={book}/>)}
+                </Card.Group>
+                <Pagination
+                    activePage={this.state.activePage}
+                    boundaryRange={this.state.boundaryRange}
+                    onPageChange={this.handlePaginationChange}
+                    size='small'
+                    siblingRange={this.state.siblingRange}
+                    totalPages={this.state.totalPages}
+                    ellipsisItem={{content: <Icon name='ellipsis horizontal'/>, icon: true}}
+                    firstItem={{content: <Icon name='angle double left'/>, icon: true}}
+                    lastItem={{content: <Icon name='angle double right'/>, icon: true}}
+                    prevItem={{content: <Icon name='angle left'/>, icon: true}}
+                    nextItem={{content: <Icon name='angle right'/>, icon: true}}
+                />
             </React.Fragment>
 
         );

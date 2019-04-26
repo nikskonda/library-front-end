@@ -12,23 +12,12 @@ class GenreList extends Component {
         activeGenre: null,
     };
 
-    getLangFromLocalStorage = () => {
-        let lang = localStorage.getItem(LOCAL_STORAGE_BOOK_LANGUAGE);
-        if (lang !== null) {
-            lang = JSON.parse(lang);
-            if (lang.id !== undefined || lang.tag !== undefined || lang.name !== undefined) {
-                return lang;
-            }
-        }
-        return {name: DEFAULT_LANGUAGE, tag: DEFAULT_LANGUAGE_TAG};
-    };
-
     componentWillMount() {
         axios({
             method: 'get',
             url: BACK_END_SERVER_URL + '/book/genre/popular',
             headers: {'Content-Type': 'application/json'},
-            params: this.getLangFromLocalStorage()
+            params: {languageTag: this.props.lang}
         })
             .then(res => {
                 this.setState({genres: res.data});
@@ -39,10 +28,12 @@ class GenreList extends Component {
     };
 
     handleItemClick = (e, {name}) => {
+        this.props.setGenres([name]);
         this.setState({activeGenre: name});
     };
 
     render() {
+        console.log('rending genres');
         return (
             <Menu fluid vertical tabular>
                 {this.state.genres.map(genre =>
