@@ -13,15 +13,19 @@ class Language extends Component {
     };
 
     componentWillMount() {
+
         let lang = localStorage.getItem(this.state.localStorage);
         if (lang === null || lang === undefined){
             localStorage.setItem(this.state.localStorage, JSON.stringify((this.state.languageList.find((lang) => lang.key === DEFAULT_LANGUAGE_TAG)).value));
             lang = localStorage.getItem(this.state.localStorage);
         }
         this.setState({selectedLang: JSON.parse(lang)});
+
     };
 
     handleChangeLanguage = (e, {value}) => {
+
+
         if (value !== this.state.selectedLang){
             localStorage.setItem(this.state.localStorage, JSON.stringify(value));
             this.setState({selectedLang: value});
@@ -41,6 +45,7 @@ class Language extends Component {
                 options={this.state.languageList}
                 text={this.state.buttonName}
                 onChange={this.handleChangeLanguage}
+                value={this.state.selectedLang.name}
             />
         );
     }

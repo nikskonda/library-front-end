@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import axios from "axios";
-import {BACK_END_SERVER_URL} from "../context";
+import axios from "axios/index";
+import {BACK_END_SERVER_URL} from "../../context";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
 import Image from "react-bootstrap/Image";

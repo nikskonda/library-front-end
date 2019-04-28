@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import axios from "axios";
+import axios from "axios/index";
 import {
     BACK_END_SERVER_URL,
     BOOK_STATUS,
@@ -7,8 +7,7 @@ import {
     BOOK_YEAR_MIN,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     URL_DOWNLOAD_FILE
-} from "../context";
-
+} from "../../context";
 // https://react.semantic-ui.com
 import {Button, Container, Dropdown, Form, Image, Input, TextArea} from "semantic-ui-react";
 import './BookEdit.css'

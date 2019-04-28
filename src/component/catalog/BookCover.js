@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {NavLink} from 'react-router-dom'
 import StarRatings from 'react-star-ratings';
-import {Button, Card, Grid, Header, Icon, Image, Label, Popup, Rating} from "semantic-ui-react";
+import {Button, Card, Header, Image, Label, Popup, Rating} from "semantic-ui-react";
+import {Link} from "react-router-dom";
 
 class BookCover extends Component {
 
@@ -13,6 +13,7 @@ class BookCover extends Component {
     getAuthor = (author, i, array) => {
         return (
             <Popup
+                key={author.id}
                 trigger={<span
                     className='user'>{author.firstName + ' ' + author.lastName + (i !== array.length - 1 ? ', ' : '')}</span>}
                 hoverable
@@ -33,8 +34,10 @@ class BookCover extends Component {
             <React.Fragment>
                 <Card>
                     <Card.Content>
-                        <Card.Header textAlign='center'>{this.state.bookCover.title}</Card.Header>
-                        <Image src='/img/book.jpg'/>
+                        <Link to={'/book/' + this.state.bookCover.id}>
+                            <Card.Header textAlign='center'>{this.state.bookCover.title}</Card.Header>
+                            <Image src='/img/book.jpg'/>
+                        </Link>
                         <Card.Meta>
                             {this.state.bookCover.authors !== undefined ? this.state.bookCover.authors.map(
                                 (author, i, array) => this.getAuthor(author, i, array)) : false}
@@ -42,15 +45,16 @@ class BookCover extends Component {
                         </Card.Meta>
                         <Card.Description>Year
                             is {this.state.bookCover.year || this.state.bookCover.year === -1 ? 'unknown.' : this.state.bookCover.year}</Card.Description>
-                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (<Label key={genre.id} as='a' basic>{genre.name}</Label>))}
+                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (
+                            <Label key={genre.id} as='a' basic>{genre.name}</Label>))}
                     </Card.Content>
 
                     {this.state.bookCover.rating !== undefined && this.state.bookCover.rating !== 0 ?
                         <Card.Content extra>
                             <Rating icon='star'
-                                    defaultRating={3}
+                                    defaultRating={this.state.bookCover.rating / 10}
                                     maxRating={10}
-                                    rating={this.state.bookCover.rating / 10}
+                                    disabled
                             />
                         </Card.Content>
                         : false}

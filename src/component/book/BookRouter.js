@@ -6,7 +6,6 @@ import BookPage from "./BookPage";
 import BookEditPage from "./BookEditPage";
 
 
-
 const BookRouter = () => (
     <Switch>
         <Route path='/book/edit' component={BookEditPage}/>

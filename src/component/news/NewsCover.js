@@ -46,7 +46,7 @@ class NewsCover extends Component {
                     <Card.Description>Daniel is a comedian living in Nashville.</Card.Description>
                 </Card.Content>
                 <Card.Content extra>
-                    <a>
+                    <a href={'user/'+this.state.newsCover.creator.id} >
                         <Icon name='user'/>
                         {this.userSign()}
                     </a>
