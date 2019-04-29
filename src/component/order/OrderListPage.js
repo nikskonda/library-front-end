@@ -1,48 +1,41 @@
 import React, {Component} from 'react';
 import {Container} from "react-bootstrap";
-import NewsList from "./NewsList";
-import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
-import queryString from "query-string/index";
-import axios from "axios/index";
+import OrderList from "./OrderList";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import queryString from "query-string";
+import axios from "axios";
 
-class NewsListPage extends Component {
+class OrderListPage extends Component {
 
     state = {
         number: 1,
         size: 10,
-        sort: 'creationDate',
+        sort: 'creationDateTime',
         direction: 'DESC',
-        newsLangTag: null,
-        news: [],
+
         totalPages: 0,
+
+        status: null,
+        bookId: this.props.match.params.bookId,
+        userId: this.props.match.params.userId,
+
+        orders: [],
     };
 
     componentWillMount() {
         const params = queryString.parse(this.props.location.search);
         this.setState({
-            searchString: params.searchString || this.state.searchString,
             number: params.number || this.state.number,
             size: params.size || this.state.size,
             sort: params.sort || this.state.sort,
             direction: params.direction || this.state.direction,
+
+            status: params.status || this.state.status,
         });
     }
 
     componentDidMount() {
-        this.setState({newsLangTag: this.getLangTagFromLocalStorage()}, this.loadNews);
-    };
-
-
-    getLangTagFromLocalStorage = () => {
-        let lang = localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE);
-        if (lang !== null) {
-            lang = JSON.parse(lang);
-        }
-        if (lang === null || lang.tag === undefined) {
-            return DEFAULT_LANGUAGE_TAG;
-        }
-        console.log(lang);
-        return lang.tag;
+        this.loadOrders();
     };
 
     changeUrl = (params) => {
@@ -52,10 +45,11 @@ class NewsListPage extends Component {
                 size: this.state.size,
                 sort: this.state.sort,
                 direction: this.state.direction,
+                status: this.state.status,
             }
         }
         this.props.history.push({search: queryString.stringify(params)});
-        this.loadNews();
+        this.loadOrders();
 
     };
 
@@ -63,26 +57,51 @@ class NewsListPage extends Component {
         this.setState({number: page}, this.changeUrl);
     };
 
-    loadNews = () => {
+    loadOrders = () => {
+        console.log('hello');
+        let url = BACK_END_SERVER_URL + `/order/`;
+        if (this.state.userId){
+            url = url.concat('user/'+this.state.userId);
+        } else {
+            if (this.state.bookId) {
+                url = url.concat('book/'+this.state.bookId);
+            } else {
+                url = url.concat('user');
+            }
+        }
+        console.log(url);
+        this.loadOrdersByUrl(url);
+
+    };
+
+
+    loadOrdersByUrl = (url) => {
         const params = {
             number: this.state.number,
             size: this.state.size,
             sort: this.state.sort,
             direction: this.state.direction,
-            newsLangTag: this.state.newsLangTag,
+            status: this.state.status,
         };
+
         axios
-            .get(BACK_END_SERVER_URL + `/news`,
+            .get(url,
                 {
                     params: params,
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
                 }
             )
             .then(res => {
                 this.setState({
                     number: res.data.number + 1,
-                    news: res.data.content,
+                    orders: res.data.content,
                     totalPages: res.data.totalPages,
                 });
+                console.log(res);
             })
             .catch(function (error) {
                 console.log(error);
@@ -94,9 +113,9 @@ class NewsListPage extends Component {
         return (
             <React.Fragment>
                 <Container>
-                    <NewsList
+                    <OrderList
                         activePage={this.state.number}
-                        news={this.state.news}
+                        orders={this.state.orders}
                         totalPages={this.state.totalPages}
                         setActivePage={this.setActivePage}
                     />
@@ -106,4 +125,4 @@ class NewsListPage extends Component {
     }
 }
 
-export default NewsListPage;
+export default OrderListPage;

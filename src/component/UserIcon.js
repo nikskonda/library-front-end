@@ -13,7 +13,7 @@ const Trigger = props => (
 
 const options = [
     {key: 'user', text: (<Link to='/account'>Account</Link>), icon: 'user'},
-    {key: 'orders', text: (<Link to='/orders'>Orders</Link>), icon: 'shopping cart'},
+    {key: 'orders', text: (<Link to='/order/user'>Orders</Link>), icon: 'shopping cart'},
     {key: 'bookmarks', text: (<Link to='/bookmarks'>Bookmarks</Link>), icon: 'bookmark'},
     {key: 'settings', text: (<Link to='/settings'>Settings</Link>), icon: 'settings'},
     {key: 'sign-out', text: (<Link to='/signOut'>Sign Out</Link>), icon: 'sign out'},

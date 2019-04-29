@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
-import {Card, Icon, Image} from "semantic-ui-react";
+import {Card, Icon, Image} from 'semantic-ui-react';
 
 class NewsCover extends Component {
 
@@ -12,12 +12,13 @@ class NewsCover extends Component {
 
     dateSign = () => {
         // return this.state.news.modificationDate === undefined ? this.state.news.creationDate : 'm:' + this.state.news.modificationDate;
+        // return <Moment>{this.state.newsCover.creationDate}</Moment>;
         let date = new Date(this.state.newsCover.creationDate);
         let now = new Date();
         if (now.getFullYear() === date.getFullYear() && now.getMonth() === date.getMonth() && now.getDate() === date.getDate()) {
-            return date.getHours() + ':' + date.getMinutes();
+            return (date.getHours()<10? '0':'') + date.getHours() + ':' + (date.getMinutes()<10? '0':'') + date.getMinutes();
         } else {
-            return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+            return (date.getDate()<10? '0':'')+ date.getDate() + '.' + (date.getMonth() + 1<10? '0':'')+(date.getMonth() + 1) + '.' + date.getFullYear();
         }
     };
 

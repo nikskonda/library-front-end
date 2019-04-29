@@ -6,7 +6,7 @@ import Alert from "react-bootstrap/Alert";
 import Image from "react-bootstrap/Image";
 import StarRatings from "react-star-ratings";
 import Button from "react-bootstrap/Button";
-import {NavLink} from "react-router-dom";
+import {Link, NavLink} from "react-router-dom";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Table from "react-bootstrap/Table";
 import Popover from "react-bootstrap/Popover";
@@ -34,8 +34,8 @@ class Book extends Component {
             });
     }
 
-    getAuthor(author){
-        let popover =(
+    getAuthor(author) {
+        let popover = (
             <Popover id="popover-basic" title={author.name}>
                 <a href='/book/author'>{author.description}</a>
             </Popover>)
@@ -86,7 +86,12 @@ class Book extends Component {
 
                         <ButtonGroup>
                             <Button variant="primary">Buy now {this.state.book.price}$</Button>
-                            <Button variant="primary">Read Now</Button>
+                            <Button variant="primary">
+                                <Link to={`/book/${this.state.book.id}/read/pdf`}>PDF READER</Link>
+                            </Button>
+                            <Button variant="primary">
+                                <Link to={`/book/${this.state.book.id}/read/epub`}>EBUP READER</Link>
+                            </Button>
                             <Button variant="primary">Button for any action</Button>
                         </ButtonGroup>
                     </div>

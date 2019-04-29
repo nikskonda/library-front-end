@@ -8,6 +8,7 @@ import NewsPage from "./news/NewsPage";
 import SignIn from "./SignIn";
 import Header from "./Header";
 import NewsEdit from "./news/NewsEdit";
+import OrderListPage from "./order/OrderListPage";
 
 
 const MainRouter = () => (
@@ -20,6 +21,9 @@ const MainRouter = () => (
             <Route exact path='/news' component={NewsListPage}/>
             <Route path='/news/edit' component={NewsEdit}/>
             <Route path='/news/:newsId' component={NewsPage}/>
+            <Route path='/order/book/:bookId' component={OrderListPage}/>
+            <Route path='/order/user/:userId' component={OrderListPage}/>
+            <Route path='/order/user' component={OrderListPage}/>
             <Route path='/signIn' component={SignIn}/>
         </Switch>
     </React.Fragment>

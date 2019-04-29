@@ -14,7 +14,6 @@ class BookPage extends Component {
     render() {
         return (
             <React.Fragment>
-                <Header/>
                 <Book id={this.state.id}/>
             </React.Fragment>
         );
