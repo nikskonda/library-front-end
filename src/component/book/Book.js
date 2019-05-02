@@ -1,16 +1,9 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
 import {BACK_END_SERVER_URL} from "../../context";
-import Container from "react-bootstrap/Container";
-import Alert from "react-bootstrap/Alert";
-import Image from "react-bootstrap/Image";
+import {Button, Card, Container, Grid, Header, Image, Message, Popup, Rating, Segment, Table} from "semantic-ui-react";
+import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
-import Button from "react-bootstrap/Button";
-import {Link, NavLink} from "react-router-dom";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import Table from "react-bootstrap/Table";
-import Popover from "react-bootstrap/Popover";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 class Book extends Component {
 
@@ -34,206 +27,216 @@ class Book extends Component {
             });
     }
 
-    getAuthor(author) {
-        let popover = (
-            <Popover id="popover-basic" title={author.name}>
-                <a href='/book/author'>{author.description}</a>
-            </Popover>)
-        ;
-
+    getAuthor = (author, i, array) => {
         return (
-            <OverlayTrigger ket={author.id} trigger="hover" placement="bottom" overlay={popover}>
-                <NavLink to={`book/author/${author.id}`}
-                         style={{
-                             textDecoration: 'none',
-                             color: 'inhabit'
-                         }}
-                         activeClassName="active"
-                         key={author.id}
-                >
-                    {author.firstName + ' ' + author.lastName + ', '}
-                </NavLink>
-            </OverlayTrigger>);
-    }
+            <Popup
+                key={author.id}
+                trigger={<span
+                    className='user'>{author.firstName + ' ' + author.lastName + (i !== array.length - 1 ? ', ' : '')}</span>}
+                hoverable
+                on='click'
+                hideOnScroll
+            >
+                <Header as='h4'>{author.firstName + ' ' + author.lastName}</Header>
+                {author.description !== undefined ? <p>{author.description}</p> : false}
+                {author.wikiLink !== undefined ?
+                    <a href={author.wikiLink}><Button fluid>WIKIPEDIA</Button></a> : false}
+                <a href={'author/' + author.id}><Button fluid>Find All His Books</Button></a>
+            </Popup>
+        );
+    };
 
     getBody() {
         return (
-            <div>
-                <div>
-                    <div className='float-right'>
-                        <div>
-                            <Image src="../img/big_book.png" className="rounded" style={{maxHeight: 500}}/>
-                        </div>
-                        <div style={{alignItem: 'center'}}>
+
+            <Grid>
+                <Grid.Row>
+                        <h1>{this.state.book.title + (this.state.book.year && this.state.book.year!==-1 ? ', ' + this.state.book.year : '')}</h1>
+                    <div>
+                        <Button.Group floated='left'>
+                            {this.state.book.price ? <Button>Buy now {this.state.book.price}$</Button> : false}
+                            {this.state.book.pdfUrl ? <Button>
+                                <Link to={`/book/${this.state.book.id}/read/pdf`}>PDF READER</Link>
+                            </Button> : false}
+                            {this.state.book.ePubUrl ?
+                                <Link to={`/book/${this.state.book.id}/read/epub`}><Button>EBUP
+                                    READER</Button>Button></Link> : false}
+                            <Button>Button for any action</Button>
+                        </Button.Group>
+                    </div>
+                    <div>
+                        {this.state.book.rating !== undefined && this.state.book.rating !== 0 ?
+                            <Rating icon='star'
+                                    defaultRating={this.state.book.rating / 10}
+                                    maxRating={10}
+                                    disabled
+                            />
+                            : false}
+                        {this.state.book.rating !== undefined && this.state.book.rating !== 0 ?
                             <StarRatings
                                 rating={this.state.book.rating / 10}
-                                starRatedColor='red'
+                                starRatedColor='#ffe623'
                                 numberOfStars={10}
-                                starDimension='20px'
+                                starDimension='17px'
                                 starSpacing='0'
                                 name='rating'
                             />
-                        </div>
-
+                            : false}
                     </div>
                     <div>
-                        <h1>{this.state.book.title}</h1>
-                        <div>
-                            {this.state.book.authors !== null ? this.state.book.authors.map(
-                                (author) => this.getAuthor(author)) : false}
-                            {this.state.book.year !== null ? this.state.book.year : false}
-                        </div>
-
-                        <ButtonGroup>
-                            <Button variant="primary">Buy now {this.state.book.price}$</Button>
-                            <Button variant="primary">
-                                <Link to={`/book/${this.state.book.id}/read/pdf`}>PDF READER</Link>
-                            </Button>
-                            <Button variant="primary">
-                                <Link to={`/book/${this.state.book.id}/read/epub`}>EBUP READER</Link>
-                            </Button>
-                            <Button variant="primary">Button for any action</Button>
-                        </ButtonGroup>
-                    </div>
-                    <div>
+                        <Image src='../../img/big_book.png' size='large' floated='right'/>
                         <p>{this.state.book.description}</p>
                     </div>
-                </div>
-                <hr/>
-                <div className='open_book'>
+                </Grid.Row>
+                <Grid.Row>
                     <Table striped bordered hover size="sm">
-                        <tbody>
-                        {this.state.book.size !== undefined ?
-                            <tr>
-                                <td>Size</td>
-                                <td>{this.state.book.size}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.genres !== undefined ?
-                            <tr>
-                                <td>Genre</td>
-                                <td>{this.state.book.genres.map((genre, i, list) => genre.name + (list.length - 1 !== i ? ', ' : ' '))}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.translator !== undefined ?
-                            <tr>
-                                <td>translator</td>
-                                <td>{this.state.book.translator.map((translator, i, list) => (translator.firstName + ' ' + translator.lastName + (list.length - 1 !== i ? ', ' : ' ')))}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.type !== undefined ?
-                            <tr>
-                                <td>type</td>
-                                <td>{this.state.book.type}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.ageRestriction !== undefined ?
-                            <tr>
-                                <td>ageRestriction</td>
-                                <td>{this.state.book.ageRestriction}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.rating !== undefined ?
-                            <tr>
-                                <td>rating</td>
-                                <td>{this.state.book.rating}/100</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.year !== undefined ?
-                            <tr>
-                                <td>year</td>
-                                <td>{this.state.book.year}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.status !== undefined ?
-                            <tr>
-                                <td>status</td>
-                                <td>{this.state.book.status}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.weight !== undefined ?
-                            <tr>
-                                <td>weight</td>
-                                <td>{this.state.book.weight}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.pages !== undefined ?
-                            <tr>
-                                <td>pages</td>
-                                <td>{this.state.book.pages}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.isbn !== undefined ?
-                            <tr>
-                                <td>ISBN</td>
-                                <td>{this.state.book.isbn}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.publishingHouse !== undefined ?
-                            <tr>
-                                <td>publishingHouse</td>
-                                <td>{this.state.book.publishingHouse.title}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.producer !== undefined ?
-                            <tr>
-                                <td>producer</td>
-                                <td>{this.state.book.producer.title}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.importer !== undefined ?
-                            <tr>
-                                <td>importer</td>
-                                <td>{this.state.book.importer.title}</td>
-                            </tr>
-                            :
-                            false
-                        }
-                        {this.state.book.price !== undefined ?
-                            <tr>
-                                <td>price</td>
-                                <td>{this.state.book.price}</td>
-                            </tr>
-                            :
-                            false
-                        }
+                        <Table.Body>
 
-                        </tbody>
+                            {this.state.book.genres !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>Genre</Table.Cell>
+                                    <Table.Cell>{this.state.book.genres.map((genre, i, list) => genre.name + (list.length - 1 !== i ? ', ' : ' '))}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+
+                            {this.state.book.authors !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>authors</Table.Cell>
+                                    <Table.Cell>{this.state.book.authors ? this.state.book.authors.map((author, i, array) => this.getAuthor(author, i, array)) : false}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.translators !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>translators</Table.Cell>
+                                    <Table.Cell>{this.state.book.translators ? this.state.book.translators.map((translator, i, array) => this.getAuthor(translator, i, array)) : false}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.size !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>Size</Table.Cell>
+                                    <Table.Cell>{this.state.book.size}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.type !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>type</Table.Cell>
+                                    <Table.Cell>{this.state.book.type}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.ageRestriction  ?
+                                <Table.Row>
+                                    <Table.Cell>ageRestriction</Table.Cell>
+                                    <Table.Cell>{this.state.book.ageRestriction}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.rating ?
+                                <Table.Row>
+                                    <Table.Cell>rating</Table.Cell>
+                                    <Table.Cell>{this.state.book.rating}/100</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.year ?
+                                <Table.Row>
+                                    <Table.Cell>year</Table.Cell>
+                                    <Table.Cell>{this.state.book.year==-1?' unknown' : this.state.book.year}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.status !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>status</Table.Cell>
+                                    <Table.Cell>{this.state.book.status}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.weight !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>weight</Table.Cell>
+                                    <Table.Cell>{this.state.book.weight}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.pages !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>pages</Table.Cell>
+                                    <Table.Cell>{this.state.book.pages}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.isbn !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>ISBN</Table.Cell>
+                                    <Table.Cell>{this.state.book.isbn}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.publishingHouse !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>publishingHouse</Table.Cell>
+                                    <Table.Cell>{this.state.book.publishingHouse.title}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.producer !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>producer</Table.Cell>
+                                    <Table.Cell>{this.state.book.producer.title}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.importer !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>importer</Table.Cell>
+                                    <Table.Cell>{this.state.book.importer.title}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+                            {this.state.book.price !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>price</Table.Cell>
+                                    <Table.Cell>{this.state.book.price}</Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
+
+                        </Table.Body>
                     </Table>
-                </div>
-            </div>
+                </Grid.Row>
+            </Grid>
         );
     }
 
 
     render() {
-        let notFount = <Alert variant='warning'>Book not found</Alert>;
+        const notFount =
+            (<Message
+                warning
+                header='Book Not found'
+                content='Plz change search query!'
+            />);
         return (
             <Container>
                 {this.state.book === null ? notFount : this.getBody()}

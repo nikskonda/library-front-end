@@ -1,11 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
 import {BACK_END_SERVER_URL} from "../../context";
-import Alert from "react-bootstrap/Alert";
-import Container from "react-bootstrap/Container";
-import Image from "react-bootstrap/Image";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import {Container, Grid, Image, Message} from "semantic-ui-react";
 
 class News extends Component {
 
@@ -57,32 +53,36 @@ class News extends Component {
 
     getBody(){
         return (
-            <React.Fragment>
-                <Row>
-                    <Image src="../img/news.jpg" className="rounded" style={{maxHeight: 500}}/>
-                </Row>
-                <Row>
-                    <h1>{this.state.news.title}</h1>
-                </Row>
-                <Row>
-                    <p>{this.state.news.text}</p>
-                </Row>
-                <Row className='justify-content-between'>
-                    <Col>
-                        <small>{this.dateSign()}</small>
-                    </Col>
-                    <Col>
-                        <small>{this.userSign()}</small>
-                    </Col>
-                </Row>
-            </React.Fragment>
+                <Grid>
+                    <Grid.Row>
+                        <Image src="../img/news.jpg"/>
+                    </Grid.Row>
 
+                    <Grid.Row>
+                        <h1>{this.state.news.title}</h1>
+                        <p>{this.state.news.text}</p>
+                    </Grid.Row>
+
+                    <Grid.Row>
+                        <Grid.Column floated='left' width={3}>
+                            <small>{this.dateSign()}</small>
+                        </Grid.Column>
+                        <Grid.Column floated='right' width={3}>
+                            <small>{this.userSign()}</small>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
         );
 
     }
 
     render() {
-        let notFount = <Alert variant='warning'>News not found</Alert>;
+        const notFount =
+            (<Message
+                warning
+                header='News Not found'
+                content='Plz change search query!'
+            />);
         return (
             <Container>
                 {this.state.news === null ? notFount : this.getBody()}

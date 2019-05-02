@@ -9,6 +9,10 @@ import SignIn from "./SignIn";
 import Header from "./Header";
 import NewsEdit from "./news/NewsEdit";
 import OrderListPage from "./order/OrderListPage";
+import SignUp from "./SignUp";
+import SignOut from "./SignOut";
+import UserSettings from "./UserSettings";
+import BookmarkListPage from "./bookmark/BookmarkListPage";
 
 
 const MainRouter = () => (
@@ -25,6 +29,10 @@ const MainRouter = () => (
             <Route path='/order/user/:userId' component={OrderListPage}/>
             <Route path='/order/user' component={OrderListPage}/>
             <Route path='/signIn' component={SignIn}/>
+            <Route path='/signUp' component={SignUp}/>
+            <Route path='/signOut' component={SignOut}/>
+            <Route path='/user/settings' component={UserSettings}/>
+            <Route path='/bookmarks' component={BookmarkListPage}/>
         </Switch>
     </React.Fragment>
 

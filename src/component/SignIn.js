@@ -161,7 +161,7 @@ class SignIn extends Component {
                             />
 
                             <Button
-                                content='Login'
+                                content='Sign In'
                                 primary
                                 onClick={this.signIn}
                             />
@@ -172,7 +172,7 @@ class SignIn extends Component {
                         <Button content='Sign up'
                                 icon='signup'
                                 size='big'
-                                onClick={this.signIn}
+                                onClick={() => this.props.history.push('/signUp')}
                         />
                     </Grid.Column>
                 </Grid>

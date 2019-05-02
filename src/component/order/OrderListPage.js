@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {Container} from "react-bootstrap";
 import OrderList from "./OrderList";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
 import queryString from "query-string";
 import axios from "axios";
+import {Container} from "semantic-ui-react";
 
 class OrderListPage extends Component {
 
