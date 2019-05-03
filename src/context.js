@@ -19,7 +19,7 @@ export const DEFAULT_LANGUAGE_TAG = 'US_en';
 export const BOOK_TYPE = [ { name: 'BOOK'}, {name: 'COMICS'}, {name: 'MAGAZINE'} ];
 export const BOOK_STATUS = [ { name: 'IN_STOCK'}, {name: 'ON_HAND'}, {name: 'UNKNOWN'} ];
 
-export const ORDER_STATUS = [['new', 'NEW'],['in_progress', 'IN_PROCESS'],['completed', 'COMPLETED']];
+export const ORDER_STATUS = [['new', 'NEW'],['in_progress', 'IN_PROCESS'],['completed', 'COMPLETED'],['cancelled', 'CANCELLED']];
 
-export const URL_DOWNLOAD_FILE = '/file/download/';
+export const URL_DOWNLOAD_FILE = '/file/download?file=';
 export const BOOK_YEAR_MIN = 1801;

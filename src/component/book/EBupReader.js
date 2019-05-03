@@ -11,7 +11,7 @@ class EBupReader extends Component {
     state = {
         pageNumber: 1,
         totalPage: 1,
-        pdfUrl: null,
+        ePubUrl: null,
         bookId: null,
         value: 1,
         bookmark: 1,
@@ -21,11 +21,13 @@ class EBupReader extends Component {
     };
 
     componentWillMount() {
+
         axios
             .get(BACK_END_SERVER_URL + `/book/${this.props.match.params.bookId}`)
             .then(res => {
+                console.log(res);
                 this.setState({
-                    pdfUrl: res.data.pdfUrl,
+                    ePubUrl: res.data.epubUrl,
                     bookId: res.data.id,
                 });
             })
@@ -48,8 +50,8 @@ class EBupReader extends Component {
                 console.log(res);
                 this.setState(
                     {
-                        bookmark: res.data.page,
-                        bookmarkId: res.data.id,
+                        // bookmark: res.data.page,
+                        // bookmarkId: res.data.id,
                     }
                     // ,
                     // () => {
@@ -151,7 +153,9 @@ class EBupReader extends Component {
                 header={`Bookmark didn't creat!`}
                 content='qqqqqqqqqqqqqq!'
             />);
-        return (this.state.pdfUrl ?
+        if (this.state.ePubUrl)
+            console.log(BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.ePubUrl.replace(/\//g, '%2F'));
+        return (this.state.ePubUrl ?
                 <Container>
                     <Grid>
                         {this.state.bookmarkSuccessAlert ? bookmarkSuccessAlert : false}
@@ -174,12 +178,15 @@ class EBupReader extends Component {
                             </Button>
                         </Grid.Row>
                         <Grid.Row>
+                            <div style={{ position: "relative", height: "100%" }}>
+                                {" "}
                             <ReactReader
-                                url={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.pdfUrl}
+                                url={BACK_END_SERVER_URL + '/file/download/book/epub/1.epub'}
                                 title={"Alice in wonderland"}
                                 location={"epubcfi(/6/2[cover]!/6)"}
                                 locationChanged={epubcifi => console.log(epubcifi)}
                                 />
+                            </div>
                         </Grid.Row>
                         <Grid.Row>
                             <GridColumn width={13}>

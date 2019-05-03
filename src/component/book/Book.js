@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL} from "../../context";
-import {Button, Card, Container, Grid, Header, Image, Message, Popup, Rating, Segment, Table} from "semantic-ui-react";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
+import {Button, Container, Grid, Header, Image, Message, Popup, Rating, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
 
@@ -84,12 +84,12 @@ class Book extends Component {
                             : false}
                     </div>
                     <div>
-                        <Image src='../../img/big_book.png' size='large' floated='right'/>
+                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.book.pictureUrl} size='large' floated='right'/>
                         <p>{this.state.book.description}</p>
                     </div>
                 </Grid.Row>
                 <Grid.Row>
-                    <Table striped bordered hover size="sm">
+                    <Table striped bordered size="sm">
                         <Table.Body>
 
                             {this.state.book.genres !== undefined ?
@@ -152,7 +152,7 @@ class Book extends Component {
                             {this.state.book.year ?
                                 <Table.Row>
                                     <Table.Cell>year</Table.Cell>
-                                    <Table.Cell>{this.state.book.year==-1?' unknown' : this.state.book.year}</Table.Cell>
+                                    <Table.Cell>{this.state.book.year===-1?' unknown' : this.state.book.year}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false

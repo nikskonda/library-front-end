@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Card, Image, Label} from "semantic-ui-react";
-import {ORDER_STATUS} from "../../context";
+import {BACK_END_SERVER_URL, ORDER_STATUS, URL_DOWNLOAD_FILE} from "../../context";
 import {Link} from "react-router-dom";
 
 class BookmarkCover extends Component {
@@ -36,7 +36,7 @@ class BookmarkCover extends Component {
         const bookmark = this.props.bookmark;
         console.log(bookmark.page);
         return (<Card>
-                        <Image src='../img/book.jpg'/>
+                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+bookmark.book.thumbnailUrl}/>
                         <Card.Content>
                             <Card.Header>
                                 <Link to={`../book/` + bookmark.book.id}>{bookmark.book.title}</Link>

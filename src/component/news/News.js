@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL} from "../../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
 import {Container, Grid, Image, Message} from "semantic-ui-react";
 
 class News extends Component {
@@ -55,7 +55,7 @@ class News extends Component {
         return (
                 <Grid>
                     <Grid.Row>
-                        <Image src="../img/news.jpg"/>
+                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.news.pictureUrl}/>
                     </Grid.Row>
 
                     <Grid.Row>

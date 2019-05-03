@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import StarRatings from 'react-star-ratings';
 import {Button, Card, Header, Image, Label, Popup, Rating} from "semantic-ui-react";
 import {Link} from "react-router-dom";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
 
 class BookCover extends Component {
 
@@ -36,7 +37,7 @@ class BookCover extends Component {
                     <Card.Content>
                         <Link to={'/book/' + this.state.bookCover.id}>
                             <Card.Header textAlign='center'>{this.state.bookCover.title}</Card.Header>
-                            <Image src='/img/book.jpg'/>
+                            <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.bookCover.thumbnailUrl}/>
                         </Link>
                         <Card.Meta>
                             {this.state.bookCover.authors !== undefined ? this.state.bookCover.authors.map(

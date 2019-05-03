@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
 
 class NewsCover extends Component {
 
@@ -38,7 +39,7 @@ class NewsCover extends Component {
     render() {
         return (
             <Card>
-                <Image src='img/news.jpg'/>
+                <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.newsCover.thumbnailUrl}/>
                 <Card.Content>
                     <Card.Header>
                         <Link to={'news/' + this.state.newsCover.id}>{this.state.newsCover.title}</Link>

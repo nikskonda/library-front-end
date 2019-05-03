@@ -25,6 +25,7 @@ class PdfReader extends Component {
         axios
             .get(BACK_END_SERVER_URL + `/book/${this.props.match.params.bookId}`)
             .then(res => {
+                console.log(res.data);
                 this.setState({
                     pdfUrl: res.data.pdfUrl,
                     bookId: res.data.id,
@@ -46,10 +47,10 @@ class PdfReader extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
+
                 this.setState(
                     {
-                        bookmark: res.data.page,
+                        bookmark: res.data.page>this.state.totalPage?this.state.totalPage:res.data.page,
                         bookmarkId: res.data.id,
                     }
                     // ,

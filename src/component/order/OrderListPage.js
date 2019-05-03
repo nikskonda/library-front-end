@@ -108,6 +108,19 @@ class OrderListPage extends Component {
             });
     };
 
+    changeOrder = (order) => {
+
+        for (let i=0; i<this.state.orders.length; i++){
+            if (this.state.orders[i].id===order.id){
+                console.log('change');
+                console.log(this.state.orders);
+                this.state.orders[i]=order;
+                console.log(this.state.orders);
+                break;
+            }
+        }
+        this.render();
+    };
 
     render() {
         return (
@@ -118,6 +131,7 @@ class OrderListPage extends Component {
                         orders={this.state.orders}
                         totalPages={this.state.totalPages}
                         setActivePage={this.setActivePage}
+                        changeOrder={this.changeOrder}
                     />
                 </Container>
             </React.Fragment>

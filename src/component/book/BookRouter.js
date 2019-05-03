@@ -12,7 +12,7 @@ const BookRouter = () => (
     <Switch>
         <Route path='/book/edit' component={BookEditPage}/>
         <Route path='/book/:bookId/read/pdf' component={PdfReader}/>
-        <Route path='/book/:bookId/read/ebup' component={EBupReader}/>
+        <Route path='/book/:bookId/read/epub' component={EBupReader}/>
         <Route path='/book/:bookId' component={BookPage}/>
     </Switch>
 );

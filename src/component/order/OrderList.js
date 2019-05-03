@@ -29,7 +29,7 @@ class OrderList extends Component {
         return ( this.props.orders ?
             <React.Fragment>
                 <Card.Group>
-                    {this.props.orders.map((order) => <OrderCover key={order.id} order={order}/>)}
+                    {this.props.orders.map((order) => <OrderCover key={order.id} order={order} changeOrder={this.props.changeOrder}/>)}
                 </Card.Group>
                 <Pagination
                     activePage={this.props.number}
