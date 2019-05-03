@@ -13,6 +13,7 @@ import SignUp from "./SignUp";
 import SignOut from "./SignOut";
 import UserSettings from "./UserSettings";
 import BookmarkListPage from "./bookmark/BookmarkListPage";
+import BasketPage from "./BasketPage";
 
 
 const MainRouter = () => (
@@ -33,6 +34,7 @@ const MainRouter = () => (
             <Route path='/signOut' component={SignOut}/>
             <Route path='/user/settings' component={UserSettings}/>
             <Route path='/bookmarks' component={BookmarkListPage}/>
+            <Route path='/basket' component={BasketPage}/>
         </Switch>
     </React.Fragment>
 

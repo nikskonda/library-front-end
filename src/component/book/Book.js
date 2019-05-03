@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, URL_DOWNLOAD_FILE} from "../../context";
 import {Button, Container, Grid, Header, Image, Message, Popup, Rating, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
@@ -46,6 +46,30 @@ class Book extends Component {
         );
     };
 
+    addBookToBasket = () =>{
+        const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
+        let basket = [];
+        if (basketStr){
+            basket = JSON.parse(basketStr);
+            let flag = true;
+            for (let i=0; i<basket.length; i++){
+                if (basket[i].book.id===this.state.book.id){
+                    basket[i].count++;
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag){
+                basket.push({book: this.state.book, count: 1});
+            }
+        } else {
+            basket.push({book: this.state.book, count: 1});
+        }
+        localStorage.setItem(LOCAL_STORAGE_BASKET, JSON.stringify(basket));
+        this.setState({isBasketSuccess: true});
+    };
+
+
     getBody() {
         return (
 
@@ -54,14 +78,13 @@ class Book extends Component {
                         <h1>{this.state.book.title + (this.state.book.year && this.state.book.year!==-1 ? ', ' + this.state.book.year : '')}</h1>
                     <div>
                         <Button.Group floated='left'>
-                            {this.state.book.price ? <Button>Buy now {this.state.book.price}$</Button> : false}
+                            {this.state.book.price ? <Button onClick={this.addBookToBasket}>Buy now {this.state.book.price}$</Button> : false}
                             {this.state.book.pdfUrl ? <Button>
                                 <Link to={`/book/${this.state.book.id}/read/pdf`}>PDF READER</Link>
                             </Button> : false}
                             {this.state.book.ePubUrl ?
                                 <Link to={`/book/${this.state.book.id}/read/epub`}><Button>EBUP
                                     READER</Button>Button></Link> : false}
-                            <Button>Button for any action</Button>
                         </Button.Group>
                     </div>
                     <div>
@@ -237,8 +260,15 @@ class Book extends Component {
                 header='Book Not found'
                 content='Plz change search query!'
             />);
+        const inBasket =
+            (<Message
+                success
+                header='Book In Basket'
+                content='Plz change search query!'
+            />);
         return (
             <Container>
+                {this.state.isBasketSuccess? inBasket: false}
                 {this.state.book === null ? notFount : this.getBody()}
             </Container>
         );
