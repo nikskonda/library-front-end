@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
 import {Link} from "react-router-dom";
 
 class BasketItem extends Component {

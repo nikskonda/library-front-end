@@ -66,6 +66,8 @@ class BookCover extends Component {
         return false;
     };
 
+
+
     render() {
         return (
             <React.Fragment>
@@ -82,8 +84,7 @@ class BookCover extends Component {
                         </Card.Meta>
                         <Card.Description>Year
                             is {this.state.bookCover.year || this.state.bookCover.year === -1 ? 'unknown.' : this.state.bookCover.year}</Card.Description>
-                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (
-                            <Label key={genre.id} as='a' basic>{genre.name}</Label>))}
+                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (<Genre genre={genre} addGenre={this.props.addGenre} />))}
                         {this.isInBasket()}
                     </Card.Content>
 
@@ -128,6 +129,19 @@ class BookCover extends Component {
 
         );
     }
+}
+
+class Genre extends Component {
+
+    addGenre = () => {
+        this.props.addGenre(this.props.genre.name);
+    };
+
+    render(){
+        let genre=this.props.genre;
+        return  <Label key={genre.id} basic onClick={this.addGenre}>{genre.name}</Label>;
+    }
+
 }
 
 export default BookCover;

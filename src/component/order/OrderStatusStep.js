@@ -22,7 +22,7 @@ const icon = (status) => {
 
 const OrderStatusStep = (props) => (
     <Step.Group>
-        {props.statusList.map((status) =>
+        {props.statusList ? props.statusList.map((status) =>
             <Step
                 key={status.id}
             >
@@ -31,7 +31,8 @@ const OrderStatusStep = (props) => (
                     <Step.Title>{status.status}</Step.Title>
                     <Step.Description>{dateSign(status.dateTime)}</Step.Description>
                 </Step.Content>
-            </Step>  )}
+            </Step>  )
+        : false}
 
     </Step.Group>
 );

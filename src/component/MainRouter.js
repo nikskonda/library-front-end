@@ -5,15 +5,15 @@ import BookCatalogPage from "./catalog/BookCatalogPage";
 import BookRouter from "./book/BookRouter";
 import NewsListPage from "./news/NewsListPage";
 import NewsPage from "./news/NewsPage";
-import SignIn from "./SignIn";
+import SignIn from "./sign/SignIn";
 import Header from "./Header";
 import NewsEdit from "./news/NewsEdit";
 import OrderListPage from "./order/OrderListPage";
-import SignUp from "./SignUp";
-import SignOut from "./SignOut";
+import SignUp from "./sign/SignUp";
+import SignOut from "./sign/SignOut";
 import UserSettings from "./UserSettings";
 import BookmarkListPage from "./bookmark/BookmarkListPage";
-import BasketPage from "./BasketPage";
+import BasketPage from "./basket/BasketPage";
 
 
 const MainRouter = () => (

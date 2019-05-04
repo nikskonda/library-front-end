@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import BookList from "./BookList";
 import GenreList from "./GenreList"
 import {Button, Container, Grid, Input, Select} from "semantic-ui-react";
-import queryString from 'query-string/index';
+import queryString from 'query-string';
 import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../../context";
-import axios from "axios/index";
+import axios from "axios";
 
 
 class BookCatalogPage extends Component {
@@ -42,6 +42,8 @@ class BookCatalogPage extends Component {
             genres: params.genres || this.state.genres,
             authors: params.authors || this.state.authors,
         });
+        if (!params.genres) this.state.genres.push(params.genres);
+        if (!params.authors) this.state.genres.push(params.authors);
     }
 
 
@@ -53,7 +55,6 @@ class BookCatalogPage extends Component {
         if (lang === null || lang.tag === undefined) {
             return DEFAULT_LANGUAGE_TAG;
         }
-        console.log(lang);
         return lang.tag;
     };
 
@@ -71,11 +72,12 @@ class BookCatalogPage extends Component {
         }
         this.props.history.push({search: queryString.stringify(params)});
         this.loadBooks();
-
+        window.scrollTo(0, 0)
     };
 
-    addGenre = (genre) => {
-        this.state.genres.push(genre.name);
+    addGenre = (genreName) => {
+        console.log(this.state.genres);
+        this.state.genres.push(genreName);
         this.changeUrl();
     };
 
@@ -119,6 +121,24 @@ class BookCatalogPage extends Component {
             });
     };
 
+    changeSearchHandler = (event, {value}) =>{
+        this.setState({searchString: value});
+    };
+
+    searchBooks = () => {
+           let params = {
+                searchString: this.state.searchString,
+                number: 1,
+                size: this.state.size,
+                sort: this.state.sort,
+                direction: this.state.direction,
+                genres: [],
+                authors: [],
+            };
+        this.changeUrl(params);
+
+    };
+
     render() {
 
         return (
@@ -130,16 +150,20 @@ class BookCatalogPage extends Component {
                             <GenreList location={this.props.location} addGenre={this.addGenre} setGenres={this.setGenres} lang={this.getLangTagFromLocalStorage()}/>
                         </Grid.Column>
                         <Grid.Column stretched width={13}>
-                            <Input className='w-100' type='text' placeholder='Search...' action>
+                            <Input className='w-100' type='text' placeholder='Search...' action value={this.state.searchString} onChange={this.changeSearchHandler}>
                                 <input/>
                                 <Select compact options={this.state.searchOptions} defaultValue='all'/>
-                                <Button type='submit'>Search</Button>
+                                <Button
+                                    type='submit'
+                                    onClick={this.searchBooks}
+                                >Search</Button>
                             </Input>
                             <BookList
                                 activePage={this.state.number}
                                 books={this.state.books}
                                 totalPages={this.state.totalPages}
                                 setActivePage={this.setActivePage}
+                                addGenre={this.addGenre}
                             />
                         </Grid.Column>
                     </Grid>

@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
-import {LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
 import axios from "axios";
-import {Container, Item, Message, Statistic} from "semantic-ui-react";
+import {Button, Container, Item, Message, Statistic} from "semantic-ui-react";
 import BasketItem from "./BasketItem";
+import AddressForm from "./AddressForm";
 
 class BasketPage extends Component {
 
     state = {
         basket: [],
         totalPrice: 0,
+        showAddressField: false,
     };
 
     componentWillMount() {
@@ -25,43 +27,10 @@ class BasketPage extends Component {
         let basket = this.state.basket;
         let total = 0;
         for (let i = 0; i < basket.length; i++) {
-            total += (basket[i].book.price?basket[i].book.price:0) * basket[i].count;
+            total += (basket[i].book.price ? basket[i].book.price : 0) * basket[i].count;
         }
         this.setState({totalPrice: total});
     }
-
-    loadOrdersByUrl = (url) => {
-        const params = {
-            number: this.state.number,
-            size: this.state.size,
-            sort: this.state.sort,
-            direction: this.state.direction,
-            status: this.state.status,
-        };
-
-        axios
-            .get(url,
-                {
-                    params: params,
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
-                    },
-                }
-            )
-            .then(res => {
-                this.setState({
-                    number: res.data.number + 1,
-                    orders: res.data.content,
-                    totalPages: res.data.totalPages,
-                });
-                console.log(res);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
 
     updateBasket = (basket) => {
         localStorage.setItem(LOCAL_STORAGE_BASKET, JSON.stringify(basket));
@@ -105,6 +74,34 @@ class BasketPage extends Component {
         this.updateBasket(basket);
     };
 
+    viewAddressFields = () => {
+        this.setState({showAddressField: !this.state.showAddressField})
+    };
+
+    createOrder = (address) => {
+        let order = {
+            address: address,
+            details: this.state.basket,
+        };
+        axios
+            .post(BACK_END_SERVER_URL + '/order',
+                order,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                this.props.history.push('/order/user')
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
     render() {
         const alert =
             (<Message
@@ -132,6 +129,11 @@ class BasketPage extends Component {
                                 <Statistic.Value>{this.state.totalPrice}</Statistic.Value>
                                 <Statistic.Label>Total</Statistic.Label>
                             </Statistic>
+                            <Button
+                                onClick={this.viewAddressFields}>
+                                OFORMIT
+                            </Button>
+                            {this.state.showAddressField ? <AddressForm createOrder={this.createOrder}/> : false}
                         </React.Fragment>
                         :
                         alert

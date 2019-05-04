@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {BACK_END_SERVER_URL} from "../context";
+import {BACK_END_SERVER_URL} from "../../context";
 import axios from "axios";
 import {Button, Container, Divider, Form, Grid, SegmentGroup} from "semantic-ui-react";
 

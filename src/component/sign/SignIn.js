@@ -8,7 +8,7 @@ import {
     OAUTH2_CLIENT_SECRET,
     OAUTH2_GRANT_TYPE_PASSWORD,
     OAUTH2_GRANT_TYPE_REFRESH_TOKEN
-} from "../context";
+} from "../../context";
 import axios from "axios";
 import {Button, Container, Divider, Form, Grid, SegmentGroup} from "semantic-ui-react";
 

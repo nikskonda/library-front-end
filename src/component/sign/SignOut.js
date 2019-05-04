@@ -3,7 +3,7 @@ import {
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN,
     LOCAL_STORAGE_USER_DATA
-} from "../context";
+} from "../../context";
 import {Container} from "semantic-ui-react";
 
 

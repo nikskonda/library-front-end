@@ -58,7 +58,6 @@ class OrderListPage extends Component {
     };
 
     loadOrders = () => {
-        console.log('hello');
         let url = BACK_END_SERVER_URL + `/order/`;
         if (this.state.userId){
             url = url.concat('user/'+this.state.userId);
@@ -69,7 +68,6 @@ class OrderListPage extends Component {
                 url = url.concat('user');
             }
         }
-        console.log(url);
         this.loadOrdersByUrl(url);
 
     };

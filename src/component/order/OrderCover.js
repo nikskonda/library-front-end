@@ -41,7 +41,7 @@ class OrderCover extends Component {
     address = () => {
         const address = this.props.order.address;
         return address.address + ' ' + address.postalCode + ', ' + address.city.name + '/' + address.city.state.name + '/'
-            + address.city.state.country.name + ', ' + address.firstName + ' ' + address.lastName;
+            + address.city.state.country.name + ', ' + address.firstName + ' ' + address.lastName+' ' + address.phone;
     };
 
     changeShowDetails = () => {
