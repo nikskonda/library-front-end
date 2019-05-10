@@ -10,6 +10,7 @@ import PdfReader from "./PdfReader";
 
 const BookRouter = () => (
     <Switch>
+        <Route path='/book/edit/:bookId' component={BookEditPage}/>
         <Route path='/book/edit' component={BookEditPage}/>
         <Route path='/book/:bookId/read/pdf' component={PdfReader}/>
         <Route path='/book/:bookId/read/epub' component={EBupReader}/>

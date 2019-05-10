@@ -84,7 +84,7 @@ class BookCover extends Component {
                         </Card.Meta>
                         <Card.Description>Year
                             is {this.state.bookCover.year || this.state.bookCover.year === -1 ? 'unknown.' : this.state.bookCover.year}</Card.Description>
-                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (<Genre genre={genre} addGenre={this.props.addGenre} />))}
+                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (<Genre key={genre.id} genre={genre} addGenre={this.props.addGenre} />))}
                         {this.isInBasket()}
                     </Card.Content>
 

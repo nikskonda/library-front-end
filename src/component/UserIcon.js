@@ -34,7 +34,6 @@ class UserIcon extends Component {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (user !== null && user !== undefined) {
             user = JSON.parse(user);
-            console.log(user);
             this.setState({isAuthorize: true});
             this.setState({username: user.username, avatar: user.avatar});
         }

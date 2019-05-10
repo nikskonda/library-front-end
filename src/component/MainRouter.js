@@ -24,7 +24,10 @@ const MainRouter = () => (
             <Route path='/book' component={BookRouter}/>
             <Route path='/catalog' component={BookCatalogPage}/>
             <Route exact path='/news' component={NewsListPage}/>
+
+            <Route path='/news/edit/:newsId' component={NewsEdit}/>
             <Route path='/news/edit' component={NewsEdit}/>
+
             <Route path='/news/:newsId' component={NewsPage}/>
             <Route path='/order/book/:bookId' component={OrderListPage}/>
             <Route path='/order/user/:userId' component={OrderListPage}/>

@@ -18,13 +18,18 @@ class LanguageTumbler extends Component {
             .get(BACK_END_SERVER_URL + `/language`)
             .then(res => {
                 let array = [];
-                res.data.map((lang) => array.push({key: lang.tag, text: lang.name, value: lang}));
+                res.data.map((lang) => array.push(
+                    {
+                        key: lang.tag,
+                        text: lang.name,
+                        value: lang
+                    }
+                ));
                 this.setState({languageList: array});
             })
             .catch(function (error) {
                 console.log(error);
             });
-
     }
 
     render() {

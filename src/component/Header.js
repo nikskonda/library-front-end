@@ -38,25 +38,27 @@ class Header extends Component {
                             <Menu.Item
                                 name='home'
                                 active={this.state.activeItem === 'home'}
-                                content={(<Link to='/' >Library</Link>)}
+                                as={Link}
+                                to='/'
                                 onClick={this.handleItemClick}/>
                             <Menu.Item
                                 name='news'
                                 position='right'
                                 active={this.state.activeItem === 'news'}
-                                content={(<Link to='/news' >News</Link>)}
+                                as={Link}
+                                to='/news'
                                 onClick={this.handleItemClick}/>
-
                             <Menu.Item
                                 name='catalog'
                                 active={this.state.activeItem === 'catalog'}
-                                content={(<Link to='/catalog'>Catalog</Link>)}
+                                as={Link}
+                                to='/catalog'
                                 onClick={this.handleItemClick}/>
-
                             <Menu.Item
                                 name='basket'
                                 active={this.state.activeItem === 'basket'}
-                                content={(<Link to='/basket'>Basket</Link>)}
+                                as={Link}
+                                to='/basket'
                                 onClick={this.handleItemClick}/>
                         </Menu.Menu>
 

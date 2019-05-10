@@ -35,7 +35,7 @@ class NewsList extends Component {
                     activePage={this.props.number}
                     boundaryRange={this.state.boundaryRange}
                     onPageChange={this.handlePaginationChange}
-                    size='middle'
+                    size='small'
                     siblingRange={this.state.siblingRange}
                     totalPages={this.props.totalPages}
                     ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}

@@ -41,7 +41,7 @@ class OrderCover extends Component {
     address = () => {
         const address = this.props.order.address;
         return address.address + ' ' + address.postalCode + ', ' + address.city.name + '/' + address.city.state.name + '/'
-            + address.city.state.country.name + ', ' + address.firstName + ' ' + address.lastName+' ' + address.phone;
+            + address.city.state.country.name + ', ' + address.firstName + ' ' + address.lastName + ' ' + address.phone;
     };
 
     changeShowDetails = () => {
@@ -51,48 +51,49 @@ class OrderCover extends Component {
     getOrderDetailTable = (order) => {
         return (
 
-                <Table basic='very' celled>
-                    <Table.Body>
-                        {order.details.map(detail =>
-                            <Table.Row>
-                                <Table.Cell textAlign='center'>
-                                    <Link to={'../book/' + detail.book.id}>
-                                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+detail.book.thumbnailUrl} size='small'/>
-                                    </Link>
-                                </Table.Cell>
-                                <Table.Cell
-                                    textAlign='center'
-                                    verticalAlign='middle'
-                                >
-                                    <Link to={'../book/' + detail.book.id}>
-                                        {detail.book.title}
-                                    </Link></Table.Cell>
-                                <Table.Cell
-                                    textAlign='center'
-                                    verticalAlign='middle'
-                                >{detail.count}</Table.Cell>
-                                <Table.Cell
-                                    textAlign='center'
-                                    verticalAlign='middle'
-                                >{detail.price}</Table.Cell>
-                            </Table.Row>
-                        )}
-                    </Table.Body>
-                    <Table.Footer>
+            <Table basic='very' celled>
+                <Table.Body>
+                    {order.details.map(detail =>
                         <Table.Row>
-                            <Table.HeaderCell/>
-                            <Table.HeaderCell/>
-                            <Table.HeaderCell>Total:</Table.HeaderCell>
-                            <Table.HeaderCell>{order.totalPrice}</Table.HeaderCell>
+                            <Table.Cell textAlign='center'>
+                                <Link to={'../book/' + detail.book.id}>
+                                    <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + detail.book.thumbnailUrl}
+                                           size='small'/>
+                                </Link>
+                            </Table.Cell>
+                            <Table.Cell
+                                textAlign='center'
+                                verticalAlign='middle'
+                            >
+                                <Link to={'../book/' + detail.book.id}>
+                                    {detail.book.title}
+                                </Link></Table.Cell>
+                            <Table.Cell
+                                textAlign='center'
+                                verticalAlign='middle'
+                            >{detail.count}</Table.Cell>
+                            <Table.Cell
+                                textAlign='center'
+                                verticalAlign='middle'
+                            >{detail.price}</Table.Cell>
                         </Table.Row>
-                    </Table.Footer>
-                </Table>);
+                    )}
+                </Table.Body>
+                <Table.Footer>
+                    <Table.Row>
+                        <Table.HeaderCell/>
+                        <Table.HeaderCell/>
+                        <Table.HeaderCell>Total:</Table.HeaderCell>
+                        <Table.HeaderCell>{order.totalPrice}</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Footer>
+            </Table>);
     };
 
     cancelOrder = () => {
         axios
-            .post(BACK_END_SERVER_URL+'/order/'+this.props.order.id+'/cancel',
-            null,
+            .post(BACK_END_SERVER_URL + '/order/' + this.props.order.id + '/canceled',
+                null,
                 {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
@@ -108,6 +109,122 @@ class OrderCover extends Component {
                 console.log(error);
             });
     };
+
+    receiveOrder = () => {
+        axios
+            .post(BACK_END_SERVER_URL + '/order/' + this.props.order.id + '/received',
+                null,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                this.props.changeOrder(res.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    confirmOrder = () => {
+        axios
+            .post(BACK_END_SERVER_URL + '/order/' + this.props.order.id + '/confirmed',
+                null,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                this.props.changeOrder(res.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    returnOrder = () => {
+        axios
+            .post(BACK_END_SERVER_URL + '/order/' + this.props.order.id + '/returned',
+                null,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                this.props.changeOrder(res.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    buttonsForOrderControl = () => {
+        let status = new Map(ORDER_STATUS);
+        let result;
+        let statusList = this.props.order.statusList;
+        console.log(statusList);
+        if (statusList[statusList.length - 1].status === status.get('new')) {
+            result = (
+                <React.Fragment>
+                    <Button
+                        icon
+                        labelPosition='right'
+                        onClick={this.confirmOrder}>
+                        <Icon name='ok'/>
+                        Confirm
+                    </Button>
+                    <Button
+                        icon
+                        labelPosition='right'
+                        onClick={this.cancelOrder}>
+                        <Icon name='ban'/>
+                        Cancel
+                    </Button>
+                </React.Fragment>
+
+            );
+            console.log(result);
+        }
+        if (statusList[statusList.length - 1].status === status.get('confirmed')) {
+            result = (
+                <Button
+                    icon
+                    labelPosition='right'
+                    onClick={this.receiveOrder}>
+                    <Icon name='ok'/>
+                    Receive
+                </Button>
+            );
+            console.log(result);
+        }
+        if (statusList[statusList.length - 1].status === status.get('received')) {
+            result = (
+                <Button
+                    icon
+                    labelPosition='right'
+                    onClick={this.returnOrder}>
+                    <Icon name='ok'/>
+                    Returned
+                </Button>
+            );
+            console.log(result);
+        }
+
+        return result;
+    };
+
 
     render() {
         const order = this.props.order;
@@ -126,16 +243,10 @@ class OrderCover extends Component {
                         icon
                         labelPosition='left'
                         onClick={this.changeShowDetails}>
-                        <Icon name='unordered list' />
+                        <Icon name='unordered list'/>
                         {this.state.showDetails ? 'hide details' : 'show details'}
                     </Button>
-                    <Button
-                        icon
-                        labelPosition='right'
-                        onClick={this.cancelOrder}>
-                        <Icon name='ban' />
-                        Cancel
-                    </Button>
+                    {this.buttonsForOrderControl()}
                     {this.state.showDetails ? this.getOrderDetailTable(order) : false}
 
                 </Card.Content>

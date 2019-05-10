@@ -110,10 +110,7 @@ class OrderListPage extends Component {
 
         for (let i=0; i<this.state.orders.length; i++){
             if (this.state.orders[i].id===order.id){
-                console.log('change');
-                console.log(this.state.orders);
                 this.state.orders[i]=order;
-                console.log(this.state.orders);
                 break;
             }
         }

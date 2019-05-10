@@ -58,8 +58,7 @@ import './NewsEdit.css'
 class NewsEdit extends Component {
 
     state = {
-        // book: {
-        id: null,
+        id: this.props.match.params.newsId,
         language: null,
         title: '',
         text: '',
@@ -72,8 +71,35 @@ class NewsEdit extends Component {
 
         picture: null,
         thumbnail: null,
-        pdf: null,
+    };
 
+    componentWillMount(){
+        if (this.state.id){
+            this.loadNews(this.state.id);
+        }
+    }
+
+    loadNews = (id) => {
+        axios
+            .get(BACK_END_SERVER_URL + `/news/`+this.state.id,
+                {
+                    headers: {
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                })
+            .then(res => {
+                console.log(res);
+                this.setState({
+                    language: res.data.language,
+                    title: res.data.title,
+                    text: res.data.text,
+                    pictureUrl: res.data.pictureUrl,
+                    thumbnailUrl: res.data.thumbnailUrl,
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     };
 
     componentDidMount = () => {
@@ -164,22 +190,23 @@ class NewsEdit extends Component {
     };
 
     handleButtonSubmit = () => {
-        axios
-            .post(BACK_END_SERVER_URL + `/news`,
-                {
-                    title: this.state.title,
-                    language: this.state.language,
-                    text: this.state.text,
-                    pictureUrl: this.state.pictureUrl,
-                    thumbnailUrl: this.state.thumbnailUrl,
+        let url = this.state.id ? '/news/'+this.state.id : '/news';
+        let method = this.state.id ? 'put' : 'post';
+        axios({
+            method: method,
+            url: BACK_END_SERVER_URL + url,
+            headers: {
+                'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                'Content-type': 'application/json',
+                // 'Accept-Language': locale.tag || ''
                 },
-                {
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
-                    },
-                })
+            data: {
+                title: this.state.title,
+                language: this.state.language,
+                text: this.state.text,
+                pictureUrl: this.state.pictureUrl,
+                thumbnailUrl: this.state.thumbnailUrl, }
+        })
             .then(res => {
                 console.log("success id="+res.data.id);
             })

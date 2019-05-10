@@ -3,10 +3,12 @@ import BookEdit from "./BookEdit";
 
 class BookEditPage extends Component {
 
+
+
     render() {
         return (
             <React.Fragment>
-                <BookEdit/>
+                <BookEdit id={this.props.match.params.bookId}/>
             </React.Fragment>
         );
     }

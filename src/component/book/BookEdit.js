@@ -66,7 +66,7 @@ class BookEdit extends Component {
 
     state = {
         // book: {
-        id: null,
+        id: this.props.id,
         language: null,
         title: '',
         description: '',
@@ -115,7 +115,53 @@ class BookEdit extends Component {
 
     };
 
-    componentDidMount = () => {
+    componentWillMount() {
+        if (this.state.id) {
+            this.loadBook();
+        }
+    }
+
+    loadBook = () => {
+        axios
+            .get(BACK_END_SERVER_URL + `/book/` + this.state.id,
+                {
+                    headers: {
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                })
+            .then(res => {
+                console.log(res);
+                this.setState({
+                    language: res.data.language,
+                    title: res.data.title,
+                    description: res.data.description,
+                    authors: res.data.authors,
+                    translators: res.data.translators,
+                    genres: res.data.genres,
+                    type: res.data.type,
+                    ageRestriction: res.data.ageRestriction,
+                    rating: res.data.rating,
+                    year: res.data.year,
+                    status: res.data.status,
+                    weight: res.data.weight,
+                    size: res.data.size,
+                    pages: res.data.pages,
+                    pictureUrl: res.data.pictureUrl,
+                    thumbnailUrl: res.data.thumbnailUrl,
+                    pdfUrl: res.data.pdfUrl,
+                    isbn: res.data.isbn,
+                    publishingHouse: res.data.publishingHouse,
+                    producer: res.data.producer,
+                    importer: res.data.importer,
+                    price: res.data.price,
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    componentDidMount() {
         this.loadLanguageList();
         this.loadYearList();
     };
@@ -471,39 +517,41 @@ class BookEdit extends Component {
     };
 
     handleButtonSubmit = () => {
-        axios
-            .post(BACK_END_SERVER_URL + `/book`,
-                {
-                    title: this.state.title,
-                    language: this.state.language,
-                    description: this.state.description,
-                    authors: this.state.authors,
-                    translators: this.state.translators,
-                    genres: this.state.genres,
-                    type: this.state.type,
-                    ageRestriction: this.state.ageRestriction,
-                    rating: this.state.rating,
-                    year: this.state.year,
-                    status: this.state.status,
-                    weight: this.state.weight,
-                    size: this.state.size,
-                    pages: this.state.pages,
-                    pictureUrl: this.state.pictureUrl,
-                    thumbnailUrl: this.state.thumbnailUrl,
-                    pdfUrl: this.state.pdfUrl,
-                    isbn: this.state.isbn,
-                    publishingHouse: this.state.publishingHouse,
-                    producer: this.state.producer,
-                    importer: this.state.importer,
-                    price: this.state.price,
-                },
-                {
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
-                    },
-                })
+        let url = this.state.id ? '/book/' + this.state.id : '/book';
+        let method = this.state.id ? 'put' : 'post';
+        axios({
+            method: method,
+            url: BACK_END_SERVER_URL + url,
+            headers: {
+                'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                'Content-type': 'application/json',
+                // 'Accept-Language': locale.tag || ''
+            },
+            data: {
+                title: this.state.title,
+                language: this.state.language,
+                description: this.state.description,
+                authors: this.state.authors,
+                translators: this.state.translators,
+                genres: this.state.genres,
+                type: this.state.type,
+                ageRestriction: this.state.ageRestriction,
+                rating: this.state.rating,
+                year: this.state.year,
+                status: this.state.status,
+                weight: this.state.weight,
+                size: this.state.size,
+                pages: this.state.pages,
+                pictureUrl: this.state.pictureUrl,
+                thumbnailUrl: this.state.thumbnailUrl,
+                pdfUrl: this.state.pdfUrl,
+                isbn: this.state.isbn,
+                publishingHouse: this.state.publishingHouse,
+                producer: this.state.producer,
+                importer: this.state.importer,
+                price: this.state.price,
+            }
+        })
             .then(res => {
                 this.setState({
                     pdfUrl: res.data.fileName
@@ -613,7 +661,9 @@ class BookEdit extends Component {
                             </div>
                         </div>
                     </Form.Group>
-                    {this.state.thumbnailUrl !== null ? <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl} size='small'/> : false}
+                    {this.state.thumbnailUrl !== null ?
+                        <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl}
+                               size='small'/> : false}
                     <br/>
                     <Form.Group>
                         <div className="input-group file-loader">
