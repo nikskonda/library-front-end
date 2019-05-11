@@ -34,7 +34,6 @@ class BookmarkCover extends Component {
 
     render() {
         const bookmark = this.props.bookmark;
-        console.log(bookmark.page);
         return (<Card>
                         <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+bookmark.book.thumbnailUrl}/>
                         <Card.Content>

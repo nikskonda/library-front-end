@@ -29,13 +29,13 @@ class OrderList extends Component {
         return ( this.props.orders ?
             <React.Fragment>
                 <Card.Group>
-                    {this.props.orders.map((order) => <OrderCover key={order.id} order={order} changeOrder={this.props.changeOrder}/>)}
+                    {this.props.orders.map((order) => <OrderCover key={order.id} order={order} refresh={this.props.refresh}/>)}
                 </Card.Group>
                 <Pagination
                     activePage={this.props.number}
                     boundaryRange={this.state.boundaryRange}
                     onPageChange={this.handlePaginationChange}
-                    size='middle'
+                    size='small'
                     siblingRange={this.state.siblingRange}
                     totalPages={this.props.totalPages}
                     ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}

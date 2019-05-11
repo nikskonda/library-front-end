@@ -41,7 +41,6 @@ class UserSettings extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     userId: res.data.id,
                     userData: res.data,

@@ -130,7 +130,6 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     language: res.data.language,
                     title: res.data.title,

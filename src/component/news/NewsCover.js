@@ -12,7 +12,7 @@ class NewsCover extends Component {
 
 
     dateSign = () => {
-        // return this.state.news.modificationDate === undefined ? this.state.news.creationDate : 'm:' + this.state.news.modificationDate;
+        // return this.state.userList.modificationDate === undefined ? this.state.userList.creationDate : 'm:' + this.state.userList.modificationDate;
         // return <Moment>{this.state.newsCover.creationDate}</Moment>;
         let date = new Date(this.state.newsCover.creationDate);
         let now = new Date();

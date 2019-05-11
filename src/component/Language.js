@@ -32,7 +32,6 @@ class Language extends Component {
 
 
     render() {
-        console.log(this.props.languageList);
         return (
             <Dropdown
                 button

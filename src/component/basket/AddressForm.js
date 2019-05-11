@@ -165,7 +165,6 @@ class AddressForm extends Component {
     };
 
     loadStateList = () => {
-        console.log(this.state.country);
         axios
             .get(BACK_END_SERVER_URL + `/user/state/country/` + this.state.country.id,
                 {
@@ -238,7 +237,6 @@ class AddressForm extends Component {
                 })
             .then(res => {
                 let array = [];
-                console.log(res);
                 res.data.map(city => array.push({
                     key: city.id,
                     text: city.name,
@@ -268,6 +266,7 @@ class AddressForm extends Component {
 
     handleChangeCity = (event, {value}) => {
         this.setState({citySearchString: '', city: value});
+        console.log(value);
     };
 
     handleSearchChangeCity = (event, {searchQuery}) => {
@@ -312,18 +311,7 @@ class AddressForm extends Component {
                 address: this.state.addressDesc,
                 postalCode: this.state.postalCode,
                 phone: this.state.phone,
-                city: {
-                    id: this.state.city.id,
-                    name: this.state.city.name,
-                    state: {
-                        id: this.state.state.id,
-                        name: this.state.state.name,
-                        country: {
-                            id: this.state.country.id,
-                            name: this.state.country.name,
-                        }
-                    }
-                },
+                city: this.state.city,
             };
         }
         this.props.createOrder(address);
@@ -393,7 +381,6 @@ class AddressForm extends Component {
                             <Form.Field
                                 width={8}
                                 label='postalCode'
-                                type='number'
                                 control={Input}
                                 placeholder="postalCode"
                                 value={this.state.postalCode}

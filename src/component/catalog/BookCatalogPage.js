@@ -76,7 +76,6 @@ class BookCatalogPage extends Component {
     };
 
     addGenre = (genreName) => {
-        console.log(this.state.genres);
         this.state.genres.push(genreName);
         this.changeUrl();
     };

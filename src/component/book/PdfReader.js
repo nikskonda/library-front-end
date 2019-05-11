@@ -25,7 +25,6 @@ class PdfReader extends Component {
         axios
             .get(BACK_END_SERVER_URL + `/book/${this.props.match.params.bookId}`)
             .then(res => {
-                console.log(res.data);
                 this.setState({
                     pdfUrl: res.data.pdfUrl,
                     bookId: res.data.id,

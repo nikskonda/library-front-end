@@ -3,8 +3,9 @@ import React, {Component} from 'react';
 import LanguageTumbler from "./LanguageTumbler";
 import {Link} from "react-router-dom";
 import './Header.css'
-import {Container, Menu} from "semantic-ui-react";
+import {Container, Label, Menu} from "semantic-ui-react";
 import UserIcon from "./UserIcon";
+import {LOCAL_STORAGE_BASKET} from "../context";
 
 class Header extends Component {
 
@@ -21,7 +22,6 @@ class Header extends Component {
     render() {
         return (
             <React.Fragment>
-                {/*<Container style={{backgroundColor: 'green'}}>*/}
                 <Container>
                     <Menu secondary>
                         <Menu.Menu position='right'>
@@ -44,7 +44,7 @@ class Header extends Component {
                             <Menu.Item
                                 name='news'
                                 position='right'
-                                active={this.state.activeItem === 'news'}
+                                active={this.state.activeItem === 'userList'}
                                 as={Link}
                                 to='/news'
                                 onClick={this.handleItemClick}/>
@@ -59,6 +59,19 @@ class Header extends Component {
                                 active={this.state.activeItem === 'basket'}
                                 as={Link}
                                 to='/basket'
+                                onClick={this.handleItemClick}>
+                                Basket
+                                {localStorage.getItem(LOCAL_STORAGE_BASKET) && JSON.parse(localStorage.getItem(LOCAL_STORAGE_BASKET)).length>0?
+                                <Label color='red' floating>
+                                    {JSON.parse(localStorage.getItem(LOCAL_STORAGE_BASKET)).length}
+                                </Label>
+                                    :false}
+                            </Menu.Item>
+                            <Menu.Item
+                                name='admin'
+                                active={this.state.activeItem === 'admin'}
+                                as={Link}
+                                to='/admin'
                                 onClick={this.handleItemClick}/>
                         </Menu.Menu>
 
@@ -80,135 +93,6 @@ class Header extends Component {
                         {/*</Menu.Menu>*/}
                     </Menu>
                 </Container>
-                {/*<Row className="header-row">*/}
-                {/*    <Container>*/}
-                {/*        <Navbar collapseOnSelect className="top-navbar" expand="lg" bg="dark" variant="dark">*/}
-                {/*            <Nav className="w-75 justify-content-between">*/}
-                {/*                <LanguageTumbler/>*/}
-                {/*                <Nav.Link>*/}
-                {/*                    <NavLink to={`signIn`}*/}
-                {/*                             style={{*/}
-                {/*                                 textDecoration: 'none',*/}
-                {/*                                 color: 'inhabit'*/}
-                {/*                             }}*/}
-                {/*                             activeClassName="active"*/}
-                {/*                    >*/}
-                {/*                        Sign In*/}
-                {/*                    </NavLink>*/}
-                {/*                </Nav.Link>*/}
-                {/*                <Nav.Link>*/}
-                {/*                    <NavLink to={`signUp`}*/}
-                {/*                             style={{*/}
-                {/*                                 textDecoration: 'none',*/}
-                {/*                                 color: 'inhabit'*/}
-                {/*                             }}*/}
-                {/*                             activeClassName="active"*/}
-                {/*                    >*/}
-                {/*                        Sign Up*/}
-                {/*                    </NavLink>*/}
-                {/*                </Nav.Link>*/}
-                {/*                <NavDropdown title="USERNAME" id="collasible-nav-dropdown">*/}
-                {/*                    <NavDropdown.Item>*/}
-                {/*                        <NavLink to={`profile`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            Profile*/}
-                {/*                        </NavLink>*/}
-                {/*                    </NavDropdown.Item>*/}
-                {/*                    <NavDropdown.Item>*/}
-                {/*                        <NavLink to={`orders`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            Orders*/}
-                {/*                        </NavLink>*/}
-                {/*                    </NavDropdown.Item>*/}
-                {/*                    <NavDropdown.Item>*/}
-                {/*                        <NavLink to={`bookmarks`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            Bookmark*/}
-                {/*                        </NavLink>*/}
-                {/*                    </NavDropdown.Item>*/}
-                {/*                    <NavDropdown.Divider/>*/}
-                {/*                    <NavDropdown.Item>*/}
-                {/*                        <NavLink to={`signOut`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            Sign Out*/}
-                {/*                        </NavLink>*/}
-                {/*                    </NavDropdown.Item>*/}
-                {/*                </NavDropdown>*/}
-                {/*            </Nav>*/}
-                {/*        </Navbar>*/}
-                {/*        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark"*/}
-                {/*                className="bottom-navbar justify-content-between">*/}
-                {/*            <Navbar.Brand href="/">Library</Navbar.Brand>*/}
-                {/*            <Navbar.Toggle aria-controls="responsive-navbar-nav"/>*/}
-                {/*            <Navbar.Collapse id="responsive-navbar-nav">*/}
-                {/*                <Nav className="mr-auto">*/}
-                {/*                    <Nav.Link>*/}
-                {/*                        <NavLink to={`news`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            News*/}
-                {/*                        </NavLink>*/}
-                {/*                    </Nav.Link>*/}
-                {/*                    <Nav.Link>*/}
-                {/*                        <NavLink to={`catalog`}*/}
-                {/*                                 style={{*/}
-                {/*                                     textDecoration: 'none',*/}
-                {/*                                     color: 'inhabit'*/}
-                {/*                                 }}*/}
-                {/*                                 activeClassName="active"*/}
-                {/*                        >*/}
-                {/*                            Catalog*/}
-                {/*                        </NavLink>*/}
-                {/*                    </Nav.Link>*/}
-                {/*                    <NavDropdown title="Book" id="collasible-nav-dropdown-book">*/}
-                {/*                        <NavDropdown.Item>*/}
-                {/*                            <NavLink to={`book/edit`}*/}
-                {/*                                     style={{*/}
-                {/*                                         textDecoration: 'none',*/}
-                {/*                                         color: 'inhabit'*/}
-                {/*                                     }}*/}
-                {/*                                     activeClassName="active"*/}
-                {/*                            >*/}
-                {/*                                Edit Book*/}
-                {/*                            </NavLink>*/}
-                {/*                        </NavDropdown.Item>*/}
-                {/*                        <NavDropdown.Item>*/}
-
-                {/*                        </NavDropdown.Item>*/}
-                {/*                        <NavDropdown.Item>*/}
-
-                {/*                        </NavDropdown.Item>*/}
-                {/*                        <NavDropdown.Divider/>*/}
-                {/*                    </NavDropdown>*/}
-                {/*                </Nav>*/}
-                {/*            </Navbar.Collapse>*/}
-                {/*        </Navbar>*/}
-                {/*    </Container>*/}
-                {/*</Row>*/}
             </React.Fragment>
         );
     }

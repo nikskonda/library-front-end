@@ -26,7 +26,6 @@ class BookmarkList extends Component {
                 header='bookmarks Not found'
                 content='Plz change search query!'
             />);
-        console.log(this.props.bookmarks);
         return ( this.props.bookmarks ?
             <React.Fragment>
                 <Card.Group>

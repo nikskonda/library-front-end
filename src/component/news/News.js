@@ -28,7 +28,7 @@ class News extends Component {
     }
 
     dateSign() {
-        // return this.state.news.modificationDate === undefined ? this.state.news.creationDate : 'm:' + this.state.news.modificationDate;
+        // return this.state.userList.modificationDate === undefined ? this.state.userList.creationDate : 'm:' + this.state.userList.modificationDate;
         let date = new Date(this.state.news.creationDate);
         let now = new Date();
         if (now.getFullYear() === date.getFullYear() && now.getMonth() === date.getMonth() && now.getDate() === date.getDate()) {

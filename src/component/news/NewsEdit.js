@@ -88,7 +88,6 @@ class NewsEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     language: res.data.language,
                     title: res.data.title,
@@ -190,7 +189,7 @@ class NewsEdit extends Component {
     };
 
     handleButtonSubmit = () => {
-        let url = this.state.id ? '/news/'+this.state.id : '/news';
+        let url = this.state.id ? '/userList/'+this.state.id : '/userList';
         let method = this.state.id ? 'put' : 'post';
         axios({
             method: method,

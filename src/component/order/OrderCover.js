@@ -103,7 +103,7 @@ class OrderCover extends Component {
                 }
             )
             .then(res => {
-                this.props.changeOrder(res.data);
+                this.props.refresh();
             })
             .catch(function (error) {
                 console.log(error);
@@ -123,7 +123,7 @@ class OrderCover extends Component {
                 }
             )
             .then(res => {
-                this.props.changeOrder(res.data);
+                this.props.refresh();
             })
             .catch(function (error) {
                 console.log(error);
@@ -143,7 +143,7 @@ class OrderCover extends Component {
                 }
             )
             .then(res => {
-                this.props.changeOrder(res.data);
+                this.props.refresh();
             })
             .catch(function (error) {
                 console.log(error);
@@ -163,7 +163,7 @@ class OrderCover extends Component {
                 }
             )
             .then(res => {
-                this.props.changeOrder(res.data);
+                this.props.refresh();
             })
             .catch(function (error) {
                 console.log(error);
@@ -174,7 +174,6 @@ class OrderCover extends Component {
         let status = new Map(ORDER_STATUS);
         let result;
         let statusList = this.props.order.statusList;
-        console.log(statusList);
         if (statusList[statusList.length - 1].status === status.get('new')) {
             result = (
                 <React.Fragment>
@@ -195,7 +194,6 @@ class OrderCover extends Component {
                 </React.Fragment>
 
             );
-            console.log(result);
         }
         if (statusList[statusList.length - 1].status === status.get('confirmed')) {
             result = (
@@ -207,7 +205,6 @@ class OrderCover extends Component {
                     Receive
                 </Button>
             );
-            console.log(result);
         }
         if (statusList[statusList.length - 1].status === status.get('received')) {
             result = (
@@ -219,7 +216,6 @@ class OrderCover extends Component {
                     Returned
                 </Button>
             );
-            console.log(result);
         }
 
         return result;
