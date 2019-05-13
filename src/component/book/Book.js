@@ -84,7 +84,10 @@ class Book extends Component {
                             </Button> : false}
                             {this.state.book.ePubUrl ?
                                 <Link to={`/book/${this.state.book.id}/read/epub`}><Button>EBUP
-                                    READER</Button>Button></Link> : false}
+                                    READER</Button></Link> : false}
+                            <Button>
+                                <Link to={`../../../admin/orderList?bookId=${this.state.book.id}`}>IN ORDERS</Link>
+                            </Button>
                         </Button.Group>
                     </div>
                     <div>

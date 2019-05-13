@@ -15,7 +15,7 @@ class AdminOrders extends Component {
 
         totalPages: 0,
 
-        status: null,
+        status: 'ALL',
 
         bookId: null,
         userId: null,
@@ -34,24 +34,21 @@ class AdminOrders extends Component {
             bookId: params.bookId,
             userId: params.userId,
             status: params.status || this.state.status,
-        }, this.loadOrders());
+        }, this.loadOrders);
     }
 
     setActivePage = (page) => {
-        this.setState({number: page}, this.loadOrders());
+        this.setState({number: page}, this.loadOrders);
     };
 
     loadOrders = () => {
-
-        let url = BACK_END_SERVER_URL + `/order/`;
-        console.log(url);
+        console.log(this.state);
+        let url = BACK_END_SERVER_URL + `/order`;
         if (this.state.userId) {
-            url = url.concat('user/' + this.state.userId);
+            url = url.concat('/user/' + this.state.userId);
         } else {
             if (this.state.bookId) {
-                url = url.concat('book/' + this.state.bookId);
-            } else {
-                url = url.concat('user');
+                url = url.concat('/book/' + this.state.bookId);
             }
         }
         this.loadOrdersByUrl(url);
@@ -62,6 +59,8 @@ class AdminOrders extends Component {
                 sort: this.state.sort,
                 direction: this.state.direction,
                 status: this.state.status,
+                userId: this.state.userId,
+                bookId: this.state.bookId,
             }
         )
     };
@@ -73,7 +72,7 @@ class AdminOrders extends Component {
             size: this.state.size,
             sort: this.state.sort,
             direction: this.state.direction,
-            status: this.state.status,
+            status: this.state.status==='ALL'?null:this.state.status,
         };
 
         axios
@@ -100,13 +99,13 @@ class AdminOrders extends Component {
     };
 
     statusOptions = () => {
-        let array = [];
+        let array = [{key: 'ALL', text: 'ALL', value: 'ALL'}];
         Array.from( new Map(ORDER_STATUS).values()).map(value => array.push({key: value, text: value, value: value}));
         return array;
     };
 
     handleChangeStatus = (e, {value}) => {
-        this.setState({status: value}, this.loadOrders());
+        this.setState({status: value}, this.loadOrders);
     };
 
     render() {
@@ -116,6 +115,7 @@ class AdminOrders extends Component {
                     placeholder='Select status'
                     fluid
                     selection
+                    defaultValue='ALL'
                     options={this.statusOptions()}
                     onChange={this.handleChangeStatus}
                 />

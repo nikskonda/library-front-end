@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button, Icon, Item} from "semantic-ui-react";
 import axios from "axios";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
+import {Link} from "react-router-dom";
 
 class UserItem extends Component {
 
@@ -76,6 +77,9 @@ class UserItem extends Component {
                         <p>{this.address(user.address)}</p>
                     </Item.Description>
                     <Item.Extra>
+                        <Button>
+                            <Link to={`../../../admin/orderList?userId=${user.id}`}>ORDERS</Link>
+                        </Button>
                         <Button
                             icon
                             labelPosition='right'
