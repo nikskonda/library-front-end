@@ -1,12 +1,36 @@
 import React, {Component} from 'react';
-import {Button, Icon, Item} from "semantic-ui-react";
+import {Button, Icon, Item, Label, Dropdown} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE_COLOR} from "../../context";
+import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
 
 class UserItem extends Component {
 
-    state = {};
+    state = {
+        roleList: [],
+    };
+
+    componentDidMount(){
+        axios
+            .get(BACK_END_SERVER_URL + '/user/role',
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                let array = [];
+                res.data.map(role => array.push({key: role.id, text: role.authority, value: role.authority}));
+                this.setState({roleList: array});
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
 
     address = (address) => {
         if (address) {
@@ -71,7 +95,8 @@ class UserItem extends Component {
             <Item>
                 <Item.Image size='small' src={user.avatarUrl?BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+user.avatarUrl:'https://react.semantic-ui.com/images/wireframe/image.png'}/>
                 <Item.Content>
-                    <Item.Header as='a'>{user.username}</Item.Header>
+                    <Item.Header as='a'>{user.username}</Item.Header><br/>
+                    <RoleList roleList={this.state.roleList} user={user} refresh={this.props.refresh}/>
                     <Item.Description>
                         <p>{this.name(user.firstName, user.lastName)}</p>
                         <p>{this.address(user.address)}</p>
@@ -103,6 +128,132 @@ class UserItem extends Component {
                 </Item.Content>
             </Item>
         );
+    };
+}
+
+class RoleList extends Component {
+
+    state = {
+        roleSearchString: '',
+        newAuthority: '',
+        roleSearchList: [],
+        showModal: false,
+    };
+
+    componentWillReceiveProps(nextProps) {
+      this.setState({ roleSearchList: nextProps.roleList });
+    }
+
+    handleChangeRole = (event, {searchQuery, value}) => {
+        this.setState({roleSearchString: '', newAuthority: value, showModal:true });
+    };
+
+    handleSearchChangeRole = (event, {searchQuery}) => {
+        this.setState({roleSearchString: searchQuery});
+        let roleSearchList = [];
+        if (!searchQuery || searchQuery===''){
+            roleSearchList = this.props.roleList;
+        } else {
+            this.props.roleList.map(role => {
+                if (role.text.includes(searchQuery.toUpperCase())){
+                    roleSearchList.push(role);
+                }
+            })
+        }
+        this.setState({roleSearchList: roleSearchList});
+    };
+
+    addAuthority = () => {
+        let body = {
+            username: this.props.user.username,
+            authority: this.state.newAuthority,
+        }
+        axios
+            .post(BACK_END_SERVER_URL + '/user/role',
+                body,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                this.props.refresh();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    openClose = () => this.setState({showModal: !this.state.showModal});
+
+    render() {
+        let user = this.props.user;
+        return (
+            <React.Fragment>
+                {user.authorities.map(role => <Role key={role.id} username={user.username} role={role} refresh={this.props.refresh} />)}
+                <Dropdown
+                    compact
+                    onChange={this.handleChangeRole}
+                    onSearchChange={this.handleSearchChangeRole}
+                    options={this.state.roleSearchList}
+                    placeholder='role'
+                    search
+                    searchQuery={this.state.roleSearchString}
+                    selection
+                    text='select new role'
+                    value={this.state.newAuthority}
+                    />
+                <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.addAuthority} />
+            </React.Fragment>
+            );
+    };
+}
+
+class Role extends Component {
+
+    state = {
+        showModal: false,
+    }
+
+    removeAuthority = () => {
+        axios({
+            method: 'delete',
+            url: BACK_END_SERVER_URL + '/user/role',
+            headers: {
+                'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                'Content-type': 'application/json',
+                // 'Accept-Language': locale.tag || ''
+            },
+            data: {
+                username: this.props.username,
+                authority: this.props.role.authority,
+            }
+        })
+            .then(res => {
+                this.props.refresh();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    openClose = () => this.setState({showModal: !this.state.showModal});
+
+    render() {
+        let roleColor = new Map(ROLE_COLOR);
+        let role = this.props.role;
+        return (
+            <React.Fragment>
+                <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.removeAuthority} />
+                <Label as='a' tag color={roleColor.get(role.authority)}>
+                    {role.authority}
+                    <Icon name='delete' onClick={this.openClose}/>
+                </Label>
+            </React.Fragment>
+            );
     };
 }
 

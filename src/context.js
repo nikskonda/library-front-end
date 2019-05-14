@@ -26,3 +26,5 @@ export const URL_DOWNLOAD_FILE = '/file/download?file=';
 export const BOOK_YEAR_MIN = 1801;
 
 export const DELIVERY_PRICE = 10;
+
+export const ROLE_COLOR = [['USER', 'green'],['LIBRARIAN', 'violet'],['COURIER', 'purple'],['ADMIN', 'red'],['default', 'grey']];
