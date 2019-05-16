@@ -9,7 +9,7 @@ class Language extends Component {
         buttonName: this.props.buttonName,
         languageList: this.props.languageList,
         localStorage: this.props.localStorage,
-        selectedLang: null
+        selectedLang: null,
     };
 
     componentWillMount() {
@@ -42,6 +42,7 @@ class Language extends Component {
                 options={this.props.languageList}
                 text={this.state.buttonName}
                 onChange={this.handleChangeLanguage}
+                value={this.state.selectedLang}
             />
         );
     }

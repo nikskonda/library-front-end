@@ -6,6 +6,7 @@ import UserList from "./UserList";
 import queryString from "query-string";
 import OrderListPage from "../order/OrderListPage";
 import AdminOrders from "./AdminOrders";
+import UserSettings from "../UserSettings";
 
 class AdminMenu extends Component {
 
@@ -27,15 +28,15 @@ class AdminMenu extends Component {
 
     Home = () => <h1>Welcome to admin panel</h1>;
 
+    UserSettings = () => <UserSettings userId={this.props.match.params.userId}/>;
+
     render() {
         return (
             <Container>
-
-
                 <Menu attached='top' tabular>
                     <Menu.Item
                         as={Link}
-                        to='../admin/'
+                        to='../../../../admin/'
                         name='home'
                         active={this.state.activeItem === 'home'}
                         onClick={this.handleItemClick}/>
@@ -52,6 +53,13 @@ class AdminMenu extends Component {
                         active={this.state.activeItem === 'orders'}
                         onClick={this.handleItemClick}
                     />
+                    {this.state.activeItem === 'userSettings'?
+                        <Menu.Item
+                            name='userSettings'
+                            active={this.state.activeItem === 'userSettings'}
+                            onClick={this.handleItemClick}
+                        />
+                    : false }
                     <Menu.Menu position='right'>
                         <Menu.Item>
                             <Input
@@ -68,6 +76,7 @@ class AdminMenu extends Component {
                         <Route exact path='/admin' component={this.Home}/>
                         <Route path='/admin/userList' component={this.UserListComponent}/>
                         <Route path='/admin/orderList' component={this.OrderListComponent}/>
+                        <Route path='/admin/user/settings/:userId' component={UserSettings}/>
                     </Switch>
                 </Segment>
 

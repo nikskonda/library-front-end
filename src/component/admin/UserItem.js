@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Label, Dropdown} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE_COLOR} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE_COLOR, LOCAL_STORAGE_BASKET} from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
 
@@ -9,9 +9,11 @@ class UserItem extends Component {
 
     state = {
         roleList: [],
+        basket: [],
     };
 
-    componentDidMount(){
+    componentWillMount(){
+        this.loadBasket();
         axios
             .get(BACK_END_SERVER_URL + '/user/role',
                 {
@@ -30,6 +32,15 @@ class UserItem extends Component {
             .catch(function (error) {
                 console.log(error);
             });
+    };
+
+    loadBasket = () => {
+        const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
+        let basket = [];
+        if (basketStr) {
+            basket = JSON.parse(basketStr);
+            this.setState({basket: basket});
+        }
     };
 
     address = (address) => {
@@ -89,6 +100,32 @@ class UserItem extends Component {
             });
     };
 
+    giveBooksFromBasket = () => {
+        let order = {
+            details: this.state.basket,
+            user: {
+                username: this.props.user.username,
+            }
+        };
+        axios
+            .post(BACK_END_SERVER_URL + '/order/handOut',
+                order,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                console.log('success!');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
     render() {
         let user = this.props.user;
         return (
@@ -99,11 +136,35 @@ class UserItem extends Component {
                     <RoleList roleList={this.state.roleList} user={user} refresh={this.props.refresh}/>
                     <Item.Description>
                         <p>{this.name(user.firstName, user.lastName)}</p>
-                        <p>{this.address(user.address)}</p>
+                        <p>{this.address(user.registrationAddress)}</p>
                     </Item.Description>
                     <Item.Extra>
-                        <Button>
-                            <Link to={`../../../admin/orderList?userId=${user.id}`}>ORDERS</Link>
+                        <Button
+                            icon
+                            labelPosition='right'
+                            floated='right'
+                            onClick={this.giveBooksFromBasket}
+                            >
+                            giveBooksFromBasket
+                            <Icon name='ban'/>
+                        </Button>
+                        <Button
+                            as={Link}
+                            to={`../../../admin/orderList?userId=${user.id}`}
+                            icon
+                            labelPosition='right'
+                            floated='right'>
+                            ORDERS
+                            <Icon name='ban'/>
+                        </Button>
+                        <Button
+                            as={Link}
+                            to={`../admin/user/settings/${user.id}`}
+                            icon
+                            labelPosition='right'
+                            floated='right'>
+                            UserSettings
+                            <Icon name='ban'/>
                         </Button>
                         <Button
                             icon
@@ -141,7 +202,16 @@ class RoleList extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-      this.setState({ roleSearchList: nextProps.roleList });
+        let roleSearchList = [];
+
+        nextProps.roleList.map(role => {
+            let flag = true;
+            nextProps.user.authorities.map(userRole => {if (userRole.authority===role.text) flag=false});
+            if (flag){
+                roleSearchList.push(role);
+            }
+        });
+      this.setState({ roleSearchList: roleSearchList});
     }
 
     handleChangeRole = (event, {searchQuery, value}) => {

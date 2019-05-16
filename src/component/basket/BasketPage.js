@@ -102,6 +102,12 @@ class BasketPage extends Component {
             });
     };
 
+    getAddress = (address) => {
+        if (address){
+            this.createOrder(address);
+        }
+    };
+
     render() {
         const alert =
             (<Message
@@ -133,7 +139,7 @@ class BasketPage extends Component {
                                 onClick={this.viewAddressFields}>
                                 OFORMIT
                             </Button>
-                            {this.state.showAddressField ? <AddressForm createOrder={this.createOrder}/> : false}
+                            {this.state.showAddressField ? <AddressForm returnAddress={this.getAddress}/> : false}
                         </React.Fragment>
                         :
                         alert

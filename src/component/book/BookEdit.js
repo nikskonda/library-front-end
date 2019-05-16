@@ -11,61 +11,11 @@ import {
 // https://react.semantic-ui.com
 import {Button, Container, Dropdown, Form, Image, Input, TextArea} from "semantic-ui-react";
 import './BookEdit.css'
-
-
-// BookEdit.propTypes = {
-//     id: PropTypes.number,
-//     language: PropTypes.object,
-//     title: PropTypes.string,
-//     description: PropTypes.string,
-//     authors: [],
-//     translators: [],
-//     genres: [],
-//     type: PropTypes.string,
-//     ageRestriction: PropTypes.string,
-//     rating: 0,
-//     year: -1,
-//     status: PropTypes.string,
-//     weight: PropTypes.string,
-//     size: PropTypes.string,
-//     pages: 0,
-//     pictureUrl: PropTypes.string,
-//     thumbnailUrl: PropTypes.string,
-//     pdfUrl: PropTypes.string,
-//     isbn: PropTypes.string,
-//     publishingHouse: {},
-//     producer: {},
-//     importer: {},
-//     price: 0,
-//
-//     // },
-//     languageList: [],
-//     yearList: [],
-//     genreList: [],
-//     genreSearchString: PropTypes.string,
-//
-//     authorList: [],
-//     authorSearchString: PropTypes.string,
-//     translatorList: [],
-//     translatorSearchString: PropTypes.string,
-//
-//     publishingHouseList: [],
-//     publishingHouseSearchString: PropTypes.string,
-//
-//     producerList: [],
-//     producerSearchString: PropTypes.string,
-//     importerList: [],
-//     importerSearchString: PropTypes.string,
-//
-//     picture: PropTypes.string,
-//     thumbnail: PropTypes.string,
-//     pdf: PropTypes.string,
-// }
+import ModalYesNo from './../ModalYesNo'
 
 class BookEdit extends Component {
 
     state = {
-        // book: {
         id: this.props.id,
         language: null,
         title: '',
@@ -85,12 +35,13 @@ class BookEdit extends Component {
         thumbnailUrl: null,
         pdfUrl: null,
         isbn: '',
-        publishingHouse: {},
-        producer: {},
-        importer: {},
-        price: 0,
+        publishingHouse: null,
+        producer: null,
+        importer: null,
+        count: 0,
+        inLibraryUseOnly: false,
 
-        // },
+
         languageList: [],
         yearList: [],
         genreList: [],
@@ -106,6 +57,7 @@ class BookEdit extends Component {
 
         producerList: [],
         producerSearchString: '',
+
         importerList: [],
         importerSearchString: '',
 
@@ -113,12 +65,22 @@ class BookEdit extends Component {
         thumbnail: null,
         pdf: null,
 
+        header: '',
+        content: [''],
+        showModal: false,
+        modalAction: null,
     };
 
     componentWillMount() {
         if (this.state.id) {
             this.loadBook();
         }
+        this.handleSearchChangeGenres(null, {searchQuery: ''});
+        this.handleSearchChangeAuthors(null, {searchQuery: ''});
+        this.handleSearchChangeTranslators(null, {searchQuery: ''});
+        this.handleSearchChangePublishingHouse(null, {searchQuery: ''});
+        this.handleSearchChangeProducer(null, {searchQuery: ''});
+        this.handleSearchChangeImporter(null, {searchQuery: ''});
     }
 
     loadBook = () => {
@@ -130,6 +92,7 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
+                console.log(res);
                 this.setState({
                     language: res.data.language,
                     title: res.data.title,
@@ -152,7 +115,8 @@ class BookEdit extends Component {
                     publishingHouse: res.data.publishingHouse,
                     producer: res.data.producer,
                     importer: res.data.importer,
-                    price: res.data.price,
+                    count: res.data.count,
+                    inLibraryUseOnly: res.data.inLibraryUseOnly,
                 });
             })
             .catch(function (error) {
@@ -163,6 +127,10 @@ class BookEdit extends Component {
     componentDidMount() {
         this.loadLanguageList();
         this.loadYearList();
+    };
+
+    handleChange = (event, {value}) => {
+        this.setState({[event.targer.name]: value});
     };
 
     handleChangeLanguage = (event, {value}) => {
@@ -189,32 +157,32 @@ class BookEdit extends Component {
         this.setState({type: value});
     };
 
-    handleChangeAgeRestriction = (event) => {
-        this.setState({ageRestriction: event.target.value});
+    handleChangeAgeRestriction = (event, {value}) => {
+        this.setState({ageRestriction: value});
     };
 
-    handleChangeRating = (event) => {
-        this.setState({rating: event.target.value});
+    handleChangeRating = (event, {value}) => {
+        this.setState({rating: value});
     };
 
-    handleChangeWeight = (event) => {
-        this.setState({weight: event.target.value});
+    handleChangeWeight = (event, {value}) => {
+        this.setState({weight: value});
     };
 
-    handleChangeSize = (event) => {
-        this.setState({size: event.target.value});
+    handleChangeSize = (event, {value}) => {
+        this.setState({size: value});
     };
 
-    handleChangePages = (event) => {
-        this.setState({pages: event.target.value});
+    handleChangePages = (event, {value}) => {
+        this.setState({pages: value});
     };
 
-    handleChangeISBN = (event) => {
-        this.setState({isbn: event.target.value});
+    handleChangeISBN = (event, {value}) => {
+        this.setState({isbn: value});
     };
 
-    handleChangePrice = (event) => {
-        this.setState({price: event.target.value});
+    handleChangeCount = (event, {value}) => {
+        this.setState({count: value});
     };
 
     handleChangeGenres = (event, {searchQuery, value}) => {
@@ -246,32 +214,48 @@ class BookEdit extends Component {
     };
 
     handleAdditionGenre = (event, {value}) => {
-        if (window.confirm('add new genre&&&')) {
-            axios
-                .post(BACK_END_SERVER_URL + `/book/genre`,
-                    {
-                        name: value
-                    },
-                    {
-                        headers: {
-                            'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                            'Content-type': 'application/json; charset=utf-8',
-                        }
+        this.setState({
+            newGenre: value,
+            header: 'addgenre',
+            content: ['addgenre', value],
+            modalAction: this.addGenre,
+        }, this.openClose);
+    };
+
+    addGenre = () =>{
+        axios
+            .post(BACK_END_SERVER_URL + `/book/genre`,
+                {
+                    name: this.state.newGenre
+                },
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json; charset=utf-8',
                     }
-                )
-                .then(res => {
-                    this.setState({
-                        genreList: [{
-                            key: res.data.id,
-                            text: res.data.name,
-                            value: res.data
-                        }, ...this.state.genreList]
-                    });
-                })
-                .catch(function (error) {
-                    console.log(error);
+                }
+            )
+            .then(res => {
+                this.setState({
+                    genreSearchString: '',
+                    genreList: [{
+                        key: res.data.id,
+                        text: res.data.name,
+                        value: res.data
+                    }, ...this.state.genreList],
+                    genres: [{
+                        id: res.data.id,
+                        name: res.data.name,
+                    }, ...this.state.genres]
                 });
-        }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    handleChangeInLibraryUseOnly = (event, {checked}) => {
+        this.setState({inLibraryUseOnly: checked});
     };
 
     loadLanguageList = () => {
@@ -434,6 +418,88 @@ class BookEdit extends Component {
             });
     };
 
+    handleAdditionProduser = (event, {value}) => {
+        this.setState({
+            newProduser: value,
+            header: 'addProducer',
+            content: ['addProducer', value],
+            modalAction: this.addProducer,
+        }, this.openClose);
+    };
+
+    addProducer = () =>{
+        axios
+            .post(BACK_END_SERVER_URL + `/book/organization`,
+                {
+                    title: this.state.newProduser
+                },
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json; charset=utf-8',
+                    }
+                }
+            )
+            .then(res => {
+                this.setState({
+                    producerSearchString: '',
+                    producerList: [{
+                        key: res.data.id,
+                        text: res.data.title,
+                        value: res.data
+                    }, ...this.state.producerList],
+                    producer: {
+                        id: res.data.id,
+                        title: res.data.title,
+                    },
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    handleAdditionImporter = (event, {value}) => {
+        this.setState({
+            newProduser: value,
+            header: 'addImporter',
+            content: ['addImporter', value],
+            modalAction: this.addImporter,
+        }, this.openClose);
+    };
+
+    addImporter = () =>{
+        axios
+            .post(BACK_END_SERVER_URL + `/book/organization`,
+                {
+                    title: this.state.newProduser
+                },
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'application/json; charset=utf-8',
+                    }
+                }
+            )
+            .then(res => {
+                this.setState({
+                    importerSearchString: '',
+                    importerList: [{
+                        key: res.data.id,
+                        text: res.data.title,
+                        value: res.data
+                    }, ...this.state.producerList],
+                    importer: {
+                        id: res.data.id,
+                        title: res.data.title,
+                    },
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
     handleChangePictureFile = (event) => {
         this.setState({picture: event.target.files[0]});
     };
@@ -548,21 +614,24 @@ class BookEdit extends Component {
                 publishingHouse: this.state.publishingHouse,
                 producer: this.state.producer,
                 importer: this.state.importer,
-                price: this.state.price,
+                count: this.state.count,
+                inLibraryUseOnly: this.state.inLibraryUseOnly,
             }
         })
             .then(res => {
-                this.setState({
-                    pdfUrl: res.data.fileName
-                })
+                console.log(this.state);
             })
             .catch(function (error) {
                 console.log(error);
             });
     };
 
+    openClose = () => this.setState({showModal: !this.state.showModal});
+
     render() {
         return (
+            <React.Fragment>
+            <ModalYesNo size='tiny' header={this.state.header} content={this.state.content} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.state.modalAction} />
             <Container>
                 <Form>
                     <Form.Group>
@@ -602,23 +671,73 @@ class BookEdit extends Component {
                         <Form.Field
                             width={10}
                             label='authors'
-                            control={this.AuthorDropdown}/>
+                            control={Dropdown}
+                                fluid
+                                multiple
+                                onChange={this.handleChangeAuthors}
+                                onSearchChange={this.handleSearchChangeAuthors}
+                                options={this.state.authorList}
+                                placeholder='authors'
+                                search
+                                searchQuery={this.state.authorSearchString}
+                                selection
+                                value={this.state.authors}
+                                allowAdditions
+                                additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
+                                onAddItem={this.handleAdditionGenre}
+                            />
                         <Form.Field
                             width={6}
                             label='genres'
-                            control={this.GenreDropdown}/>
-
+                            control={Dropdown}
+                                fluid
+                                multiple
+                                onChange={this.handleChangeGenres}
+                                onSearchChange={this.handleSearchChangeGenres}
+                                options={this.state.genreList}
+                                placeholder='genres'
+                                search
+                                searchQuery={this.state.genreSearchString}
+                                selection
+                                value={this.state.genres}
+                                allowAdditions
+                                additionLabel={<i style={{color: 'red'}}>New Genre: </i>}
+                                onAddItem={this.handleAdditionGenre}
+                            />
                     </Form.Group>
 
                     <Form.Group>
                         <Form.Field
                             width={10}
                             label='translator'
-                            control={this.TranslatorDropdown}/>
+                            control={Dropdown}
+
+                                fluid
+                                multiple
+                                onChange={this.handleChangeTranslators}
+                                onSearchChange={this.handleSearchChangeTranslators}
+                                options={this.state.translatorList}
+                                placeholder='translators'
+                                search
+                                searchQuery={this.state.translatorSearchString}
+                                selection
+                                value={this.state.translators}
+                                allowAdditions
+                                additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
+                                onAddItem={this.handleAdditionGenre}
+                            />
                         <Form.Field
                             width={6}
                             label='year'
-                            control={this.YearDropdown}/>
+                            control={Dropdown}
+                                fluid
+                                clearable
+                                onChange={this.handleChangeYear}
+                                options={this.state.yearList}
+                                placeholder='year'
+                                selection
+                                value={this.state.year}
+                            />
                     </Form.Group>
 
                     <Form.Group>
@@ -706,36 +825,12 @@ class BookEdit extends Component {
                             <a href={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.pdfUrl}> YourPdfFile</a>
                         </div> : false}
                     <br/>
-                    <Form.Group inline>
-                        <label>type</label>
-                        {BOOK_TYPE.map(type => (
-                            <Form.Radio
-                                label={type.name}
-                                value={type.name}
-                                checked={this.state.type === type.name}
-                                onChange={this.handleChangeType}
-                            />
-                        ))}
-
-                    </Form.Group>
-                    <Form.Group inline>
-                        <label>status</label>
-                        {BOOK_STATUS.map(status => (
-                            <Form.Radio
-                                label={status.name}
-                                value={status.name}
-                                checked={this.state.status === status.name}
-                                onChange={this.handleChangeStatus}
-                            />
-                        ))}
-                    </Form.Group>
-
                     <Form.Group>
                         <Form.Field
                             width={8}
                             type='number'
                             min={0}
-                            max={100}
+                            max={100000}
                             label='weight'
                             control={Input}
                             placeholder="weight"
@@ -750,177 +845,101 @@ class BookEdit extends Component {
                             onChange={this.handleChangeSize}/>
                     </Form.Group>
                     <Form.Group>
-                        <Form.Field
+                        <Form.Input
                             width={8}
                             label='pages'
                             type='number'
                             step={1}
                             min={0}
                             max={10000}
-                            control={Input}
                             placeholder="pages"
                             value={this.state.pages}
                             onChange={this.handleChangePages}/>
-                        <Form.Field
+                        <Form.Input
                             width={8}
                             type='number'
                             step={1}
                             min={0}
-                            max={10000}
-                            label='price'
-                            control={Input}
-                            placeholder="price"
-                            value={this.state.price}
-                            onChange={this.handleChangePrice}/>
+                            max={1000}
+                            label='count'
+                            placeholder="count"
+                            value={this.state.count}
+                            onChange={this.handleChangeCount}/>
 
                     </Form.Group>
                     <Form.Group>
-                        <Form.Field
+                        <Form.Dropdown
                             width={8}
                             label='publishingHouse'
-                            control={this.PublishingHouseDropdown}/>
-                        <Form.Field
+                                fluid
+                                clearable
+                                onChange={this.handleChangePublishingHouse}
+                                onSearchChange={this.handleSearchChangePublishingHouse}
+                                options={this.state.publishingHouseList}
+                                placeholder='publishingHouse'
+                                search
+                                searchQuery={this.state.publishingHouseSearchString}
+                                selection
+                                value={this.state.publishingHouse}
+                                allowAdditions
+                                additionLabel={<i style={{ color: 'red' }}>New publishingHouse: </i>}
+                                onAddItem={this.handleAdditionGenre}
+                            />
+                        <Form.Input
                             width={8}
                             label='isbn'
-                            control={Input}
                             placeholder="isbn"
                             value={this.state.isbn}
                             onChange={this.handleChangeISBN}/>
                     </Form.Group>
 
                     <Form.Group>
-                        <Form.Field
+                        <Form.Dropdown
                             width={8}
                             label='producer'
-                            control={this.ProducerDropdown}/>
-                        <Form.Field
+                                fluid
+                                clearable
+                                onChange={this.handleChangeProducer}
+                                onSearchChange={this.handleSearchChangeProducer}
+                                options={this.state.producerList}
+                                placeholder='producer'
+                                search
+                                searchQuery={this.state.producerSearchString}
+                                selection
+                                value={this.state.producer}
+                                allowAdditions
+                                additionLabel={<i style={{ color: 'red' }}>New producer: </i>}
+                                onAddItem={this.handleAdditionProduser}
+                            />
+                        <Form.Dropdown
                             width={8}
                             label='importer'
-                            control={this.ImporterDropdown}/>
+                                fluid
+                                clearable
+                                onChange={this.handleChangeImporter}
+                                onSearchChange={this.handleSearchChangeImporter}
+                                options={this.state.importerList}
+                                placeholder='producer'
+                                search
+                                searchQuery={this.state.importerSearchString}
+                                selection
+                                value={this.state.importer}
+                                allowAdditions
+                                additionLabel={<i style={{ color: 'red' }}>New importer: </i>}
+                                onAddItem={this.handleAdditionImporter}
+                            />
                     </Form.Group>
-
+                    <Form.Checkbox
+                        label='inLibraryUseOnly'
+                        checked={this.state.inLibraryUseOnly}
+                        onClick={this.handleChangeInLibraryUseOnly}
+                        />
                     <Button size='big' color='purple' fluid onClick={this.handleButtonSubmit}>Create BOOK!!!!</Button>
                 </Form>
             </Container>
+            </React.Fragment>
         );
     }
-
-    GenreDropdown = () => (
-        <Dropdown
-            fluid
-            multiple
-            onChange={this.handleChangeGenres}
-            onSearchChange={this.handleSearchChangeGenres}
-            options={this.state.genreList}
-            placeholder='genres'
-            search
-            searchQuery={this.state.genreSearchString}
-            selection
-            value={this.state.genres}
-            allowAdditions
-            additionLabel={<i style={{color: 'red'}}>New Genre: </i>}
-            onAddItem={this.handleAdditionGenre}
-        />
-    );
-
-    AuthorDropdown = () => (
-        <Dropdown
-            fluid
-            multiple
-            onChange={this.handleChangeAuthors}
-            onSearchChange={this.handleSearchChangeAuthors}
-            options={this.state.authorList}
-            placeholder='authors'
-            search
-            searchQuery={this.state.authorSearchString}
-            selection
-            value={this.state.authors}
-            // allowAdditions
-            // additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-            // onAddItem={this.handleAdditionGenre}
-        />
-    );
-
-    TranslatorDropdown = () => (
-        <Dropdown
-            fluid
-            multiple
-            onChange={this.handleChangeTranslators}
-            onSearchChange={this.handleSearchChangeTranslators}
-            options={this.state.translatorList}
-            placeholder='translators'
-            search
-            searchQuery={this.state.translatorSearchString}
-            selection
-            value={this.state.translators}
-            // allowAdditions
-            // additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-            // onAddItem={this.handleAdditionGenre}
-        />);
-
-    YearDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeYear}
-            options={this.state.yearList}
-            placeholder='year'
-            selection
-            value={this.state.year}
-        />
-    );
-
-    PublishingHouseDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangePublishingHouse}
-            onSearchChange={this.handleSearchChangePublishingHouse}
-            options={this.state.publishingHouseList}
-            placeholder='publishingHouse'
-            search
-            searchQuery={this.state.publishingHouseSearchString}
-            selection
-            text={this.state.publishingHouse.title}
-            value={this.state.publishingHouse}
-            allowAdditions
-            // additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-            // onAddItem={this.handleAdditionGenre}
-        />
-    );
-    ProducerDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeProducer}
-            onSearchChange={this.handleSearchChangeProducer}
-            options={this.state.producerList}
-            placeholder='producer'
-            search
-            searchQuery={this.state.producerSearchString}
-            selection
-            value={this.state.producer}
-            // allowAdditions
-            // additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-            // onAddItem={this.handleAdditionGenre}
-        />
-    );
-    ImporterDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeImporter}
-            onSearchChange={this.handleSearchChangeImporter}
-            options={this.state.importerList}
-            placeholder='producer'
-            search
-            searchQuery={this.state.importerSearchString}
-            selection
-            value={this.state.importer}
-            // allowAdditions
-            // additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-            // onAddItem={this.handleAdditionGenre}
-        />
-    );
-
 }
 
-
 export default BookEdit;
-

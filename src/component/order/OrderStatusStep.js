@@ -3,6 +3,7 @@ import {Label, Step} from 'semantic-ui-react'
 import {ORDER_STATUS} from "../../context";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 
+const statusList = new Map(ORDER_STATUS);
 
 const dateSign = (dateString) => {
     // return <Moment>{this.state.newsCover.creationDate}</Moment>;
@@ -13,22 +14,19 @@ const dateSign = (dateString) => {
 };
 
 const icon = (status) => {
-    let list = new Map(ORDER_STATUS);
-    if (status === list.get('cancelled')) {
-        return <Icon name='ban' size='huge' color='red' />
-    }
-    return <Icon name='check' size='huge' color='green' />
+    let value = statusList.get(status);
+        return <Icon name={value.icon} size='large' color={value.color} />
 };
 
 const OrderStatusStep = (props) => (
-    <Step.Group>
+    <Step.Group size='mini'>
         {props.statusList ? props.statusList.map((status) =>
             <Step
                 key={status.id}
             >
                 {icon(status.status)}
                 <Step.Content>
-                    <Step.Title>{status.status}</Step.Title>
+                    <Step.Title>{statusList.get(status.status).text}</Step.Title>
                     <Step.Description>{dateSign(status.dateTime)}</Step.Description>
                 </Step.Content>
             </Step>  )

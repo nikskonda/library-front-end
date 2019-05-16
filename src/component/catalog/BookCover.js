@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import StarRatings from 'react-star-ratings';
 import {Button, Card, Header, Image, Label, Popup, Rating} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, URL_DOWNLOAD_FILE, LOCAL_STORAGE_USER_DATA, USER_ROLE_LIBRARIAN} from "../../context";
 
 class BookCover extends Component {
 
@@ -10,6 +10,10 @@ class BookCover extends Component {
     state = {
         bookCover: this.props.bookCover,
     };
+
+    componentWillReceiveProps(nextProps){
+        this.setState({bookCover:nextProps.bookCover});
+    }
 
     getAuthor = (author, i, array) => {
         return (
@@ -30,7 +34,16 @@ class BookCover extends Component {
         );
     };
 
+    isLibrarian = () => {
+        const user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(USER_ROLE_LIBRARIAN);
+        return false;
+    };
+
     addBookToBasket = () =>{
+        if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()){
+            return;
+        }
         const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
         let basket = [];
         if (basketStr){
@@ -69,40 +82,41 @@ class BookCover extends Component {
 
 
     render() {
+        let bookCover = this.state.bookCover
         return (
             <React.Fragment>
                 <Card>
                     <Card.Content>
-                        <Link to={'/book/' + this.state.bookCover.id}>
-                            <Card.Header textAlign='center'>{this.state.bookCover.title}</Card.Header>
-                            <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.bookCover.thumbnailUrl}/>
+                        <Link to={'/book/' + bookCover.id}>
+                            <Card.Header textAlign='center'>{bookCover.title}</Card.Header>
+                            <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+bookCover.thumbnailUrl}/>
                         </Link>
                         <Card.Meta>
-                            {this.state.bookCover.authors !== undefined ? this.state.bookCover.authors.map(
+                            {bookCover.authors !== undefined ? bookCover.authors.map(
                                 (author, i, array) => this.getAuthor(author, i, array)) : false}
 
                         </Card.Meta>
-                        <Card.Description>Year
-                            is {this.state.bookCover.year || this.state.bookCover.year === -1 ? 'unknown.' : this.state.bookCover.year}</Card.Description>
-                        {this.state.bookCover.genres === undefined ? false : this.state.bookCover.genres.map(genre => (<Genre key={genre.id} genre={genre} addGenre={this.props.addGenre} />))}
+                        <Card.Description>
+                            <p>Year is {bookCover.year || bookCover.year === -1 ? 'unknown.' : bookCover.year}</p>
+                            {bookCover.ageRestriction?<p>ageRestriction: {bookCover.ageRestriction}</p>:false}
+                        </Card.Description>
+                        {bookCover.genres === undefined ? false : bookCover.genres.map(genre => (<Genre key={genre.id} genre={genre} addGenre={this.props.addGenre} />))}
                         {this.isInBasket()}
                     </Card.Content>
 
-                    {this.state.bookCover.rating !== undefined && this.state.bookCover.rating !== 0 ?
+                    {bookCover.rating !== undefined && bookCover.rating !== 0 ?
                         <Card.Content extra>
                             <Rating icon='star'
-                                    defaultRating={this.state.bookCover.rating / 10}
+                                    defaultRating={bookCover.rating / 10}
                                     maxRating={10}
                                     disabled
                             />
                         </Card.Content>
                         : false}
-
-
-                    {this.state.bookCover.rating !== undefined && this.state.bookCover.rating !== 0 ?
+                    {bookCover.rating !== undefined && bookCover.rating !== 0 ?
                         <Card.Content extra>
                             <StarRatings
-                                rating={this.state.bookCover.rating / 10}
+                                rating={bookCover.rating / 10}
                                 starRatedColor='#ffe623'
                                 numberOfStars={10}
                                 starDimension='17px'
@@ -114,14 +128,19 @@ class BookCover extends Component {
 
                     <Card.Content extra>
                         <div className='ui two buttons'>
-                            {this.state.bookCover.price !== undefined ?
+                            {!bookCover.inLibraryUseOnly ?
                                 <Button
                                     basic
                                     color='green'
                                     onClick={this.addBookToBasket}
-                                >Buy now {this.state.bookCover.price}$</Button> : false}
-                            {this.state.bookCover.ageRestriction !== undefined ?
-                                <Button basic color='red'>{this.state.bookCover.ageRestriction}</Button> : false}
+                                >To Busket</Button>
+                            :
+                                <Button
+                                    style={{cursor: this.isLibrarian()?'pointer':'default'}}
+                                    basic
+                                    color='red'
+                                    onClick={this.addBookToBasket}
+                                    >inLibraryUseOnly</Button>}
                         </div>
                     </Card.Content>
                 </Card>

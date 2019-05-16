@@ -139,9 +139,7 @@ class BookCatalogPage extends Component {
     };
 
     render() {
-
         return (
-
             <React.Fragment>
                 <Container>
                     <Grid>

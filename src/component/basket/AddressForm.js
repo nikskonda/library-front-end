@@ -14,15 +14,15 @@ class AddressForm extends Component {
         showStateList: false,
         showCityList: false,
 
-        country: null,
+        country: {name: 'qwe'},
         countryList: [],
         countrySearchString: '',
 
-        state: null,
+        state: {name: ''},
         stateList: [],
         stateSearchString: '',
 
-        city: null,
+        city: {name: ''},
         cityList: [],
         citySearchString: '',
 
@@ -32,7 +32,26 @@ class AddressForm extends Component {
         phone: '',
         addressDesc: '',
 
+        userId: null,
     };
+
+    componentWillReceiveProps(nextProps){
+        if (nextProps.defaultAddress){
+            this.setState({
+                country: nextProps.defaultAddress.city.state.country || this.state.country,
+                state: nextProps.defaultAddress.city.state || this.state.state,
+                city: nextProps.defaultAddress.city || this.state.city,
+                firstName: nextProps.defaultAddress.firstName || this.state.firstName,
+                lastName: nextProps.defaultAddress.lastName || this.state.lastName,
+                postalCode: nextProps.defaultAddress.postalCode || this.state.postalCode,
+                phone: nextProps.defaultAddress.phone || this.state.phone,
+                addressDesc: nextProps.defaultAddress.address || this.state.addressDesc,
+            }, console.log(this.state));
+        }
+        if (nextProps.userId && nextProps.userId!==this.state.usetId){
+            this.setState({usetId: nextProps.userId}, this.loadAddressList);
+        }
+    }
 
     componentWillMount() {
         this.loadAddressList();
@@ -45,8 +64,9 @@ class AddressForm extends Component {
     };
 
     loadAddressList = () => {
+        let url = BACK_END_SERVER_URL + '/address/user/' + (this.props.userId?this.props.userId:'');
         axios
-            .get(BACK_END_SERVER_URL + `/user/address`,
+            .get(url,
                 {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
@@ -139,6 +159,7 @@ class AddressForm extends Component {
             search
             searchQuery={this.state.countrySearchString}
             selection
+            value={this.state.country.name}
         />
     );
 
@@ -165,6 +186,7 @@ class AddressForm extends Component {
     };
 
     loadStateList = () => {
+        console.log(this.state);
         axios
             .get(BACK_END_SERVER_URL + `/user/state/country/` + this.state.country.id,
                 {
@@ -199,7 +221,7 @@ class AddressForm extends Component {
             search
             searchQuery={this.state.stateSearchString}
             selection
-            //value={this.state.address}
+            value={this.state.state.name}
         />
     );
 
@@ -260,13 +282,12 @@ class AddressForm extends Component {
             search
             searchQuery={this.state.citySearchString}
             selection
-            //value={this.state.address}
+            value={this.state.city.name}
         />
     );
 
     handleChangeCity = (event, {value}) => {
         this.setState({citySearchString: '', city: value});
-        console.log(value);
     };
 
     handleSearchChangeCity = (event, {searchQuery}) => {
@@ -302,7 +323,7 @@ class AddressForm extends Component {
         this.setState({addressDesc: value});
     };
 
-    createOrder = () => {
+    returnAddress = () => {
         let address = this.state.address;
         if (this.state.willNew){
             address = {
@@ -314,29 +335,41 @@ class AddressForm extends Component {
                 city: this.state.city,
             };
         }
-        this.props.createOrder(address);
+        this.props.returnAddress(address);
     };
 
     render() {
+        console.log(this.state);
         return (
             <React.Fragment>
-                <Button
-                    onClick={this.changeAddressForm}
-                >
-                    {this.state.willNew ? 'ADD NEW ADDRESS' : 'select from list of last addresses'}
-                </Button>
+                {this.state.addressList && this.state.addressList.length>0 ?
+                    <Button
+                        onClick={this.changeAddressForm}
+                    >
+                        {!this.state.willNew ? 'ADD NEW ADDRESS' : 'select from list of last addresses'}
+                    </Button>
+                : false}
                 {!this.state.willNew ?
-                    <Form>
                         <Form.Group>
                             <Form.Field
                                 width={8}
                                 label='producer'
                                 control={this.AddressDropdown}/>
                         </Form.Group>
-                    </Form>
                     :
-                    <Form>
+                    <React.Fragment>
                         <Form.Group>
+                            <Dropdown
+                                fluid
+                                onChange={this.handleChangeCountry}
+                                onSearchChange={this.handleSearchChangeCountry}
+                                options={this.state.countryList}
+                                placeholder='Select Country'
+                                search
+                                searchQuery={this.state.countrySearchString}
+                                selection
+                                value={this.state.country.name}
+                            />
                             <Form.Field
                                 width={5}
                                 label='Country'
@@ -392,11 +425,11 @@ class AddressForm extends Component {
                                     placeholder='address'
                             value={this.state.addressDesc}
                             onChange={this.handleChangeAddressDesc}/>
-                    </Form>}
+                    </React.Fragment>}
                 <Form.Field
                     control={Button}
-                    onClick={this.createOrder}
-                >Create Order</Form.Field>
+                    onClick={this.returnAddress}
+                >SetAddress</Form.Field>
             </React.Fragment>
         );
     };
