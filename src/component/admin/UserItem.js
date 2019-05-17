@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Label, Dropdown} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE_COLOR, LOCAL_STORAGE_BASKET} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE, LOCAL_STORAGE_BASKET} from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
 
@@ -313,13 +313,13 @@ class Role extends Component {
     openClose = () => this.setState({showModal: !this.state.showModal});
 
     render() {
-        let roleColor = new Map(ROLE_COLOR);
+        let roleColor = new Map(ROLE);
         let role = this.props.role;
         return (
             <React.Fragment>
                 <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.removeAuthority} />
-                <Label as='a' tag color={roleColor.get(role.authority)}>
-                    {role.authority}
+                <Label as='a' tag color={roleColor.get(role.authority).color}>
+                    {roleColor.get(role.authority).text}
                     <Icon name='delete' onClick={this.openClose}/>
                 </Label>
             </React.Fragment>

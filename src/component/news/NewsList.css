@@ -1,0 +1,56 @@
+#newsList {
+    margin-top: 20px;
+}
+
+.newsPagination{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#newsList .newsPagination .pagination{
+    background-color: #CACF98;
+}
+
+#newsList .newsPagination .dropdown{
+    background-color: #CACF98;
+    color: #40453B;
+}
+
+#newsList .newsPagination .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#newsCardGroup .card{
+    background-color: #F4f4db;
+    border: 1px solid;
+}
+
+#newsCardGroup .card .content .header{
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    text-align: justify;
+}
+
+#newsCardGroup .card .content .header a{
+    color: #40453B;
+}
+
+#newsCardGroup .card .content .meta{
+    align-self: flex-end;
+}
+
+
+#newsCardGroup .card .content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+
+
+#newsCardGroup .card .content .linkToUser{
+    color: #40453B;
+}

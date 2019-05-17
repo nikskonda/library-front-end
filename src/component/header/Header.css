@@ -1,0 +1,40 @@
+
+    
+    
+    .backgroundImage {
+        background: #181a0f url("/img/header.jpg") no-repeat center top;
+        min-height: 400px;
+    }
+
+    #headerMenuFirst {
+        padding-top: 20px;
+    }
+
+    #userIcon a{
+        color: #cacf98;
+        padding: 8px;
+    }
+
+    #userIcon a:hover{
+        border-bottom: 1px solid;
+        border-color: #cacf98;
+    }
+
+    #headerMenuSecond{
+        padding-top: 100px;
+    }
+
+    #headerMenuSecond .menu a{
+        color: #cacf98;
+    }
+
+    #headerMenuSecond .menu .active{
+        border: 1px solid ;
+        border-color: #cacf98;
+    }
+
+    #headerMenuSecond .menu a:hover{
+        border: solid 1px;
+        border-color: #cacf98;
+    }
+

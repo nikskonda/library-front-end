@@ -6,7 +6,7 @@ import BookRouter from "./book/BookRouter";
 import NewsListPage from "./news/NewsListPage";
 import NewsPage from "./news/NewsPage";
 import SignIn from "./sign/SignIn";
-import Header from "./Header";
+import Header from "./header/Header";
 import NewsEdit from "./news/NewsEdit";
 import OrderListPage from "./order/OrderListPage";
 import SignUp from "./sign/SignUp";
@@ -24,11 +24,20 @@ class MainRouter extends Component {
     //
     // BookCatalogPage = () => <BookCatalogPage updateBasket={this.updateBasket} location={this.location}/>;
 
+    state = {
+        isAuthorize: false,
+    };
+
+    changeAuthorizeStatus = () => {
+        console.log('hell');
+        this.setState({isAuthorize: !this.state.isAuthorize});
+    };
+
     render() {
         return (
             <React.Fragment>
                 {/*<Header ref={this.headerRef}/>*/}
-                <Header/>
+                <Header isAuthorize={this.state.isAuthorize}/>
                 <Switch>
                     <Route exact path='/' component={BookCatalogPage}/>
                     <Route path='/book' component={BookRouter}/>
@@ -42,7 +51,7 @@ class MainRouter extends Component {
                     <Route path='/order/book/:bookId' component={OrderListPage}/>
                     <Route path='/order/user/:userId' component={OrderListPage}/>
                     <Route path='/order/user' component={OrderListPage}/>
-                    <Route path='/signIn' component={SignIn}/>
+                    <Route path='/signIn' render={() => <SignIn changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
                     <Route path='/signUp' component={SignUp}/>
                     <Route path='/signOut' component={SignOut}/>
                     <Route path='/user/settings/:userId' component={UserSettings}/>

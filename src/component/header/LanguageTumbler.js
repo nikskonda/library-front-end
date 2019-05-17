@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import Language from "./Language";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BOOK_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_BOOK_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 
 class LanguageTumbler extends Component {
 

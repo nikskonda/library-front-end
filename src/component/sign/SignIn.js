@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import  { withRouter } from 'react-router-dom'
 import {
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
@@ -16,27 +17,22 @@ const jwt = require('jsonwebtoken');
 
 class SignIn extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
+        state = {
             username: '',
             password: '',
             expires_in: 0
         };
-        this.changeUsernameHandler = this.changeUsernameHandler.bind(this);
-        this.changePasswordHandler = this.changePasswordHandler.bind(this);
-        this.signIn = this.signIn.bind(this);
-    }
 
-    changeUsernameHandler(event, {value}) {
+
+    changeUsernameHandler = (event, {value}) => {
         this.setState({username: value});
-    }
+    };
 
-    changePasswordHandler(event, {value}) {
+    changePasswordHandler = (event, {value}) => {
         this.setState({password: value});
-    }
+    };
 
-    formBody(obj) {
+    formBody = (obj) => {
         let formBody = [];
         for (let property in obj) {
             let encodedKey = encodeURIComponent(property);
@@ -44,9 +40,9 @@ class SignIn extends Component {
             formBody.push(encodedKey + "=" + encodedValue);
         }
         return (formBody.join("&"));
-    }
+    };
 
-    signIn() {
+    signIn = () => {
         let details = {
             username: this.state.username,
             password: this.state.password,
@@ -81,18 +77,20 @@ class SignIn extends Component {
                 this.setState({expires_in: res.data.expires_in});
                 this.startRefreshCycle();
                 // this.setState({books: this.state.books.concat(res.data.content)});
+                this.props.changeAuthorizeStatus();
                 this.props.history.push('/');
+
             })
             .catch(function (error) {
                 console.log(error);
             });
-    }
+    };
 
-    startRefreshCycle() {
+    startRefreshCycle = () => {
         setTimeout(this.refreshToken.bind(this), (this.state.expires_in - 15) * 1000);
-    }
+    };
 
-    refreshToken() {
+    refreshToken = () => {
         console.log('try to get refresh token ' + new Date());
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN) !== null &&
@@ -135,7 +133,7 @@ class SignIn extends Component {
                     console.log(error);
                 });
         }
-    }
+    };
 
     render() {
         return (<Container >
@@ -172,7 +170,7 @@ class SignIn extends Component {
                         <Button content='Sign up'
                                 icon='signup'
                                 size='big'
-                                onClick={() => this.props.history.push('/signUp')}
+                                onClick={() =>this.props.history.push('/signUp')}
                         />
                     </Grid.Column>
                 </Grid>
@@ -183,4 +181,4 @@ class SignIn extends Component {
     }
 }
 
-export default SignIn;
+export default withRouter(SignIn);

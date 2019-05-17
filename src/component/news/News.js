@@ -8,7 +8,7 @@ class News extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: props.id,
+            id: props.newsId,
             news: null
         };
         this.getBody = this.getBody.bind(this);

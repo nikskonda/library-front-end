@@ -1,0 +1,18 @@
+#languageButton {
+    background-color: #CACF98;
+    border: none;
+    color: #40453B;
+    text-align: center;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+#languageButton .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#languageButton .visible .item {
+    text-align: center;
+    text-decoration: none;
+}

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN} from "../../context";
 
 class NewsCover extends Component {
 
@@ -36,6 +36,12 @@ class NewsCover extends Component {
         return this.state.newsCover.creator.firstName + ' ' + this.state.newsCover.creator.lastName;
     };
 
+    isAdmin(){
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_ADMIN);
+        else return false;
+    }
+
     render() {
         return (
             <Card>
@@ -45,13 +51,19 @@ class NewsCover extends Component {
                         <Link to={'news/' + this.state.newsCover.id}>{this.state.newsCover.title}</Link>
                     </Card.Header>
                     <Card.Meta>Added {this.dateSign()}</Card.Meta>
-                    <Card.Description>Daniel is a comedian living in Nashville.</Card.Description>
+                    {/*<Card.Description>Daniel is a comedian living in Nashville.</Card.Description>*/}
                 </Card.Content>
-                <Card.Content extra>
-                    <a href={'user/'+this.state.newsCover.creator.id} >
+                <Card.Content
+                    
+                    extra>
+                    <Link 
+                        style={{cursor: this.isAdmin()?'pointer':'default'}}
+                        className='linkToUser'
+                        to={this.isAdmin()?'admin/user/settings/'+this.state.newsCover.creator.id:false}
+                    >
                         <Icon name='user'/>
                         {this.userSign()}
-                    </a>
+                    </Link>
                 </Card.Content>
             </Card>
         );

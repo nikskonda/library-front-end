@@ -13,12 +13,21 @@ export const OAUTH2_CLIENT_ID = 'devglan-client';
 export const OAUTH2_CLIENT_SECRET = 'devglan-secret';
 
 export const DEFAULT_LANGUAGE = 'English';
-export const DEFAULT_LANGUAGE_TAG = 'US_en';
+export const DEFAULT_LANGUAGE_TAG = 'en-US';
 
 export const USER_ROLE_LIBRARIAN = 'LIBRARIAN';
 
-export const BOOK_TYPE = [ { name: 'BOOK'}, {name: 'COMICS'}, {name: 'MAGAZINE'} ];
-export const BOOK_STATUS = [ { name: 'IN_STOCK'}, {name: 'ON_HAND'}, {name: 'UNKNOWN'} ];
+export const BOOK_TYPE_BOOK = 'BOOK';
+export const BOOK_TYPE_COMICS = 'COMICS';
+export const BOOK_TYPE_MAGAZINE = 'MAGAZINE';
+
+export const BOOK_TYPE = [ 
+    [ BOOK_TYPE_BOOK, { name: 'BOOK'}], 
+    [ BOOK_TYPE_COMICS, {name: 'COMICS'}], 
+    [ BOOK_TYPE_MAGAZINE, {name: 'MAGAZINE'}]
+];
+
+
 
 export const ORDER_STATUS_NEW = 'NEW';
 export const ORDER_STATUS_CONFIRMED = 'CONFIRMED';
@@ -45,4 +54,31 @@ export const BOOK_YEAR_MIN = 1801;
 
 export let DELIVERY_PRICE = 5;
 
-export const ROLE_COLOR = [['USER', 'green'],['LIBRARIAN', 'violet'],['COURIER', 'purple'],['ADMIN', 'red'],['default', 'grey']];
+export const ROLE_USER = 'USER';
+export const ROLE_LIBRARIAN = 'LIBRARIAN';
+export const ROLE_COURIER = 'COURIER';
+export const ROLE_JOURNALIST = 'JOURNALIST';
+export const ROLE_ADMIN = 'ADMIN';
+
+
+export const ROLE = [
+    [ROLE_USER, { text:'user', color: 'green'}],
+    [ROLE_LIBRARIAN, { text:'librarian', color: 'violet'}],
+    [ROLE_COURIER, { text:'courier', color: 'purple'}],
+    [ROLE_JOURNALIST, { text:'journalist', color: 'yellow'}],
+    [ROLE_ADMIN, { text:'admin', color: 'red'}]
+];
+
+
+
+export const PAGINATION_BOUNDARY_RANGE = 2;
+export const PAGINATION_SIBLING_RANGE = 2;
+
+export const PAGINATION_NEWS_PER_ROW = 3;
+export const PAGINATION_NEWS_ROWS = 7;
+
+export const PAGINATION_BOOKS_PER_ROW = 3;
+export const PAGINATION_BOOKS_ROWS = 7;
+
+export const PAGINATION_COUNT_IN_DROPDOWN = 5;
+export const PAGINATION_STEP_IN_DROPDOWN = 6; // ROW*PAGINATION_NEWS_PER_ROW;

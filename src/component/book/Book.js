@@ -88,6 +88,9 @@ class Book extends Component {
                             <Button>
                                 <Link to={`../../../admin/orderList?bookId=${this.state.book.id}`}>IN ORDERS</Link>
                             </Button>
+                            <Button>
+                                <Link to={`../../../book/edit/${this.state.book.id}`}>EDIT</Link>
+                            </Button>
                         </Button.Group>
                     </div>
                     <div>

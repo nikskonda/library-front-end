@@ -5,15 +5,15 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import 'jquery';
 import 'popper.js';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
+// import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'semantic-ui-css/semantic.min.css'
 
 ReactDOM.render(
     <BrowserRouter>
-        <App />
+        <App id='app'/>
     </BrowserRouter>
     , document.getElementById('root'));
 

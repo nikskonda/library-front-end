@@ -9,7 +9,7 @@ import {
     URL_DOWNLOAD_FILE
 } from "../../context";
 // https://react.semantic-ui.com
-import {Button, Container, Dropdown, Form, Image, Input, TextArea} from "semantic-ui-react";
+import {Button, Container, Dropdown, Form, Image, Input, TextArea, Modal} from "semantic-ui-react";
 import './BookEdit.css'
 import ModalYesNo from './../ModalYesNo'
 
@@ -69,6 +69,9 @@ class BookEdit extends Component {
         content: [''],
         showModal: false,
         modalAction: null,
+        showModalAddAuthor: false,
+        showModalAddPH: false,
+
     };
 
     componentWillMount() {
@@ -137,12 +140,12 @@ class BookEdit extends Component {
         this.setState({language: value});
     };
 
-    handleChangeTitle = (event) => {
-        this.setState({title: event.target.value});
+    handleChangeTitle = (event, {value}) => {
+        this.setState({title: value});
     };
 
-    handleChangeDescription = (event) => {
-        this.setState({description: event.target.value});
+    handleChangeDescription = (event, {value}) => {
+        this.setState({description: value});
     };
 
     handleChangeYear = (event, {value}) => {
@@ -627,6 +630,24 @@ class BookEdit extends Component {
     };
 
     openClose = () => this.setState({showModal: !this.state.showModal});
+    openCloseAddAuthor = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor});
+    openCloseAddPH = () => this.setState({showModalAddPH: !this.state.showModalAddPH});
+
+    isCreatedAuthor = (flag, searchQuery) => {
+        if (flag){
+            this.handleSearchChangeAuthors(null, {searchQuery});
+        } else {
+            this.setState({showModalAddAuthor: false});
+        }
+    }
+
+    isCreatedPH = (flag, searchQuery) => {
+        if (flag){
+            this.handleSearchChangePublishingHouse(null, {searchQuery});
+        } else {
+            this.setState({showModalAddPH: false});
+        }
+    }
 
     render() {
         return (
@@ -674,6 +695,7 @@ class BookEdit extends Component {
                             control={Dropdown}
                                 fluid
                                 multiple
+                                clearable
                                 onChange={this.handleChangeAuthors}
                                 onSearchChange={this.handleSearchChangeAuthors}
                                 options={this.state.authorList}
@@ -683,8 +705,8 @@ class BookEdit extends Component {
                                 selection
                                 value={this.state.authors}
                                 allowAdditions
-                                additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-                                onAddItem={this.handleAdditionGenre}
+                                additionLabel={<i style={{ color: 'red' }}>New author: </i>}
+                                onAddItem={this.openCloseAddAuthor}
                             />
                         <Form.Field
                             width={6}
@@ -692,6 +714,7 @@ class BookEdit extends Component {
                             control={Dropdown}
                                 fluid
                                 multiple
+                                clearable
                                 onChange={this.handleChangeGenres}
                                 onSearchChange={this.handleSearchChangeGenres}
                                 options={this.state.genreList}
@@ -703,9 +726,10 @@ class BookEdit extends Component {
                                 allowAdditions
                                 additionLabel={<i style={{color: 'red'}}>New Genre: </i>}
                                 onAddItem={this.handleAdditionGenre}
+                                onGenreLabelClick={this.onGenreLabelClick}
                             />
                     </Form.Group>
-
+                    <AddAuthorModal size='tiny' open={this.state.showModalAddAuthor} openClose={this.openCloseAddAuthor} isCreated={this.isCreatedAuthor} />
                     <Form.Group>
                         <Form.Field
                             width={10}
@@ -714,6 +738,7 @@ class BookEdit extends Component {
 
                                 fluid
                                 multiple
+                                clearable
                                 onChange={this.handleChangeTranslators}
                                 onSearchChange={this.handleSearchChangeTranslators}
                                 options={this.state.translatorList}
@@ -723,8 +748,8 @@ class BookEdit extends Component {
                                 selection
                                 value={this.state.translators}
                                 allowAdditions
-                                additionLabel={<i style={{ color: 'red' }}>New Genre: </i>}
-                                onAddItem={this.handleAdditionGenre}
+                                additionLabel={<i style={{ color: 'red' }}>New trans: </i>}
+                                onAddItem={this.openCloseAddAuthor}
                             />
                         <Form.Field
                             width={6}
@@ -883,8 +908,9 @@ class BookEdit extends Component {
                                 value={this.state.publishingHouse}
                                 allowAdditions
                                 additionLabel={<i style={{ color: 'red' }}>New publishingHouse: </i>}
-                                onAddItem={this.handleAdditionGenre}
+                                onAddItem={this.openCloseAddPH}
                             />
+                        <AddPHModal size='tiny' open={this.state.showModalAddPH} openClose={this.openCloseAddPH} isCreated={this.isCreatedPH} title={this.state.publishingHouseSearchString}/>
                         <Form.Input
                             width={8}
                             label='isbn'
@@ -938,6 +964,200 @@ class BookEdit extends Component {
                 </Form>
             </Container>
             </React.Fragment>
+        );
+    }
+}
+
+class AddPHModal extends Component {
+    state = {
+        title: '',
+        siteLink: '',
+        description: '',
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.setState({title: nextProps.title})
+    }
+
+    hanbleChangeTitle = (event, {value}) => {
+        this.setState({title: value});
+    };
+
+    hanbleChangeDesc = (event, {value}) => {
+        this.setState({description: value});
+    };
+
+    hanbleChangeSiteLink = (event, {value}) => {
+        this.setState({siteLink: value});
+    };
+
+    successCreated = () => {
+        this.props.isCreated(true, this.state.title);
+    };
+
+    createPH = () => {
+        axios({
+            method: 'POST',
+            url: BACK_END_SERVER_URL + '/book/publishingHouse',
+            headers: {
+                'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                'Content-type': 'application/json',
+                // 'Accept-Language': locale.tag || ''
+            },
+            data: {
+                title: this.state.title===''?null:this.state.title,
+                description: this.state.description === '' ? null : this.state.description,
+                wikiLink: this.state.wikiLink === '' ? null : this.state.wikiLink,
+            }
+        })
+            .then(res => {
+                this.successCreated();
+            })
+            .catch((error) => {
+
+            });
+
+
+    };
+
+    render () {
+        return (
+            <Modal size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
+                <Modal.Header>AddPH</Modal.Header>
+                <Modal.Content>
+                  <Modal.Description>
+                      <Form>
+                          <Form.Input
+                              fluid
+                                label='title'
+                                placeholder='First name'
+                                value={this.state.title}
+                                onChange={this.hanbleChangeTitle}
+                            />
+                            <Form.TextArea
+                            label='desc'
+                            value={this.state.description}
+                            onChange={this.hanbleChangeDesc}/>
+                        <Form.Input
+                            fluid
+                            label='siteLink'
+                            placeholder='siteLink'
+                            value={this.state.siteLink}
+                            onChange={this.hanbleChangeSiteLink}
+                        />
+                      </Form>
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button negative onClick={this.props.openClose}>Cancel</Button>
+                    <Button positive icon='checkmark' labelPosition='right' content='Create' onClick={this.createPH}/>
+                </Modal.Actions>
+                <Modal.Actions>
+                </Modal.Actions>
+              </Modal>
+        );
+    }
+}
+
+class AddAuthorModal extends Component {
+
+    state = {
+        firstName: '',
+        lastName: '',
+        description: '',
+        wikiLink: '',
+    }
+
+    hanbleChangeFirstName = (event, {value}) => {
+        this.setState({firstName: value});
+    };
+
+    hanbleChangeLastName = (event, {value}) => {
+        this.setState({lastName: value});
+    };
+
+    hanbleChangeDesc = (event, {value}) => {
+        this.setState({description: value});
+    };
+
+    hanbleChangeWikiLink = (event, {value}) => {
+        this.setState({wikiLink: value});
+    };
+
+    successCreated = () => {
+        this.props.isCreated(true, this.state.firstName+' '+this.state.lastName);
+    };
+
+    createAuthor = () => {
+        axios({
+            method: 'POST',
+            url: BACK_END_SERVER_URL + '/book/author',
+            headers: {
+                'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                'Content-type': 'application/json',
+                // 'Accept-Language': locale.tag || ''
+            },
+            data: {
+                firstName: this.state.firstName===''?null:this.state.firstName,
+                lastName: this.state.lastName === '' ? null : this.state.lastName,
+                description: this.state.description === '' ? null : this.state.description,
+                wikiLink: this.state.wikiLink === '' ? null : this.state.wikiLink,
+            }
+        })
+            .then(res => {
+                this.successCreated();
+            })
+            .catch((error) => {
+
+            });
+
+
+    };
+
+    render () {
+        return (
+            <Modal size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
+                <Modal.Header>AddAuthor</Modal.Header>
+                <Modal.Content>
+                  <Modal.Description>
+                      <Form>
+                          <Form.Group widths='equal'>
+                              <Form.Input
+                                  fluid
+                                  label='First name'
+                                  placeholder='First name'
+                                  value={this.state.firstName}
+                                  onChange={this.hanbleChangeFirstName}
+                                  />
+                              <Form.Input
+                                  fluid
+                                  label='Last name'
+                                  placeholder='Last name'
+                                  value={this.state.lastName}
+                                  onChange={this.hanbleChangeLastName}
+                                  />
+                        </Form.Group>
+                        <Form.TextArea
+                            label='desc'
+                            value={this.state.description}
+                            onChange={this.hanbleChangeDesc}/>
+                        <Form.Input
+                            fluid
+                            label='wikiLink'
+                            placeholder='wikiLink'
+                            value={this.state.wikiLink}
+                            onChange={this.hanbleChangeWikiLink}
+                        />
+                      </Form>
+                  </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button negative onClick={this.props.openClose}>Cancel</Button>
+                    <Button positive icon='checkmark' labelPosition='right' content='Create' onClick={this.createAuthor}/>
+                </Modal.Actions>
+                <Modal.Actions>
+                </Modal.Actions>
+              </Modal>
         );
     }
 }

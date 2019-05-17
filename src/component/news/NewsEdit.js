@@ -189,7 +189,7 @@ class NewsEdit extends Component {
     };
 
     handleButtonSubmit = () => {
-        let url = this.state.id ? '/userList/'+this.state.id : '/userList';
+        let url = this.state.id ? '/news/'+ this.state.id : '/news';
         let method = this.state.id ? 'put' : 'post';
         axios({
             method: method,
@@ -303,4 +303,3 @@ class NewsEdit extends Component {
 
 
 export default NewsEdit;
-

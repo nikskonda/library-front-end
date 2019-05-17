@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import './Header.css'
 import {Container, Label, Menu} from "semantic-ui-react";
 import UserIcon from "./UserIcon";
-import {LOCAL_STORAGE_BASKET} from "../context";
+import {LOCAL_STORAGE_BASKET} from "../../context";
 
 const HOME = 'home';
 const NEWS = 'news';
@@ -41,12 +41,14 @@ const links = new Map([
     }],
 ]);
 
+
 class Header extends Component {
 
     state = {
         activeItem: 'home',
         url: '/',
         countInBasket: 0,
+        isAuthorize: false,
     };
 
     componentWillMount(){
@@ -55,10 +57,13 @@ class Header extends Component {
                 if (value.name!==HOME && url.includes(value.url))
                     this.setState({activeItem: value.name});
         });
+
     }
 
     componentWillReceiveProps(nextProps){
-        this.setState({url:nextProps.url});
+        if (this.state.isAuthorize!==nextProps.isAuthorize){
+            this.setState({isAuthorize: nextProps.isAuthorize});
+        }
     }
 
     handleItemClick = (e, {name}) => {
@@ -76,19 +81,19 @@ class Header extends Component {
     render() {
         console.log();
         return (
-            <React.Fragment>
+            <div className='backgroundImage'>
                 <Container>
-                    <Menu secondary>
+                    <Menu secondary id='headerMenuFirst'>
                         <Menu.Menu position='right'>
                             <Menu.Item>
                                 <LanguageTumbler/>
                             </Menu.Item>
-                            <Menu.Item>
-                                <UserIcon/>
+                            <Menu.Item id='userIcon'>
+                                <UserIcon  isAuthorize={this.state.isAuthorize}/>
                             </Menu.Item>
                         </Menu.Menu>
                     </Menu>
-                    <Menu secondary>
+                    <Menu secondary id='headerMenuSecond'>
                         <Menu.Menu>
                             <Menu.Item
                                 name={links.get(HOME).name}
@@ -155,7 +160,7 @@ class Header extends Component {
                         {/*</Menu.Menu>*/}
                     </Menu>
                 </Container>
-            </React.Fragment>
+            </div>
         );
     }
 }

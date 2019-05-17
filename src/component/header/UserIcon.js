@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import faker from 'faker';
 import {Dropdown, Image} from "semantic-ui-react";
-import {LOCAL_STORAGE_USER_DATA} from "../context";
+import {LOCAL_STORAGE_USER_DATA} from "../../context";
 import {Link} from "react-router-dom";
 
 
@@ -27,17 +27,26 @@ const NotAuthorize = () => (<Link to='signIn'> Sign In / Sing Up </Link>);
 class UserIcon extends Component {
 
     state = {
-        isAuthorize: false
+        isAuthorize: false,
     };
 
-    componentWillMount() {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isAuthorize!=this.state.isAuthorize) {
+            this.setState({isAuthorize: nextProps.isAuthorize});
+        }
+        if (nextProps.isAuthorize){
+            this.loadUserData();
+        }
+    }
+
+    loadUserData = () => {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (user !== null && user !== undefined) {
             user = JSON.parse(user);
             this.setState({isAuthorize: true});
             this.setState({username: user.username, avatar: user.avatar});
         }
-    }
+    };
 
     render() {
         return this.state.isAuthorize ? <Authorize username={this.state.username} avatar={this.state.avatar}/> : <NotAuthorize/>;
