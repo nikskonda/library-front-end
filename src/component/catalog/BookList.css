@@ -1,0 +1,115 @@
+#bookCatalog .genreList .menu .active{
+    background-color: #F4f4db;
+}
+
+#bookCatalog .searchBook{
+    margin: 20px 0;
+}
+
+#bookCatalog .searchBook input{
+    background-color: #F4f4db;
+}
+
+#bookCatalog .searchBook .selection{
+    background-color: #cacf98;
+}
+
+#bookCatalog .searchBook button{
+    background-color: #809955;
+}
+
+#bookCatalog .searchBook .selection .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookCatalog .searchBook .selection .visible .item {
+    text-align: center;
+    text-decoration: none;
+}
+
+
+#bookCatalog .booksPagination{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#bookCatalog .booksPagination .pagination{
+    background-color: #CACF98;
+}
+
+#bookCatalog .booksPagination .dropdown{
+    background-color: #CACF98;
+    color: #40453B;
+}
+
+#bookCatalog .booksPagination .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookCatalog .cards .card{
+    background-color: #F4f4db;
+}
+
+#bookCatalog .cards .card .content a .header{
+    text-decoration: none;
+    color: #254868;
+    font-size: 15pt;
+}
+
+#bookCatalog .cards .card .content a img{
+    margin: 10px 0;
+}
+
+#bookCatalog .cards .card .content .authorName{
+    cursor: pointer;
+}
+
+#bookCatalog .cards .card .genres{
+    display: flex;
+    justify-content: space-around;
+}
+
+#bookCatalog .cards .card .genres .label{
+    background-color: #CACF98;
+    cursor: pointer;
+}
+
+#bookCatalog .cards .card .rating{
+    display: flex;
+    justify-content: center;
+}
+
+
+#bookCatalog .cards .card .content .addToBasket .greenButton {
+    color: #809955 !important;
+    box-shadow: 0 0 0 1px #809955 inset !important;
+}
+
+#bookCatalog .cards .card .content .addToBasket .redButton {
+    color: #9f3a38 !important;
+    box-shadow: 0 0 0 1px #9f3a38 inset !important;
+}
+
+
+
+.authorInfo, .authorInfo::before{
+    width: 400px;
+    background-color: #F4f4db !important;
+}
+
+.authorInfo .header{
+    text-align: center;
+}
+
+.authorInfo p{
+    text-align: justify;
+}
+
+.authorInfo .button{
+
+    background-color: #CACF98 !important;
+}
+

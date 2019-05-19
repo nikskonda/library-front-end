@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Container, Icon, Item, Message, Pagination} from "semantic-ui-react";
+import {Button, Icon, Item, Message, Pagination} from "semantic-ui-react";
 import axios from "axios";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
 import queryString from "query-string";

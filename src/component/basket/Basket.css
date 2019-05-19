@@ -1,0 +1,18 @@
+#basket{
+    margin: 30px 0;
+}
+
+#basket .items .item .content .header{
+    text-decoration: none;
+    color: #254868;
+}
+
+#basket .items .item .content .meta .label{
+    background-color: #809955;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#basket .items .item .content .extra .button{
+    background-color: #CACF98;
+}

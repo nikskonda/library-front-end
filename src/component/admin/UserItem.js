@@ -1,7 +1,14 @@
 import React, {Component} from 'react';
-import {Button, Icon, Item, Label, Dropdown} from "semantic-ui-react";
+import {Button, Dropdown, Icon, Item, Label} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE, ROLE, LOCAL_STORAGE_BASKET} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_BASKET,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    ROLE,
+    URL_DOWNLOAD_FILE,
+    USER_AVATAR_DEFAULT
+} from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
 
@@ -130,7 +137,7 @@ class UserItem extends Component {
         let user = this.props.user;
         return (
             <Item>
-                <Item.Image size='small' src={user.avatarUrl?BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+user.avatarUrl:'https://react.semantic-ui.com/images/wireframe/image.png'}/>
+                <Item.Image size='small' src={user.avatarUrl?BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+user.avatarUrl:USER_AVATAR_DEFAULT}/>
                 <Item.Content>
                     <Item.Header as='a'>{user.username}</Item.Header><br/>
                     <RoleList roleList={this.state.roleList} user={user} refresh={this.props.refresh}/>
@@ -204,9 +211,9 @@ class RoleList extends Component {
     componentWillReceiveProps(nextProps) {
         let roleSearchList = [];
 
-        nextProps.roleList.map(role => {
+        nextProps.roleList.forEach(role => {
             let flag = true;
-            nextProps.user.authorities.map(userRole => {if (userRole.authority===role.text) flag=false});
+            nextProps.user.authorities.forEach(userRole => {if (userRole.authority===role.text) flag=false});
             if (flag){
                 roleSearchList.push(role);
             }
@@ -224,7 +231,7 @@ class RoleList extends Component {
         if (!searchQuery || searchQuery===''){
             roleSearchList = this.props.roleList;
         } else {
-            this.props.roleList.map(role => {
+            this.props.roleList.forEach(role => {
                 if (role.text.includes(searchQuery.toUpperCase())){
                     roleSearchList.push(role);
                 }

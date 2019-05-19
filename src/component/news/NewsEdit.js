@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
-// https://react.semantic-ui.com
-import {Button, Container, Dropdown, Form, Image, Input, TextArea} from "semantic-ui-react";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {Button, Container, Dropdown, Form, Message, TextArea} from "semantic-ui-react";
 import './NewsEdit.css'
-
+import FileDropBox from "../FileDropBox";
+import {Link} from "react-router-dom";
 
 // BookEdit.propTypes = {
 //     id: PropTypes.number,
@@ -68,20 +68,28 @@ class NewsEdit extends Component {
         thumbnailUrl: null,
         creator: null,
 
-
         picture: null,
         thumbnail: null,
+
+
+        languageWasChanged: false,
+        titleWasChanged: false,
+        textWasChanged: false,
+        thumbnailUrlWasChanged: false,
+        pictureUrlWasChanged: false,
+
+
     };
 
-    componentWillMount(){
-        if (this.state.id){
+    componentWillMount() {
+        if (this.state.id) {
             this.loadNews(this.state.id);
         }
     }
 
     loadNews = (id) => {
         axios
-            .get(BACK_END_SERVER_URL + `/news/`+this.state.id,
+            .get(BACK_END_SERVER_URL + `/news/` + this.state.id,
                 {
                     headers: {
                         // 'Accept-Language': locale.tag || ''
@@ -96,8 +104,8 @@ class NewsEdit extends Component {
                     thumbnailUrl: res.data.thumbnailUrl,
                 });
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
@@ -106,18 +114,74 @@ class NewsEdit extends Component {
     };
 
     handleChangeLanguage = (event, {value}) => {
-        this.setState({language: value});
+        this.setState({language: value, languageWasChanged: true});
     };
 
+    isValidLanguage = () => {
+        if (!this.state.languageWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid lang</p>);
+        let value = true;
+        let language = this.state.language;
+
+        if (!language) {
+            value = false;
+        }
+
+        return {value: value, message: message};
+    };
 
     handleChangeTitle = (event, {value}) => {
-        this.setState({title: value});
+        this.setState({title: value, titleWasChanged: true});
+    };
+
+    isValidTitle = () => {
+        if (!this.state.titleWasChanged) return {value: true};
+        let title = this.state.title;
+
+        let message = (<p className='errorMsg'>enter valid ({title.length}/255)</p>);
+        let value = true;
+
+        if (!title) {
+            value = false;
+        } else {
+            if (title.length === 0) {
+                value = false;
+            }
+
+            if (title.length > 255) {
+                value = false;
+            }
+        }
+
+
+        return {value: value, message: message};
     };
 
     handleChangeText = (event, {value}) => {
-        this.setState({text: value});
+        this.setState({text: value, textWasChanged: true});
     };
 
+    isValidText = () => {
+        if (!this.state.textWasChanged) return {value: true};
+        let text = this.state.text;
+
+        let message = (<p className='errorMsg'>enter valid text ({text.length}/10000)</p>);
+        let value = true;
+
+        if (!text) {
+            value = false;
+        } else {
+            if (text.length === 0) {
+                value = false;
+            }
+
+            if (text.length > 10000) {
+                value = false;
+            }
+        }
+
+        return {value: value, message: message};
+    };
 
     loadLanguageList = () => {
         axios
@@ -127,45 +191,48 @@ class NewsEdit extends Component {
                 res.data.map(l => array.push({key: l.id, text: l.name, value: l}));
                 this.setState({languageList: array});
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
 
-    handleChangePictureFile = (event) => {
-        this.setState({picture: event.target.files[0]});
+    handleChangePictureFile = (file) => {
+        this.setState({picture: file}, this.handleLoadFilePicture);
     };
 
-    handleChangeThumbnailFile = (event) => {
-        this.setState({thumbnail: event.target.files[0]});
+    isValidThumbnail = () => {
+        if (!this.state.thumbnailUrlWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid Thumbnai</p>);
+        let value = true;
+        let thumbnailUrl = this.state.thumbnailUrl;
+
+        if (!thumbnailUrl) {
+            value = false;
+        }
+
+        return {value: value, message: message};
+    };
+
+    handleChangeThumbnailFile = (file) => {
+        this.setState({thumbnail: file}, this.handleLoadFileThumbnail);
+    };
+
+    isValidPicture = () => {
+        if (!this.state.pictureUrlWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid Picture</p>);
+        let value = true;
+        let pictureUrl = this.state.pictureUrl;
+
+        if (!pictureUrl) {
+            value = false;
+        }
+
+        return {value: value, message: message};
     };
 
 
-    handleLoadFilePicture = (event) => {
-        let data = new FormData();
-        data.append('file', this.state.picture);
-        axios
-            .post(BACK_END_SERVER_URL + `/file/upload`,
-                data,
-                {
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'form/data',
-                        // 'Accept-Language': locale.tag || ''
-                    },
-                })
-            .then(res => {
-                this.setState({
-                    pictureUrl: res.data.fileName
-                })
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
-
-    handleLoadFileThumbnail = (event) => {
+    handleLoadFileThumbnail = () => {
         let data = new FormData();
         data.append('file', this.state.thumbnail);
         axios
@@ -180,16 +247,55 @@ class NewsEdit extends Component {
                 })
             .then(res => {
                 this.setState({
-                    thumbnailUrl: res.data.fileName
+                    thumbnailUrl: res.data.fileName, thumbnailUrlWasChanged: true
                 })
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
+    handleLoadFilePicture = () => {
+        let data = new FormData();
+        data.append('file', this.state.picture);
+        axios
+            .post(BACK_END_SERVER_URL + `/file/upload`,
+                data,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'form/data',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                })
+            .then(res => {
+                this.setState({
+                    pictureUrl: res.data.fileName, pictureUrlWasChanged: true
+                })
+            })
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
+            });
+    };
+
+    wasChanged = () => {
+        if (this.state.id){
+            return this.state.languageWasChanged ||
+                this.state.titleWasChanged ||
+                this.state.textWasChanged ||
+                this.state.thumbnailUrlWasChanged ||
+                this.state.pictureUrlWasChanged;
+        }
+        return this.state.languageWasChanged &&
+            this.state.titleWasChanged &&
+            this.state.textWasChanged &&
+            this.state.thumbnailUrlWasChanged &&
+            this.state.pictureUrlWasChanged;
+    };
+
+
     handleButtonSubmit = () => {
-        let url = this.state.id ? '/news/'+ this.state.id : '/news';
+        let url = this.state.id ? '/news/' + this.state.id : '/news';
         let method = this.state.id ? 'put' : 'post';
         axios({
             method: method,
@@ -198,108 +304,132 @@ class NewsEdit extends Component {
                 'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                 'Content-type': 'application/json',
                 // 'Accept-Language': locale.tag || ''
-                },
+            },
             data: {
                 title: this.state.title,
                 language: this.state.language,
                 text: this.state.text,
                 pictureUrl: this.state.pictureUrl,
-                thumbnailUrl: this.state.thumbnailUrl, }
+                thumbnailUrl: this.state.thumbnailUrl,
+            }
         })
             .then(res => {
-                console.log("success id="+res.data.id);
+                this.setState({id: res.data.id});
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
+
+    removeThumbnailUrl = () => {
+        this.setState({thumbnailUrl: null,})
+    };
+
+    removePictureUrl = () => {
+        this.setState({pictureUrl: null,})
+    };
+
+    isDisableButton = () => {
+        return this.isValidPicture().value && this.isValidThumbnail().value && this.isValidText().value && this.isValidLanguage().value && this.isValidTitle().value && this.wasChanged()
+    };
+
+
 
     render() {
         return (
             <Container>
-                <Form>
-                    <Form.Group>
-                        <Dropdown
-                            button
-                            className='icon'
-                            floating
-                            labeled
-                            icon='world'
-                            options={this.state.languageList}
-                            text={this.state.language === null ? 'Select Language' : this.state.language.name}
-                            onChange={this.handleChangeLanguage}
+                {this.state.errorText ?
+                    <Message
+                        warning
+                        header='error Not found'
+                        content={this.state.errorText}
+                    />
+                    : false}
+
+                <Form id='newsEdit'>
+                    <Form.Field
+                        id='newsLangDropdown'
+                        error={!this.isValidLanguage().value}
+                        as={Dropdown}
+                        button
+                        className='icon'
+                        floating
+                        labeled
+                        icon='world'
+                        options={this.state.languageList}
+                        text={this.state.language === null ? 'Select Language' : this.state.language.name}
+                        onChange={this.handleChangeLanguage}
+                    />
+                    {this.isValidLanguage().value ? false : this.isValidLanguage().message}
+
+                    <Form.Input
+                        label='title'
+                        placeholder="title"
+                        value={this.state.title}
+                        onChange={this.handleChangeTitle}
+                        error={!this.isValidTitle().value}
+                    />
+                    {this.isValidTitle().value ? false : this.isValidTitle().message}
+
+
+                    <Form.Field
+                        className='w-100'
+                        label='text'
+                        control={TextArea}
+                        placeholder="text"
+                        value={this.state.text}
+                        onChange={this.handleChangeText}
+                        error={!this.isValidText().value}
+                    />
+                    {this.isValidText().value ? false : this.isValidText().message}
+
+                    <FileDropBox
+                        label='thumb'
+                        accepts={['image/*']}
+                        defFileUrl={this.state.thumbnailUrl}
+                        removeFile={this.removeThumbnailUrl}
+                        handleChangeFile={this.handleChangeThumbnailFile}
+                        textBox={'select file'}
+                    />
+
+                    {this.isValidThumbnail().value ? false : this.isValidThumbnail().message}
+
+                    <FileDropBox
+                        label='pictureUrl'
+                        accepts={['image/*']}
+                        defFileUrl={this.state.pictureUrl}
+                        removeFile={this.removePictureUrl}
+                        handleChangeFile={this.handleChangePictureFile}
+                        textBox={'select file'}
+                    />
+
+                    {this.isValidPicture().value ? false : this.isValidPicture().message}
+
+                    <div className='bottomButtons'>
+                        <Button
+                            content='save'
+                            icon='save'
+                            labelPosition='right'
+                            disabled={!this.isDisableButton()}
+                            onClick={this.handleButtonSubmit}
                         />
-                    </Form.Group>
+                        {this.state.id ?
+                            <Button
+                                color='green'
+                                content='Go To News'
+                                icon='right arrow'
+                                labelPosition='right'
+                                as={Link}
+                                to={'../../../news/' + this.state.id}
+                            />
+                            : false}
+                    </div>
 
-                    <Form.Group>
-                        <Form.Field
-                            className='w-100'
-                            label='title'
-                            control={Input}
-                            placeholder="title"
-                            value={this.state.title}
-                            onChange={this.handleChangeTitle}/>
-                    </Form.Group>
-
-                    <Form.Group>
-                        <Form.Field
-                            className='w-100'
-                            label='text'
-                            control={TextArea}
-                            placeholder="text"
-                            value={this.state.text}
-                            onChange={this.handleChangeText}/>
-                    </Form.Group>
-
-                    <Form.Group>
-                        <div className="input-group file-loader">
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" id="inputGroupFile01"
-                                       aria-describedby="inputGroupFileAddon01"
-                                       onChange={this.handleChangeThumbnailFile}/>
-                                <label className="custom-file-label" htmlFor="inputGroupFile01">Choose Thumbnail
-                                    file</label>
-                            </div>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon01"
-                                        onClick={this.handleLoadFileThumbnail}
-                                        disabled={this.state.thumbnail === null}>Upload Thumbnail
-                                </button>
-                            </div>
-                        </div>
-                    </Form.Group>
-                    {this.state.thumbnailUrl !== null ? <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl} size='small'/> : false}
-                    <br/>
-                    <Form.Group>
-                        <div className="input-group file-loader">
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" id="inputGroupFile02"
-                                       aria-describedby="inputGroupFileAddon02"
-                                       onChange={this.handleChangePictureFile}/>
-                                <label className="custom-file-label" htmlFor="inputGroupFile02">Choose picture
-                                    file</label>
-                            </div>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon02"
-                                        onClick={this.handleLoadFilePicture}
-                                        disabled={this.state.picture === null}>Upload picture
-                                </button>
-                            </div>
-                        </div>
-                    </Form.Group>
-                    {this.state.pictureUrl !== null ?
-                        <div>
-                            <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.pictureUrl}/>
-                        </div> : false}
-                    <br/>
-
-                    <Button size='big' color='purple' fluid onClick={this.handleButtonSubmit}>Create NEWS!!!!</Button>
                 </Form>
             </Container>
         );
     }
 
 }
-
 
 export default NewsEdit;

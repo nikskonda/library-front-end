@@ -44,7 +44,7 @@ class Language extends Component {
                 options={this.props.languageList}
                 text={this.state.buttonName}
                 onChange={this.handleChangeLanguage}
-                value={this.state.selectedLang}
+                value=''
             />
         );
     }

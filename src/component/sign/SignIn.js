@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import  { withRouter } from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import {
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
@@ -66,7 +66,7 @@ class SignIn extends Component {
                 }
             )
             .then(res => {
-                  localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.access_token);
+                localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.access_token);
                 localStorage.setItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, res.data.refresh_token);
                 let decoded = jwt.decode(res.data.access_token);
                 let userData = {
@@ -74,12 +74,32 @@ class SignIn extends Component {
                     authorities: decoded.authorities,
                 };
                 localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
+                this.loadUserData();
                 this.setState({expires_in: res.data.expires_in});
                 this.startRefreshCycle();
                 // this.setState({books: this.state.books.concat(res.data.content)});
                 this.props.changeAuthorizeStatus();
                 this.props.history.push('/');
 
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
+
+    loadUserData = () => {
+        axios
+            .get(
+                BACK_END_SERVER_URL + `/user/data`,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                }
+            )
+            .then(res => {
+                localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(res.data));
             })
             .catch(function (error) {
                 console.log(error);
@@ -118,12 +138,6 @@ class SignIn extends Component {
                 .then(res => {
                     localStorage.setItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, res.data.acces_token);
                     localStorage.setItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN, res.data.refresh_token);
-                    let decoded = jwt.decode(res.data.access_token);
-                    let userData = {
-                        username: decoded.user_name,
-                        authorities: decoded.authorities,
-                    };
-                    localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
                     current.setState({expires_in: res.data.expires_in});
                     current.startRefreshCycle();
                     console.log('success');

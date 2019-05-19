@@ -1,18 +1,20 @@
 import React, {Component} from 'react';
-import {Button, Card, Icon, Image, Label, Table} from "semantic-ui-react";
+import {Button, Card, Icon, Image, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {BACK_END_SERVER_URL,
+import {
+    BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     ORDER_STATUS,
-    URL_DOWNLOAD_FILE,
-    ORDER_STATUS_NEW,
+    ORDER_STATUS_AT_COURIER,
+    ORDER_STATUS_CANCELLED,
     ORDER_STATUS_CONFIRMED,
     ORDER_STATUS_HANDED_OUT,
-    ORDER_STATUS_AT_COURIER,
+    ORDER_STATUS_NEW,
     ORDER_STATUS_RECEIVED,
     ORDER_STATUS_RETURN_TO_COURIER,
     ORDER_STATUS_RETURNED,
-    ORDER_STATUS_CANCELLED} from "../../context";
+    URL_DOWNLOAD_FILE
+} from "../../context";
 import OrderStatusStep from "./OrderStatusStep";
 import axios from "axios";
 

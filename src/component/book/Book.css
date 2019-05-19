@@ -1,0 +1,51 @@
+#book{
+    margin: 20px 0;
+}
+
+#book .firstPart .imgAndRating{
+    float: right;
+    padding-left: 40px;
+}
+
+#book .firstPart .imgAndRating .rating{
+    display: flex;
+    justify-content: center;
+}
+
+#book .firstPart .header{
+    text-align: center;
+}
+
+#book .firstPart .buttonGroup{
+    margin: 20px 0;
+}
+
+#book .firstPart .buttonGroup button, #book .firstPart .buttonGroup a{
+    background-color: #CACF98;
+    color: #1f2222;
+}
+
+#book .firstPart .buttonGroup .greenButton{
+    background-color: #CACF98;
+    color: #1f2222;
+}
+
+#book .firstPart .buttonGroup .redButton{
+    background-color: #ff7c79;
+    color: #1f2222;
+}
+
+
+#book .firstPart .star-ratings{
+    margin-bottom: 20px;
+}
+
+#book .firstPart p{
+    text-align: justify;
+}
+
+#book table{
+    margin-top: 20px;
+    background-color: #F4f4db;
+}
+

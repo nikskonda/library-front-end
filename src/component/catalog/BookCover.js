@@ -1,8 +1,14 @@
 import React, {Component} from 'react';
 import StarRatings from 'react-star-ratings';
-import {Button, Card, Header, Image, Label, Popup, Rating} from "semantic-ui-react";
+import {Button, Card, Header, Image, Label, Popup} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, URL_DOWNLOAD_FILE, LOCAL_STORAGE_USER_DATA, USER_ROLE_LIBRARIAN} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_BASKET,
+    LOCAL_STORAGE_USER_DATA,
+    URL_DOWNLOAD_FILE,
+    USER_ROLE_LIBRARIAN
+} from "../../context";
 
 class BookCover extends Component {
 
@@ -11,25 +17,41 @@ class BookCover extends Component {
         bookCover: this.props.bookCover,
     };
 
-    componentWillReceiveProps(nextProps){
-        this.setState({bookCover:nextProps.bookCover});
+    componentWillReceiveProps(nextProps) {
+        this.setState({bookCover: nextProps.bookCover});
     }
 
     getAuthor = (author, i, array) => {
+        let authorName = !author.firstName ?
+            author.lastName :
+            (!author.lastName ?
+                author.firstName :
+                author.firstName + ' ' + author.lastName);
         return (
             <Popup
+                className='authorInfo'
                 key={author.id}
-                trigger={<span
-                    className='user'>{author.firstName + ' ' + author.lastName + (i !== array.length - 1 ? ', ' : '')}</span>}
+                trigger={<span className='authorName'>{authorName + (i !== array.length - 1 ? ', ' : '')}</span>}
                 hoverable
                 on='click'
                 hideOnScroll
             >
-                <Header as='h4'>{author.firstName + ' ' + author.lastName}</Header>
+                <Header as='h4'>{authorName}</Header>
                 {author.description !== undefined ? <p>{author.description}</p> : false}
                 {author.wikiLink !== undefined ?
-                    <a href={author.wikiLink}><Button fluid>WIKIPEDIA</Button></a> : false}
-                <a href={'author/' + author.id}><Button fluid>Find All His Books</Button></a>
+                    <Button
+                        fluid
+                        as='a'
+                        href={author.wikiLink}
+                    >WIKIPEDIA</Button> : false}
+
+                <Button
+                    fluid
+                    as={Link}
+                    to={`../../../../../catalog?authors=${authorName}`}
+                >
+                    Find All His Books
+                </Button>
             </Popup>
         );
     };
@@ -40,23 +62,23 @@ class BookCover extends Component {
         return false;
     };
 
-    addBookToBasket = () =>{
-        if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()){
+    addBookToBasket = () => {
+        if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()) {
             return;
         }
         const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
         let basket = [];
-        if (basketStr){
+        if (basketStr) {
             basket = JSON.parse(basketStr);
             let flag = true;
-            for (let i=0; i<basket.length; i++){
-                if (basket[i].book.id===this.state.bookCover.id){
+            for (let i = 0; i < basket.length; i++) {
+                if (basket[i].book.id === this.state.bookCover.id) {
                     basket[i].count++;
                     flag = false;
                     break;
                 }
             }
-            if (flag){
+            if (flag) {
                 basket.push({book: this.state.bookCover, count: 1});
             }
         } else {
@@ -65,20 +87,19 @@ class BookCover extends Component {
         localStorage.setItem(LOCAL_STORAGE_BASKET, JSON.stringify(basket));
     };
 
-    isInBasket = () =>{
+    isInBasket = () => {
         const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
         let basket = [];
-        if (basketStr){
+        if (basketStr) {
             basket = JSON.parse(basketStr);
-            for (let i=0; i<basket.length; i++){
-                if (basket[i].book.id===this.state.bookCover.id){
+            for (let i = 0; i < basket.length; i++) {
+                if (basket[i].book.id === this.state.bookCover.id) {
                     return <Card.Description>In Basket: {basket[i].count}</Card.Description>;
                 }
             }
         }
         return false;
     };
-
 
 
     render() {
@@ -88,38 +109,41 @@ class BookCover extends Component {
                 <Card>
                     <Card.Content>
                         <Link to={'/book/' + bookCover.id}>
-                            <Card.Header textAlign='center'>{bookCover.title}</Card.Header>
-                            <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+bookCover.thumbnailUrl}/>
+                            <Card.Header textAlign='center'>{bookCover.title.toUpperCase()}</Card.Header>
+                            <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + bookCover.thumbnailUrl}/>
                         </Link>
                         <Card.Meta>
                             {bookCover.authors !== undefined ? bookCover.authors.map(
                                 (author, i, array) => this.getAuthor(author, i, array)) : false}
-
+                            {bookCover.year && bookCover.year !== -1 ? ', ' + bookCover.year : false}
                         </Card.Meta>
                         <Card.Description>
-                            <p>Year is {bookCover.year || bookCover.year === -1 ? 'unknown.' : bookCover.year}</p>
-                            {bookCover.ageRestriction?<p>ageRestriction: {bookCover.ageRestriction}</p>:false}
+                            {bookCover.ageRestriction ? <p>ageRestriction: {bookCover.ageRestriction}</p> : false}
                         </Card.Description>
-                        {bookCover.genres === undefined ? false : bookCover.genres.map(genre => (<Genre key={genre.id} genre={genre} addGenre={this.props.addGenre} />))}
                         {this.isInBasket()}
                     </Card.Content>
+                    <Card.Content extra className='genres'>
+                        {bookCover.genres === undefined ? false : bookCover.genres.map(genre => (
+                            <Genre key={genre.id} genre={genre} addGenre={this.props.addGenre}/>))}
+                    </Card.Content>
 
+                    {/*{bookCover.rating !== undefined && bookCover.rating !== 0 ?*/}
+                    {/*    <Card.Content extra>*/}
+                    {/*        <Rating icon='star'*/}
+                    {/*                defaultRating={bookCover.rating / 10}*/}
+                    {/*                maxRating={10}*/}
+                    {/*                disabled*/}
+                    {/*        />*/}
+                    {/*    </Card.Content>*/}
+                    {/*    : false}*/}
                     {bookCover.rating !== undefined && bookCover.rating !== 0 ?
-                        <Card.Content extra>
-                            <Rating icon='star'
-                                    defaultRating={bookCover.rating / 10}
-                                    maxRating={10}
-                                    disabled
-                            />
-                        </Card.Content>
-                        : false}
-                    {bookCover.rating !== undefined && bookCover.rating !== 0 ?
-                        <Card.Content extra>
+                        <Card.Content extra className='rating'>
                             <StarRatings
+                                id='ratingStars'
                                 rating={bookCover.rating / 10}
-                                starRatedColor='#ffe623'
+                                starRatedColor='#809955'
                                 numberOfStars={10}
-                                starDimension='17px'
+                                starDimension='25px'
                                 starSpacing='0'
                                 name='rating'
                             />
@@ -127,20 +151,22 @@ class BookCover extends Component {
                         : false}
 
                     <Card.Content extra>
-                        <div className='ui two buttons'>
+                        <div className='ui two buttons addToBasket'>
                             {!bookCover.inLibraryUseOnly ?
                                 <Button
+                                    className='greenButton'
                                     basic
                                     color='green'
                                     onClick={this.addBookToBasket}
                                 >To Busket</Button>
-                            :
+                                :
                                 <Button
-                                    style={{cursor: this.isLibrarian()?'pointer':'default'}}
+                                    style={{cursor: this.isLibrarian() ? 'pointer' : 'default'}}
+                                    className='redButton'
                                     basic
                                     color='red'
                                     onClick={this.addBookToBasket}
-                                    >inLibraryUseOnly</Button>}
+                                >inLibraryUseOnly</Button>}
                         </div>
                     </Card.Content>
                 </Card>
@@ -156,9 +182,9 @@ class Genre extends Component {
         this.props.addGenre(this.props.genre.name);
     };
 
-    render(){
-        let genre=this.props.genre;
-        return  <Label key={genre.id} basic onClick={this.addGenre}>{genre.name}</Label>;
+    render() {
+        let genre = this.props.genre;
+        return <Label key={genre.id} basic onClick={this.addGenre}>{genre.name}</Label>;
     }
 
 }

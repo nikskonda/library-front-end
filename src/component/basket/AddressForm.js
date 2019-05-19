@@ -6,7 +6,7 @@ import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../cont
 class AddressForm extends Component {
 
     state = {
-        willNew: true,
+        willNew: false,
         address: null,
         addressList: [],
         addressSearchString: '',
@@ -35,8 +35,8 @@ class AddressForm extends Component {
         userId: null,
     };
 
-    componentWillReceiveProps(nextProps){
-        if (nextProps.defaultAddress){
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.defaultAddress) {
             this.setState({
                 country: nextProps.defaultAddress.city.state.country || this.state.country,
                 state: nextProps.defaultAddress.city.state || this.state.state,
@@ -46,9 +46,9 @@ class AddressForm extends Component {
                 postalCode: nextProps.defaultAddress.postalCode || this.state.postalCode,
                 phone: nextProps.defaultAddress.phone || this.state.phone,
                 addressDesc: nextProps.defaultAddress.address || this.state.addressDesc,
-            }, console.log(this.state));
+            });
         }
-        if (nextProps.userId && nextProps.userId!==this.state.usetId){
+        if (nextProps.userId && nextProps.userId !== this.state.usetId) {
             this.setState({usetId: nextProps.userId}, this.loadAddressList);
         }
     }
@@ -64,7 +64,7 @@ class AddressForm extends Component {
     };
 
     loadAddressList = () => {
-        let url = BACK_END_SERVER_URL + '/address/user/' + (this.props.userId?this.props.userId:'');
+        let url = BACK_END_SERVER_URL + '/address/user/' + (this.props.userId ? this.props.userId : '');
         axios
             .get(url,
                 {
@@ -90,22 +90,9 @@ class AddressForm extends Component {
     };
 
     changeAddressForm = () => {
-        this.setState({willNew: !this.state.willNew}, this.loadCountryList())
+        this.setState({willNew: !this.state.willNew}, this.loadCountryList)
     };
 
-    AddressDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeAddress}
-            onSearchChange={this.handleSearchChangeAddress}
-            options={this.state.addressList}
-            placeholder='Select Address'
-            search
-            searchQuery={this.state.addressSearchString}
-            selection
-            //value={this.state.address}
-        />
-    );
 
     handleChangeAddress = (event, {value}) => {
         this.setState({addressSearchString: '', address: value});
@@ -115,7 +102,7 @@ class AddressForm extends Component {
         this.setState({addressSearchString: searchQuery});
         this.loadAddressList();
         let newList = [];
-        this.state.addressList.map(address => {
+        this.state.addressList.forEach(address => {
             if (address.text.toLowerCase().includes(searchQuery.toLowerCase())) {
                 newList.push(address);
             }
@@ -149,19 +136,6 @@ class AddressForm extends Component {
 
     };
 
-    CountryDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeCountry}
-            onSearchChange={this.handleSearchChangeCountry}
-            options={this.state.countryList}
-            placeholder='Select Country'
-            search
-            searchQuery={this.state.countrySearchString}
-            selection
-            value={this.state.country.name}
-        />
-    );
 
     handleChangeCountry = (event, {value}) => {
         this.setState({
@@ -176,7 +150,7 @@ class AddressForm extends Component {
         this.setState({countrySearchString: searchQuery});
         this.loadAddressList();
         let newList = [];
-        this.state.countryList.map(country => {
+        this.state.countryList.forEach(country => {
             if (country.text.toLowerCase().includes(searchQuery.toLowerCase())) {
                 newList.push(country);
             }
@@ -186,7 +160,6 @@ class AddressForm extends Component {
     };
 
     loadStateList = () => {
-        console.log(this.state);
         axios
             .get(BACK_END_SERVER_URL + `/user/state/country/` + this.state.country.id,
                 {
@@ -211,19 +184,6 @@ class AddressForm extends Component {
 
     };
 
-    StateDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeState}
-            onSearchChange={this.handleSearchChangeState}
-            options={this.state.stateList}
-            placeholder='Select City'
-            search
-            searchQuery={this.state.stateSearchString}
-            selection
-            value={this.state.state.name}
-        />
-    );
 
     handleChangeState = (event, {value}) => {
         this.setState({
@@ -237,7 +197,7 @@ class AddressForm extends Component {
         this.setState({stateSearchString: searchQuery});
         this.loadAddressList();
         let newList = [];
-        this.state.stateList.map(state => {
+        this.state.stateList.forEach(state => {
             if (state.text.toLowerCase().includes(searchQuery.toLowerCase())) {
                 newList.push(state);
             }
@@ -272,20 +232,6 @@ class AddressForm extends Component {
 
     };
 
-    CityDropdown = () => (
-        <Dropdown
-            fluid
-            onChange={this.handleChangeCity}
-            onSearchChange={this.handleSearchChangeCity}
-            options={this.state.cityList}
-            placeholder='Select State'
-            search
-            searchQuery={this.state.citySearchString}
-            selection
-            value={this.state.city.name}
-        />
-    );
-
     handleChangeCity = (event, {value}) => {
         this.setState({citySearchString: '', city: value});
     };
@@ -294,7 +240,7 @@ class AddressForm extends Component {
         this.setState({citySearchString: searchQuery});
         this.loadAddressList();
         let newList = [];
-        this.state.cityList.map(city => {
+        this.state.cityList.forEach(city => {
             if (city.text.toLowerCase().includes(searchQuery.toLowerCase())) {
                 newList.push(city);
             }
@@ -325,7 +271,7 @@ class AddressForm extends Component {
 
     returnAddress = () => {
         let address = this.state.address;
-        if (this.state.willNew){
+        if (this.state.willNew) {
             address = {
                 firstName: this.state.firstName,
                 lastName: this.state.lastName,
@@ -339,27 +285,36 @@ class AddressForm extends Component {
     };
 
     render() {
-        console.log(this.state);
         return (
             <React.Fragment>
-                {this.state.addressList && this.state.addressList.length>0 ?
+                {this.state.addressList && this.state.addressList.length > 0 ?
                     <Button
                         onClick={this.changeAddressForm}
                     >
                         {!this.state.willNew ? 'ADD NEW ADDRESS' : 'select from list of last addresses'}
                     </Button>
-                : false}
+                    : false}
                 {!this.state.willNew ?
-                        <Form.Group>
-                            <Form.Field
-                                width={8}
-                                label='producer'
-                                control={this.AddressDropdown}/>
-                        </Form.Group>
+                    <Form>
+                        <Form.Dropdown
+                            label='producer'
+                            onChange={this.handleChangeAddress}
+                            onSearchChange={this.handleSearchChangeAddress}
+                            options={this.state.addressList}
+                            placeholder='Select Address'
+                            search
+                            searchQuery={this.state.addressSearchString}
+                            selection
+                            //value={this.state.address}
+                        />
+                    </Form>
                     :
-                    <React.Fragment>
-                        <Form.Group>
-                            <Dropdown
+                    <Form>
+                        <Form.Group
+                            widths='equal'
+                        >
+                            <Form.Dropdown
+                                label='Country'
                                 fluid
                                 onChange={this.handleChangeCountry}
                                 onSearchChange={this.handleSearchChangeCountry}
@@ -368,68 +323,73 @@ class AddressForm extends Component {
                                 search
                                 searchQuery={this.state.countrySearchString}
                                 selection
-                                value={this.state.country.name}
+                                value={this.state.country}
                             />
-                            <Form.Field
-                                width={5}
-                                label='Country'
-                                control={this.CountryDropdown}/>
                             {this.state.showStateList ?
-                                <Form.Field
-                                    width={5}
+                                <Form.Dropdown
                                     label='State'
-                                    control={this.StateDropdown}/>
+                                    fluid
+                                    onChange={this.handleChangeState}
+                                    onSearchChange={this.handleSearchChangeState}
+                                    options={this.state.stateList}
+                                    placeholder='Select City'
+                                    search
+                                    searchQuery={this.state.stateSearchString}
+                                    selection
+                                    value={this.state.state}
+                                />
                                 : false}
                             {this.state.showCityList ?
-                                <Form.Field
-                                    width={5}
+                                <Form.Dropdown
                                     label='City'
-                                    control={this.CityDropdown}/>
+                                    fluid
+                                    onChange={this.handleChangeCity}
+                                    onSearchChange={this.handleSearchChangeCity}
+                                    options={this.state.cityList}
+                                    placeholder='Select State'
+                                    search
+                                    searchQuery={this.state.citySearchString}
+                                    selection
+                                    value={this.state.city}/>
                                 : false}
                         </Form.Group>
                         <Form.Group>
-                            <Form.Field
+                            <Form.Input
                                 width={8}
                                 label='firstName'
-                                control={Input}
                                 placeholder="firstName"
                                 value={this.state.firstName}
                                 onChange={this.handleChangeFirstName}/>
-                            <Form.Field
+                            <Form.Input
                                 width={8}
                                 label='lastName'
-                                control={Input}
                                 placeholder="lastName"
                                 value={this.state.lastName}
                                 onChange={this.handleChangeLastName}/>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Field
+                            <Form.Input
                                 width={8}
                                 label='phone'
-                                control={Input}
                                 placeholder="phone"
                                 value={this.state.phone}
                                 onChange={this.handleChangePhone}/>
-                            <Form.Field
+                            <Form.Input
                                 width={8}
                                 label='postalCode'
-                                control={Input}
                                 placeholder="postalCode"
                                 value={this.state.postalCode}
                                 onChange={this.handleChangePostalCode}/>
                         </Form.Group>
-                        <Form.Field
-                            control={TextArea}
-                                    label='About'
-                                    placeholder='address'
+                        <Form.TextArea
+                            label='About'
+                            placeholder='address'
                             value={this.state.addressDesc}
                             onChange={this.handleChangeAddressDesc}/>
-                    </React.Fragment>}
-                <Form.Field
-                    control={Button}
-                    onClick={this.returnAddress}
-                >SetAddress</Form.Field>
+                    </Form>}
+                <Button
+                    onClick={this.returnAddress}>
+                    ThisIsMyAddress</Button>
             </React.Fragment>
         );
     };

@@ -4,6 +4,8 @@ import axios from "axios";
 import {Button, Container, Item, Message, Statistic} from "semantic-ui-react";
 import BasketItem from "./BasketItem";
 import AddressForm from "./AddressForm";
+import './Basket.css'
+
 
 class BasketPage extends Component {
 
@@ -116,36 +118,34 @@ class BasketPage extends Component {
                 content='Plz change search query!'
             />);
         return (
-            <Container>
-                {
-                    this.state.basket && this.state.basket.length !== 0 ?
-                        <React.Fragment>
-                            <Item.Group divided>
-                                {this.state.basket.map((goods) =>
-                                    <BasketItem
-                                        key={goods.book.id}
-                                        goods={goods}
-                                        addOne={this.addOne}
-                                        removeOne={this.removeOne}
-                                        removeAll={this.removeAll}
-                                    />
-                                )}
-                            </Item.Group>
-                            <Statistic>
-                                <Statistic.Value>{this.state.totalPrice}</Statistic.Value>
-                                <Statistic.Label>Total</Statistic.Label>
-                            </Statistic>
-                            <Button
-                                onClick={this.viewAddressFields}>
-                                OFORMIT
-                            </Button>
-                            {this.state.showAddressField ? <AddressForm returnAddress={this.getAddress}/> : false}
-                        </React.Fragment>
-                        :
-                        alert
-                }
+            <div id='basket'>
+                <Container>
+                    {
+                        this.state.basket && this.state.basket.length !== 0 ?
+                            <React.Fragment>
+                                <Item.Group divided>
+                                    {this.state.basket.map((goods) =>
+                                        <BasketItem
+                                            key={goods.book.id}
+                                            goods={goods}
+                                            addOne={this.addOne}
+                                            removeOne={this.removeOne}
+                                            removeAll={this.removeAll}
+                                        />
+                                    )}
+                                </Item.Group>
+                                <Button
+                                    onClick={this.viewAddressFields}>
+                                    OFORMIT
+                                </Button>
+                                {this.state.showAddressField ? <AddressForm returnAddress={this.getAddress}/> : false}
+                            </React.Fragment>
+                            :
+                            alert
+                    }
+                </Container>
+            </div>
 
-            </Container>
 
         );
     }

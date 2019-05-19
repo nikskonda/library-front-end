@@ -3,8 +3,15 @@ import BookList from "./BookList";
 import GenreList from "./GenreList"
 import {Button, Container, Grid, Input, Select} from "semantic-ui-react";
 import queryString from 'query-string';
-import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_BOOK_LANGUAGE} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_LANGUAGE_TAG,
+    LOCAL_STORAGE_BOOK_LANGUAGE,
+    PAGINATION_BOOKS_PER_ROW,
+    PAGINATION_BOOKS_ROWS
+} from "../../context";
 import axios from "axios";
+import './BookList.css'
 
 
 class BookCatalogPage extends Component {
@@ -12,7 +19,7 @@ class BookCatalogPage extends Component {
     state = {
         searchString: '',
         number: 1,
-        size: 10,
+        size: PAGINATION_BOOKS_PER_ROW*PAGINATION_BOOKS_ROWS,
         sort: 'rating',
         direction: 'DESC',
         genres: [],
@@ -23,8 +30,11 @@ class BookCatalogPage extends Component {
             {key: 'genre', text: 'genre', value: 'genre'},
             {key: 'author', text: 'author', value: 'author'},
         ],
+        selectedSearchOption: 'all',
         books: [],
         totalPages: 0,
+
+        errorText: 'default message',
     };
 
     componentDidMount() {
@@ -39,11 +49,9 @@ class BookCatalogPage extends Component {
             size: params.size || this.state.size,
             sort: params.sort || this.state.sort,
             direction: params.direction || this.state.direction,
-            genres: params.genres || this.state.genres,
-            authors: params.authors || this.state.authors,
         });
-        if (!params.genres) this.state.genres.push(params.genres);
-        if (!params.authors) this.state.genres.push(params.authors);
+        if (params.genres) this.state.genres.push(params.genres);
+        if (params.authors) this.state.genres.push(params.authors);
     }
 
 
@@ -76,8 +84,9 @@ class BookCatalogPage extends Component {
     };
 
     addGenre = (genreName) => {
-        this.state.genres.push(genreName);
-        this.changeUrl();
+        this.setState({genres: genreName}, this.changeUrl);
+        // this.state.genres.push(genreName);
+        // this.changeUrl();
     };
 
     setGenres = (genres) => {
@@ -86,6 +95,10 @@ class BookCatalogPage extends Component {
 
     setActivePage = (page) => {
         this.setState({number: page}, this.changeUrl);
+    };
+
+    setSize = (size) => {
+        this.setState({size: size}, this.changeUrl);
     };
 
     loadBooks = () => {
@@ -138,34 +151,55 @@ class BookCatalogPage extends Component {
 
     };
 
+    changeSearchOption = (event, {value}) => {
+        this.setState({selectedSearchOption: value});
+    };
+
     render() {
         return (
-            <React.Fragment>
+            <div id='bookCatalog'>
                 <Container>
                     <Grid>
-                        <Grid.Column width={3}>
-                            <GenreList location={this.props.location} addGenre={this.addGenre} setGenres={this.setGenres} lang={this.getLangTagFromLocalStorage()}/>
+                        <Grid.Column width={3} className='genreList'>
+                            <GenreList selected={this.state.genres} addGenre={this.addGenre} setGenres={this.setGenres} lang={this.getLangTagFromLocalStorage()}/>
                         </Grid.Column>
                         <Grid.Column stretched width={13}>
-                            <Input className='w-100' type='text' placeholder='Search...' action value={this.state.searchString} onChange={this.changeSearchHandler}>
-                                <input/>
-                                <Select compact options={this.state.searchOptions} defaultValue='all'/>
-                                <Button
-                                    type='submit'
-                                    onClick={this.searchBooks}
-                                >Search</Button>
-                            </Input>
+                            <div className='searchBook'>
+                                <Input
+                                    fluid
+                                    placeholder='Search...'
+                                    action
+                                    value={this.state.searchString}
+                                    onChange={this.changeSearchHandler}
+                                >
+                                    <input/>
+                                    <Select
+                                        compact
+                                        options={this.state.searchOptions}
+                                        defaultValue='all'
+                                        value={this.state.selectedSearchOption}
+                                        onChange={this.changeSearchOption}
+                                    />
+                                    <Button
+                                        type='submit'
+                                        onClick={this.searchBooks}
+                                    >Search</Button>
+                                </Input>
+                            </div>
                             <BookList
                                 activePage={this.state.number}
                                 books={this.state.books}
                                 totalPages={this.state.totalPages}
                                 setActivePage={this.setActivePage}
                                 addGenre={this.addGenre}
+                                size={this.state.size}
+                                setSize={this.setSize}
+                                errorText={this.state.errorText}
                             />
                         </Grid.Column>
                     </Grid>
                 </Container>
-            </React.Fragment>
+            </div>
         );
     }
 }

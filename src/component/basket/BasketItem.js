@@ -3,6 +3,7 @@ import {Button, Icon, Item, Label} from "semantic-ui-react";
 import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
 import {Link} from "react-router-dom";
 
+
 class BasketItem extends Component {
 
     state = {
@@ -24,18 +25,24 @@ class BasketItem extends Component {
         return (
 
             <Item>
-                <Item.Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + goods.book.thumbnailUrl}/>
+                <Item.Image
+                    src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + goods.book.thumbnailUrl}
+                    as={Link}
+                    to={'book/' + goods.book.id}
+                />
 
                 <Item.Content>
-                    <Link to={'book/' + goods.book.id}>
-                        <Item.Header as='h3'>{goods.book.title}</Item.Header>
-                    </Link>
+                    <Item.Header
+                        as={Link}
+                        to={'book/' + goods.book.id}>
+                        {goods.book.title}
+                    </Item.Header>
+
 
                     <Item.Meta>
-                        <Label color='red' tag>
-                            Price: {goods.book.price}
+                        <Label tag>
+                            Count: {goods.count}
                         </Label>
-                        <span>Count: {goods.count}</span>
                     </Item.Meta>
                     <Item.Extra>
                         <Button
@@ -49,7 +56,7 @@ class BasketItem extends Component {
                             <Button
                                 icon
                                 labelPosition='right'
-                            onClick={this.removeOne}>
+                                onClick={this.removeOne}>
                                 Remove One
                                 <Icon name='minus'/>
                             </Button>
@@ -58,7 +65,7 @@ class BasketItem extends Component {
                             <Button
                                 icon
                                 labelPosition='right'
-                            onClick={this.removeAll}>
+                                onClick={this.removeAll}>
                                 Remove
                                 <Icon name='minus'/>
                             </Button>
@@ -67,7 +74,7 @@ class BasketItem extends Component {
                             <Button
                                 icon
                                 labelPosition='right'
-                            onClick={this.removeAll}>
+                                onClick={this.removeAll}>
                                 Remove All
                                 <Icon name='remove'/>
                             </Button>

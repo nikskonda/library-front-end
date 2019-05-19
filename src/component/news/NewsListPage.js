@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
 import NewsList from "./NewsList";
 import "./NewsList.css";
-import {BACK_END_SERVER_URL, DEFAULT_LANGUAGE_TAG, LOCAL_STORAGE_UI_LANGUAGE, PAGINATION_BOOKS_ROWS, PAGINATION_NEWS_PER_ROW, PAGINATION_NEWS_ROWS} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_LANGUAGE_TAG,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    PAGINATION_NEWS_PER_ROW,
+    PAGINATION_NEWS_ROWS
+} from "../../context";
 import queryString from "query-string/index";
 import axios from "axios/index";
 import {Container} from "semantic-ui-react";
@@ -106,7 +112,6 @@ class NewsListPage extends Component {
 
 
     render() {
-        console.log(this.state);
         return (
             <React.Fragment>
                 <Container

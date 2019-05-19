@@ -1,0 +1,11 @@
+.fileDropBox{
+  border: 1px dashed;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #F4f4db;
+}
+
+.fileDropBox .errorMsg{
+  color: red;
+}

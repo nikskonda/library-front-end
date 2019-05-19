@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Book from "./Book";
+import './Book.css'
 
 class BookPage extends Component {
 

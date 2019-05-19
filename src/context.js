@@ -82,3 +82,5 @@ export const PAGINATION_BOOKS_ROWS = 7;
 
 export const PAGINATION_COUNT_IN_DROPDOWN = 5;
 export const PAGINATION_STEP_IN_DROPDOWN = 6; // ROW*PAGINATION_NEWS_PER_ROW;
+
+export const USER_AVATAR_DEFAULT = '/img/user_ava.jpeg';

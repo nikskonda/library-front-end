@@ -1,7 +1,14 @@
 import React, {Component} from 'react';
 import NewsCover from "./NewsCover";
-import {Card, Icon, Message, Pagination, Dropdown} from "semantic-ui-react";
-import { PAGINATION_NEWS_PER_ROW, PAGINATION_BOUNDARY_RANGE, PAGINATION_SIBLING_RANGE, PAGINATION_NEWS_ROWS, PAGINATION_COUNT_IN_DROPDOWN, PAGINATION_STEP_IN_DROPDOWN } from '../../context';
+import {Card, Dropdown, Icon, Message, Pagination} from "semantic-ui-react";
+import {
+    PAGINATION_BOUNDARY_RANGE,
+    PAGINATION_COUNT_IN_DROPDOWN,
+    PAGINATION_NEWS_PER_ROW,
+    PAGINATION_NEWS_ROWS,
+    PAGINATION_SIBLING_RANGE,
+    PAGINATION_STEP_IN_DROPDOWN
+} from '../../context';
 
 class NewsList extends Component {
 
@@ -16,7 +23,7 @@ class NewsList extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        let number = new Number(nextProps.size);
+        let number = Number(nextProps.size);
         if (this.state.size!==number){
             this.setState({size: number});
         }
@@ -58,7 +65,7 @@ class NewsList extends Component {
                 ?
                     <div className='newsPagination'>
                         <Pagination
-                            activePage={this.props.number}
+                            activePage={this.props.activePage}
                             boundaryRange={PAGINATION_BOUNDARY_RANGE}
                             onPageChange={this.handlePaginationChange}
                             size='small'

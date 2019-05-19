@@ -1,3 +1,54 @@
-.file-loader{
-    padding: 0 7px;
+
+#newsEdit{
+    margin: 20px 0;
 }
+
+#newsEdit .errorMsg{
+    color: #9f3a38;
+}
+
+#newsEdit #newsLangDropdown{
+    background-color: #CACF98;
+    border: none;
+    color: #40453B;
+    text-align: center;
+    text-decoration: none;
+}
+
+#newsEdit #newsLangDropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#newsEdit #newsLangDropdown .visible .item {
+    text-align: center;
+    text-decoration: none;
+}
+
+
+#newsEdit input{
+    background-color: #F4f4db;
+}
+
+#newsEdit textarea{
+    background-color: #F4f4db;
+}
+
+#newsEdit .bottomButtons{
+
+    display: flex;
+    justify-content: flex-end;
+}
+
+#newsEdit .bottomButtons button{
+
+    background-color: #CACF98;
+    color: #1f2222;
+}
+
+#newsEdit .bottomButtons a{
+
+    background-color: #809955;
+    color: #1f2222;
+}
+

@@ -79,7 +79,6 @@ class BookmarkListPage extends Component {
                 }
             )
             .then(res => {
-                console.log(res);
                 this.setState({
                     number: res.data.number + 1,
                     bookmarks: res.data.content,

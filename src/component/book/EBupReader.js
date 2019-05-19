@@ -3,7 +3,7 @@ import axios from "axios";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
 import {Button, Container, Grid, GridColumn, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import { ReactReader } from "react-reader";
+import {ReactReader} from "react-reader";
 import Slider from "@material-ui/lab/Slider";
 
 class EBupReader extends Component {
@@ -25,7 +25,6 @@ class EBupReader extends Component {
         axios
             .get(BACK_END_SERVER_URL + `/book/${this.props.match.params.bookId}`)
             .then(res => {
-                console.log(res);
                 this.setState({
                     ePubUrl: res.data.epubUrl,
                     bookId: res.data.id,
@@ -47,7 +46,6 @@ class EBupReader extends Component {
                     }
                 })
             .then(res => {
-                console.log(res);
                 this.setState(
                     {
                         // bookmark: res.data.page,

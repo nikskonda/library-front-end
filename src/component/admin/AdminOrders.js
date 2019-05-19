@@ -42,7 +42,6 @@ class AdminOrders extends Component {
     };
 
     loadOrders = () => {
-        console.log(this.state);
         let url = BACK_END_SERVER_URL + `/order`;
         if (this.state.userId) {
             url = url.concat('/user/' + this.state.userId);

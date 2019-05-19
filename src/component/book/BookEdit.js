@@ -1,15 +1,8 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {
-    BACK_END_SERVER_URL,
-    BOOK_STATUS,
-    BOOK_TYPE,
-    BOOK_YEAR_MIN,
-    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
-    URL_DOWNLOAD_FILE
-} from "../../context";
+import {BACK_END_SERVER_URL, BOOK_YEAR_MIN, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
 // https://react.semantic-ui.com
-import {Button, Container, Dropdown, Form, Image, Input, TextArea, Modal} from "semantic-ui-react";
+import {Button, Container, Dropdown, Form, Image, Input, Modal, TextArea} from "semantic-ui-react";
 import './BookEdit.css'
 import ModalYesNo from './../ModalYesNo'
 
@@ -95,7 +88,6 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
-                console.log(res);
                 this.setState({
                     language: res.data.language,
                     title: res.data.title,
@@ -622,7 +614,8 @@ class BookEdit extends Component {
             }
         })
             .then(res => {
-                console.log(this.state);
+
+
             })
             .catch(function (error) {
                 console.log(error);

@@ -5,11 +5,7 @@ import './News.css'
 class NewsPage extends Component {
 
     render() {
-        return (
-            <React.Fragment>
-                <News newsId={this.props.match.params.newsId}/>
-            </React.Fragment>
-        );
+        return <News newsId={this.props.match.params.newsId}/>;
     }
 }
 

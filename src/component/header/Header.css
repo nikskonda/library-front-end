@@ -10,12 +10,39 @@
         padding-top: 20px;
     }
 
-    #userIcon a{
+    #userIcon .authorized{
+        background-color: #cacf98;
+        color: #1f2222;
+        padding: 4px 15px;
+        border-radius: 4px;
+    }
+
+    #bookCatalog .booksPagination .dropdown, #bookCatalog .booksPagination .dropdown::after{
+        background-color: #CACF98;
+        color: #40453B;
+    }
+
+    #userIcon .authorized .visible {
+        background-color: #F4f4db !important;
+        color: #40453B !important;
+        text-decoration: none;
+    }
+
+    #userIcon .authorized .visible .text{
+        color: #40453B !important;
+        text-decoration: none;
+    }
+
+    #userIcon .authorized .visible .text:hover{
+        border-bottom: 1px solid #40453B;
+    }
+
+    #userIcon .unauthorized{
         color: #cacf98;
         padding: 8px;
     }
 
-    #userIcon a:hover{
+    #userIcon .unauthorized:hover{
         border-bottom: 1px solid;
         border-color: #cacf98;
     }

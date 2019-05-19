@@ -15,6 +15,7 @@ import UserSettings from "./UserSettings";
 import BookmarkListPage from "./bookmark/BookmarkListPage";
 import BasketPage from "./basket/BasketPage";
 import AdminMenu from "./admin/AdminMenu";
+import {LOCAL_STORAGE_USER_DATA} from "../context";
 
 class MainRouter extends Component {
 
@@ -28,10 +29,18 @@ class MainRouter extends Component {
         isAuthorize: false,
     };
 
+    componentWillMount() {
+        let str = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (str && JSON.parse(str).username){
+            this.setState({isAuthorize: true});
+        }
+    }
+
     changeAuthorizeStatus = () => {
-        console.log('hell');
         this.setState({isAuthorize: !this.state.isAuthorize});
     };
+
+
 
     render() {
         return (
@@ -53,14 +62,26 @@ class MainRouter extends Component {
                     <Route path='/order/user' component={OrderListPage}/>
                     <Route path='/signIn' render={() => <SignIn changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
                     <Route path='/signUp' component={SignUp}/>
-                    <Route path='/signOut' component={SignOut}/>
+                    <Route path='/signOut' render={() => <SignOut changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
                     <Route path='/user/settings/:userId' component={UserSettings}/>
                     <Route path='/user/settings' component={UserSettings}/>
                     <Route path='/bookmarks' component={BookmarkListPage}/>
                     <Route path='/basket' component={BasketPage}/>
                     <Route path='/admin' component={AdminMenu}/>
                 </Switch>
+                <Footer/>
             </React.Fragment>
+        );
+    }
+
+}
+
+class Footer extends Component{
+    render() {
+        return (
+            <footer style={{backgroundColor: 'black', color: 'white'}}>
+                footer
+            </footer>
         );
     }
 

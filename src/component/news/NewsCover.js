@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, URL_DOWNLOAD_FILE} from "../../context";
 
 class NewsCover extends Component {
 
@@ -36,16 +36,20 @@ class NewsCover extends Component {
         return this.state.newsCover.creator.firstName + ' ' + this.state.newsCover.creator.lastName;
     };
 
-    isAdmin(){
+    isAdmin = () => {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (user) return user.includes(ROLE_ADMIN);
         else return false;
-    }
+    };
 
     render() {
         return (
             <Card>
-                <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.newsCover.thumbnailUrl}/>
+                <Image
+                    src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.newsCover.thumbnailUrl}
+                    as={Link}
+                    to={'news/' + this.state.newsCover.id}
+                />
                 <Card.Content>
                     <Card.Header>
                         <Link to={'news/' + this.state.newsCover.id}>{this.state.newsCover.title}</Link>

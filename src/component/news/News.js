@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
-import {Container, Grid, Image, Message} from "semantic-ui-react";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, URL_DOWNLOAD_FILE} from "../../context";
+import {Container, Header, Icon, Image, Message} from "semantic-ui-react";
+import {Link} from "react-router-dom";
 
 class News extends Component {
 
@@ -9,7 +10,8 @@ class News extends Component {
         super(props);
         this.state = {
             id: props.newsId,
-            news: null
+            news: null,
+            errorText: null,
         };
         this.getBody = this.getBody.bind(this);
         this.userSign = this.userSign.bind(this);
@@ -18,12 +20,12 @@ class News extends Component {
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL+`/news/${this.state.id}`)
+            .get(BACK_END_SERVER_URL + `/news/${this.state.id}`)
             .then(res => {
                 this.setState({news: res.data});
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     }
 
@@ -51,43 +53,68 @@ class News extends Component {
         return this.state.news.creator.firstName + ' ' + this.state.news.creator.lastName;
     }
 
-    getBody(){
+    isAdmin() {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_ADMIN);
+        else return false;
+    }
+
+    getText() {
+        let text = this.state.news.text.split(/\n/g);
+        return text.map((p, i) => <p key={i}>{p}</p>);
+    }
+
+    getBody() {
         return (
-                <Grid>
-                    <Grid.Row>
-                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.news.pictureUrl}/>
-                    </Grid.Row>
+            <div
+                className='newsBody'>
 
-                    <Grid.Row>
-                        <h1>{this.state.news.title}</h1>
-                        <p>{this.state.news.text}</p>
-                    </Grid.Row>
 
-                    <Grid.Row>
-                        <Grid.Column floated='left' width={3}>
-                            <small>{this.dateSign()}</small>
-                        </Grid.Column>
-                        <Grid.Column floated='right' width={3}>
-                            <small>{this.userSign()}</small>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                <Header
+                    as='h1'> {this.state.news.title}</Header>
+                <Image
+                    fluid
+                    src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.news.pictureUrl}
+                />
+
+                {this.getText()}
+
+                <div className='newsFooter'>
+                    <div>
+                        <Link
+                            style={{cursor: this.isAdmin() ? 'pointer' : 'default'}}
+                            className='linkToUser'
+                            to={this.isAdmin() ? 'admin/user/settings/' + this.state.news.creator.id : false}
+                        >
+                            <Icon name='user'/>
+                            {this.userSign()}
+                        </Link>
+                    </div>
+                    <div>
+                        {this.dateSign()}
+                    </div>
+                </div>
+            </div>
         );
 
     }
 
     render() {
         const notFount =
-            (<Message
-                warning
-                header='News Not found'
-                content='Plz change search query!'
-            />);
+            (
+                <Message
+                    className='errorMsg'
+                    warning
+                    header='News Not found'
+                    content={this.state.errorText}
+                />
+            );
         return (
-            <Container>
-                {this.state.news === null ? notFount : this.getBody()}
-            </Container>
-        );
+            <div id='news'>
+                <Container>
+                    {this.state.news === null ? notFount : this.getBody()}
+                </Container>
+            </div>);
     }
 }
 

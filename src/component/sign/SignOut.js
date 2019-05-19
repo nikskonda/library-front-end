@@ -5,6 +5,7 @@ import {
     LOCAL_STORAGE_USER_DATA
 } from "../../context";
 import {Container} from "semantic-ui-react";
+import {withRouter} from "react-router";
 
 
 class SignOut extends Component {
@@ -13,8 +14,8 @@ class SignOut extends Component {
         localStorage.removeItem(LOCAL_STORAGE_USER_DATA);
         localStorage.removeItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN);
         localStorage.removeItem(LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN);
+        this.props.changeAuthorizeStatus();
         this.props.history.push('/');
-        window.location.reload();
     }
 
     render() {
@@ -25,4 +26,4 @@ class SignOut extends Component {
     }
 }
 
-export default SignOut;
+export default withRouter(SignOut);

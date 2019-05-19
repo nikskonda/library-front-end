@@ -1,0 +1,32 @@
+#news{
+    margin: 50px 0;
+}
+
+#news .container .newsBody .header{
+    font-size: 40pt;
+}
+
+#news .container .newsBody .image{
+    margin-bottom: 50px;
+}
+
+#news .container .newsBody p{
+    margin-bottom: 10px;
+    font-size: 15pt;
+    text-align: justify;
+}
+
+#news .container .newsFooter{
+    display: flex;
+    justify-content: space-between;
+}
+
+#news .container .newsFooter .linkToUser{
+    color: #40453B;
+
+}
+
+#news .container .newsFooter .linkToUser{
+    color: #40453B;
+
+}

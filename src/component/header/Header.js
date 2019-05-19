@@ -48,22 +48,14 @@ class Header extends Component {
         activeItem: 'home',
         url: '/',
         countInBasket: 0,
-        isAuthorize: false,
     };
 
     componentWillMount(){
         let url = window.location.pathname;
-        Array.from(links.values()).map(value => {
+        Array.from(links.values()).forEach(value => {
                 if (value.name!==HOME && url.includes(value.url))
                     this.setState({activeItem: value.name});
         });
-
-    }
-
-    componentWillReceiveProps(nextProps){
-        if (this.state.isAuthorize!==nextProps.isAuthorize){
-            this.setState({isAuthorize: nextProps.isAuthorize});
-        }
     }
 
     handleItemClick = (e, {name}) => {
@@ -76,10 +68,9 @@ class Header extends Component {
         } else {
             this.setState({countInBasket: 0});
         }
-    }
+    };
 
     render() {
-        console.log();
         return (
             <div className='backgroundImage'>
                 <Container>
@@ -89,7 +80,7 @@ class Header extends Component {
                                 <LanguageTumbler/>
                             </Menu.Item>
                             <Menu.Item id='userIcon'>
-                                <UserIcon  isAuthorize={this.state.isAuthorize}/>
+                                <UserIcon  isAuthorize={this.props.isAuthorize}/>
                             </Menu.Item>
                         </Menu.Menu>
                     </Menu>

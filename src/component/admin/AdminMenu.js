@@ -4,7 +4,6 @@ import {Route, Switch} from "react-router";
 import {Link} from "react-router-dom";
 import UserList from "./UserList";
 import queryString from "query-string";
-import OrderListPage from "../order/OrderListPage";
 import AdminOrders from "./AdminOrders";
 import UserSettings from "../UserSettings";
 

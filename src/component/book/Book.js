@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, URL_DOWNLOAD_FILE} from "../../context";
-import {Button, Container, Grid, Header, Image, Message, Popup, Rating, Table} from "semantic-ui-react";
+import {
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_BASKET,
+    LOCAL_STORAGE_USER_DATA,
+    URL_DOWNLOAD_FILE,
+    USER_ROLE_LIBRARIAN
+} from "../../context";
+import {Button, Container, Header, Image, Message, Popup, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
 
@@ -28,38 +34,64 @@ class Book extends Component {
     }
 
     getAuthor = (author, i, array) => {
+        let authorName = !author.firstName ?
+            author.lastName :
+            (!author.lastName ?
+                author.firstName :
+                author.firstName + ' ' + author.lastName);
         return (
             <Popup
+                className='authorInfo'
                 key={author.id}
                 trigger={<span
-                    className='user'>{author.firstName + ' ' + author.lastName + (i !== array.length - 1 ? ', ' : '')}</span>}
+                    className='user'>{authorName + (i !== array.length - 1 ? ', ' : '')}</span>}
                 hoverable
                 on='click'
                 hideOnScroll
             >
-                <Header as='h4'>{author.firstName + ' ' + author.lastName}</Header>
+                <Header as='h4'>{authorName}</Header>
                 {author.description !== undefined ? <p>{author.description}</p> : false}
                 {author.wikiLink !== undefined ?
-                    <a href={author.wikiLink}><Button fluid>WIKIPEDIA</Button></a> : false}
-                <a href={'author/' + author.id}><Button fluid>Find All His Books</Button></a>
+                    <Button
+                        fluid
+                        as='a'
+                        href={author.wikiLink}
+                    >WIKIPEDIA</Button> : false}
+
+                <Button
+                    fluid
+                    as={Link}
+                    to={`../../../../../catalog?authors=${authorName}`}
+                >
+                    Find All His Books
+                </Button>
             </Popup>
         );
     };
 
-    addBookToBasket = () =>{
+    isLibrarian = () => {
+        const user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(USER_ROLE_LIBRARIAN);
+        return false;
+    };
+
+    addBookToBasket = () => {
+        if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()) {
+            return;
+        }
         const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
         let basket = [];
-        if (basketStr){
+        if (basketStr) {
             basket = JSON.parse(basketStr);
             let flag = true;
-            for (let i=0; i<basket.length; i++){
-                if (basket[i].book.id===this.state.book.id){
+            for (let i = 0; i < basket.length; i++) {
+                if (basket[i].book.id === this.state.book.id) {
                     basket[i].count++;
                     flag = false;
                     break;
                 }
             }
-            if (flag){
+            if (flag) {
                 basket.push({book: this.state.book, count: 1});
             }
         } else {
@@ -69,56 +101,82 @@ class Book extends Component {
         this.setState({isBasketSuccess: true});
     };
 
+    getText = () => {
+        let desc = this.state.description;
+        return desc.split(/\n/g).map((p, index) => <p key={index}>{p}</p>);
+
+    };
+
 
     getBody() {
         return (
-
-            <Grid>
-                <Grid.Row>
-                        <h1>{this.state.book.title + (this.state.book.year && this.state.book.year!==-1 ? ', ' + this.state.book.year : '')}</h1>
+            <div id='book'>
+                <div className='firstPart'>
+                    <div className='imgAndRating'>
+                        <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.book.pictureUrl}
+                               size='medium'/>
+                        {this.state.book.rating !== undefined && this.state.book.rating !== 0 ?
+                            <div className='rating'>
+                                <StarRatings
+                                    id='ratingStars'
+                                    rating={this.state.book.rating / 10}
+                                    starRatedColor='#809955'
+                                    numberOfStars={10}
+                                    starDimension='25px'
+                                    starSpacing='0'
+                                    name='rating'
+                                />
+                            </div>
+                            : false}
+                    </div>
                     <div>
-                        <Button.Group floated='left'>
-                            {this.state.book.price ? <Button onClick={this.addBookToBasket}>Buy now {this.state.book.price}$</Button> : false}
-                            {this.state.book.pdfUrl ? <Button>
-                                <Link to={`/book/${this.state.book.id}/read/pdf`}>PDF READER</Link>
-                            </Button> : false}
+                        <Header
+                            as='h1'>{this.state.book.title.toUpperCase() + (this.state.book.year && this.state.book.year !== -1 ? ', ' + this.state.book.year : '')}</Header>
+                        <div className='buttonGroup'>
+                            <Button
+                                className={this.state.book.inLibraryUseOnly ? 'redButton' : 'greenButton'}
+                                style={{cursor: this.isLibrarian() ? 'pointer' : 'default'}}
+                                onClick={this.addBookToBasket}>
+                                {this.state.book.inLibraryUseOnly ? 'inLibraryUseOnly' : 'Add to basket'}
+                            </Button>
+                            {this.isLibrarian() ?
+                                <React.Fragment>
+                                    <Button
+                                        as={Link}
+                                        to={`../../../admin/orderList?bookId=${this.state.book.id}`}>
+                                        IN ORDERS
+                                    </Button>
+                                    <Button
+                                        as={Link}
+                                        to={`../../../book/edit/${this.state.book.id}`}>
+                                        EDIT
+                                    </Button>
+                                </React.Fragment> : false}
+                            {this.state.book.pdfUrl ?
+                                <Button
+                                    as={Link}
+                                    to={`/book/${this.state.book.id}/read/pdf`}>
+                                    PDF READER
+                                </Button>
+                                : false}
                             {this.state.book.ePubUrl ?
-                                <Link to={`/book/${this.state.book.id}/read/epub`}><Button>EBUP
-                                    READER</Button></Link> : false}
-                            <Button>
-                                <Link to={`../../../admin/orderList?bookId=${this.state.book.id}`}>IN ORDERS</Link>
-                            </Button>
-                            <Button>
-                                <Link to={`../../../book/edit/${this.state.book.id}`}>EDIT</Link>
-                            </Button>
-                        </Button.Group>
-                    </div>
-                    <div>
-                        {this.state.book.rating !== undefined && this.state.book.rating !== 0 ?
-                            <Rating icon='star'
-                                    defaultRating={this.state.book.rating / 10}
-                                    maxRating={10}
-                                    disabled
-                            />
-                            : false}
-                        {this.state.book.rating !== undefined && this.state.book.rating !== 0 ?
-                            <StarRatings
-                                rating={this.state.book.rating / 10}
-                                starRatedColor='#ffe623'
-                                numberOfStars={10}
-                                starDimension='17px'
-                                starSpacing='0'
-                                name='rating'
-                            />
-                            : false}
-                    </div>
-                    <div>
-                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.book.pictureUrl} size='large' floated='right'/>
+                                <Button
+                                    as={Link}
+                                    to={`/book/${this.state.book.id}/read/epub`}>
+                                    EPUB READER
+                                </Button>
+                                : false}
+                        </div>
+
                         <p>{this.state.book.description}</p>
                     </div>
-                </Grid.Row>
-                <Grid.Row>
-                    <Table striped bordered size="sm">
+
+
+                </div>
+                <div>
+                    <Table
+                        striped
+                        size="small">
                         <Table.Body>
 
                             {this.state.book.genres !== undefined ?
@@ -162,7 +220,7 @@ class Book extends Component {
                                 :
                                 false
                             }
-                            {this.state.book.ageRestriction  ?
+                            {this.state.book.ageRestriction ?
                                 <Table.Row>
                                     <Table.Cell>ageRestriction</Table.Cell>
                                     <Table.Cell>{this.state.book.ageRestriction}</Table.Cell>
@@ -181,7 +239,7 @@ class Book extends Component {
                             {this.state.book.year ?
                                 <Table.Row>
                                     <Table.Cell>year</Table.Cell>
-                                    <Table.Cell>{this.state.book.year===-1?' unknown' : this.state.book.year}</Table.Cell>
+                                    <Table.Cell>{this.state.book.year === -1 ? ' unknown' : this.state.book.year}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
@@ -253,8 +311,8 @@ class Book extends Component {
 
                         </Table.Body>
                     </Table>
-                </Grid.Row>
-            </Grid>
+                </div>
+            </div>
         );
     }
 
@@ -274,7 +332,7 @@ class Book extends Component {
             />);
         return (
             <Container>
-                {this.state.isBasketSuccess? inBasket: false}
+                {this.state.isBasketSuccess ? inBasket : false}
                 {this.state.book === null ? notFount : this.getBody()}
             </Container>
         );

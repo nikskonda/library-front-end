@@ -1,5 +1,5 @@
 import React from 'react'
-import {Label, Step} from 'semantic-ui-react'
+import {Step} from 'semantic-ui-react'
 import {ORDER_STATUS} from "../../context";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 
