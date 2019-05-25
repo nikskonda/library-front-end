@@ -4,6 +4,7 @@ import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../cont
 import queryString from "query-string";
 import axios from "axios";
 import {Container} from "semantic-ui-react";
+import "./OrderList.css"
 
 class OrderListPage extends Component {
 
@@ -25,11 +26,10 @@ class OrderListPage extends Component {
     componentWillMount() {
         const params = queryString.parse(this.props.location.search);
         this.setState({
-            number: params.number || this.state.number,
-            size: params.size || this.state.size,
+            number: params.number ? Number(params.number) : this.state.number,
+            size: params.size ? Number(params.size) :  this.state.size,
             sort: params.sort || this.state.sort,
             direction: params.direction || this.state.direction,
-
             status: params.status || this.state.status,
         });
     }
@@ -55,6 +55,10 @@ class OrderListPage extends Component {
 
     setActivePage = (page) => {
         this.setState({number: page}, this.changeUrl);
+    };
+
+    setSize = (size) => {
+        this.setState({size: size}, this.changeUrl);
     };
 
     loadOrders = () => {
@@ -107,17 +111,19 @@ class OrderListPage extends Component {
 
     render() {
         return (
-            <React.Fragment>
-                <Container>
-                    <OrderList
-                        activePage={this.state.number}
-                        orders={this.state.orders}
-                        totalPages={this.state.totalPages}
-                        setActivePage={this.setActivePage}
-                        refresh={this.loadOrders}
-                    />
+                <Container id='orderList'>
+                        <OrderList
+                            activePage={this.state.number}
+                            orders={this.state.orders}
+                            totalPages={this.state.totalPages}
+                            setActivePage={this.setActivePage}
+                            refresh={this.loadOrders}
+                            size={this.state.size}
+                            setSize={this.setSize}
+                            errorText={this.state.errorText}
+                        />
+                                    
                 </Container>
-            </React.Fragment>
         );
     }
 }

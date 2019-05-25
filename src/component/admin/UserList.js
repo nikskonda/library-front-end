@@ -1,10 +1,14 @@
 import React, {Component} from 'react';
-import {Button, Icon, Item, Message, Pagination} from "semantic-ui-react";
+import {Button, Icon, Item, Message, Pagination, Dropdown} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, PAGINATION_BOUNDARY_RANGE, PAGINATION_SIBLING_RANGE, PAGINATION_USERS_PER_ROW, PAGINATION_USERS_ROWS, PAGINATION_COUNT_IN_DROPDOWN, PAGINATION_STEP_IN_DROPDOWN} from "../../context";
 import queryString from "query-string";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
 import UserItem from "./UserItem";
+import './UserList.css';
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
+import { string } from 'prop-types';
 
 class UserList extends Component {
 
@@ -16,9 +20,6 @@ class UserList extends Component {
         direction: 'ASC',
         userList: [],
         totalPages: 0,
-        itemPerRow: 3,
-        boundaryRange: 2,
-        siblingRange: 1,
     };
 
     componentWillMount() {
@@ -83,46 +84,79 @@ class UserList extends Component {
 
     handleSearchChange = (event, {value}) => this.setState({searchString: value});
 
+
+    handleChangeSize = (event, {value}) => {
+        this.setState({size: value}, this.loadUserList);
+    };
+
+    loadSizeList = () => {
+        let min = PAGINATION_USERS_ROWS*PAGINATION_USERS_PER_ROW;
+        let attay = [];
+        for (let i = 0; i < PAGINATION_COUNT_IN_DROPDOWN; i++) {
+            let value = i*PAGINATION_STEP_IN_DROPDOWN+min;
+            attay.push({key:value, text: value, value: value});
+        }
+        return attay;
+    };
+
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        
         const alert =
             (<Message
                 warning
                 header='Users Not found'
                 content='Plz change search query!'
             />);
-        return (this.state.userList ?
-                <React.Fragment>
-                    <Input type='text'
-                           placeholder='Search...'
-                           action
-                           value={this.state.searchString}
-                           onChange={this.handleSearchChange}>
-                        <input/>
-                        <Button
-                            type='submit'
-                            onClick={this.handleSearchClick}
-                        >Search</Button>
-                    </Input>
-                    <Item.Group divided>
-                        {this.state.userList.map((user) => <UserItem key={user.id} user={user} refresh={this.loadUserList}/>)}
-                    </Item.Group>
+        return (
+        <div id='userList'>
+            
+                        <Input
+                            className='search'
+                        type='text'
+                            placeholder={strings.userList.searchPlaceholder}
+                            action
+                            fluid
+                            clearable
+                            value={this.state.searchString}
+                            onChange={this.handleSearchChange}>
+                            <input/>
+                            <Button
+                                type='submit'
+                                onClick={this.handleSearchClick}
+                            >{strings.userList.search}</Button>
+                        </Input>
+                        {this.state.userList ?
+                        <React.Fragment>
+                            <Item.Group divided>
+                                {this.state.userList.map((user) => <UserItem key={user.id} user={user} refresh={this.loadUserList}/>)}
+                            </Item.Group>
+                            <div className='userPagination'>
                     <Pagination
                         activePage={this.state.number}
-                        boundaryRange={this.state.boundaryRange}
+                        boundaryRange={PAGINATION_BOUNDARY_RANGE}
                         onPageChange={this.handlePaginationChange}
                         size='small'
-                        siblingRange={this.state.siblingRange}
+                        siblingRange={PAGINATION_SIBLING_RANGE}
                         totalPages={this.state.totalPages}
-                        ellipsisItem={{content: <Icon name='ellipsis horizontal'/>, icon: true}}
-                        firstItem={{content: <Icon name='angle double left'/>, icon: true}}
-                        lastItem={{content: <Icon name='angle double right'/>, icon: true}}
-                        prevItem={{content: <Icon name='angle left'/>, icon: true}}
-                        nextItem={{content: <Icon name='angle right'/>, icon: true}}
-
+                        ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+                        firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+                        lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+                        prevItem={{ content: <Icon name='angle left' />, icon: true }}
+                        nextItem={{ content: <Icon name='angle right' />, icon: true }}
                     />
-                </React.Fragment>
-                : alert
-        );
+                    <Dropdown
+                            onChange={this.handleChangeSize}
+                            options={this.loadSizeList()}
+                            placeholder='size'
+                            selection
+                            value={Number(this.state.size)}
+                        />
+                </div>
+                         </React.Fragment>
+            : alert}
+        </div>);
     }
 }
 

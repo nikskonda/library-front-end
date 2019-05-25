@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, URL_DOWNLOAD_FILE} from "../../context";
+import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, URL_DOWNLOAD_FILE} from "../../context";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class NewsCover extends Component {
 
@@ -43,6 +45,8 @@ class NewsCover extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
             <Card>
                 <Image
@@ -54,7 +58,7 @@ class NewsCover extends Component {
                     <Card.Header>
                         <Link to={'news/' + this.state.newsCover.id}>{this.state.newsCover.title}</Link>
                     </Card.Header>
-                    <Card.Meta>Added {this.dateSign()}</Card.Meta>
+                    <Card.Meta>{strings.news.added+' '+this.dateSign()}</Card.Meta>
                     {/*<Card.Description>Daniel is a comedian living in Nashville.</Card.Description>*/}
                 </Card.Content>
                 <Card.Content

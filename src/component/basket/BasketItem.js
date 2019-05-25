@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import {Link} from "react-router-dom";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 
 class BasketItem extends Component {
@@ -21,6 +23,9 @@ class BasketItem extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let basket = strings.basket;
         const goods = this.state.goods;
         return (
 
@@ -41,7 +46,7 @@ class BasketItem extends Component {
 
                     <Item.Meta>
                         <Label tag>
-                            Count: {goods.count}
+                            {basket.count+goods.count}
                         </Label>
                     </Item.Meta>
                     <Item.Extra>
@@ -49,7 +54,7 @@ class BasketItem extends Component {
                             icon
                             labelPosition='right'
                             onClick={this.addOne}>
-                            Add One
+                            {basket.addOne}
                             <Icon name='plus'/>
                         </Button>
                         {goods.count > 1 ?
@@ -57,7 +62,7 @@ class BasketItem extends Component {
                                 icon
                                 labelPosition='right'
                                 onClick={this.removeOne}>
-                                Remove One
+                                {basket.removeOne}
                                 <Icon name='minus'/>
                             </Button>
                             : false}
@@ -66,7 +71,7 @@ class BasketItem extends Component {
                                 icon
                                 labelPosition='right'
                                 onClick={this.removeAll}>
-                                Remove
+                                {basket.remove}
                                 <Icon name='minus'/>
                             </Button>
                             : false}
@@ -75,7 +80,7 @@ class BasketItem extends Component {
                                 icon
                                 labelPosition='right'
                                 onClick={this.removeAll}>
-                                Remove All
+                                {basket.removeAll}
                                 <Icon name='remove'/>
                             </Button>
                             : false}

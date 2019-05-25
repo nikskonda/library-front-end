@@ -1,0 +1,12 @@
+#adminMenu{
+    margin: 20px 0;
+}
+
+#adminMenu .menu .active{
+    background-color: #d9e8a675;
+    border-bottom: none;
+}
+
+#adminMenu .segment{
+    background-color: #d9e8a675;
+}

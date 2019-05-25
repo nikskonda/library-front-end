@@ -1,0 +1,48 @@
+#userList .search input{
+    background-color: #F4f4db ;
+    color: #40453B;
+}
+
+#userList .search .button{
+    background-color: #CACF98 ;
+    color: #40453B;
+}
+
+#userList .items .item .dropdown{
+    background-color: #F4f4db ;
+    color: #40453B;
+}
+
+#userList .items .item .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#userList .items .item .dropdown .visible .item{
+    border-top: none;
+}
+
+#userList .items .item .extra .button{
+    background-color: #CACF98 ;
+    color: #40453B;
+}
+
+#userList .userPagination{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#userList .userPagination .pagination{
+    background-color: #CACF98;
+}
+
+#userList .userPagination .dropdown{
+    background-color: #CACF98;
+    color: #40453B;
+}
+
+#userList .userPagination .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}

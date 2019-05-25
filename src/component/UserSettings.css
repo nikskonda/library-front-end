@@ -1,0 +1,18 @@
+#userSettings{
+    margin: 20px 0;
+}
+
+#userSettings .form input{
+    background-color: #F4f4db ;
+    color: #40453B;
+}
+
+#userSettings .form .submitButton{
+    background-color: #CACF98 ;
+    color: #40453B;
+}
+
+#userSettings .form .errorMsg{
+    color: #9f3a38;
+}
+

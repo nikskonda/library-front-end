@@ -4,6 +4,7 @@ import GenreList from "./GenreList"
 import {Button, Container, Grid, Input, Select} from "semantic-ui-react";
 import queryString from 'query-string';
 import {
+    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
     DEFAULT_LANGUAGE_TAG,
     LOCAL_STORAGE_BOOK_LANGUAGE,
@@ -12,6 +13,8 @@ import {
 } from "../../context";
 import axios from "axios";
 import './BookList.css'
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 
 class BookCatalogPage extends Component {
@@ -156,6 +159,8 @@ class BookCatalogPage extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
             <div id='bookCatalog'>
                 <Container>
@@ -183,7 +188,9 @@ class BookCatalogPage extends Component {
                                     <Button
                                         type='submit'
                                         onClick={this.searchBooks}
-                                    >Search</Button>
+                                    >
+                                        {strings.book.search}
+                                    </Button>
                                 </Input>
                             </div>
                             <BookList

@@ -72,6 +72,10 @@
     justify-content: space-around;
 }
 
+#bookCatalog .cards .card .genres::after{
+    content: none;
+}
+
 #bookCatalog .cards .card .genres .label{
     background-color: #CACF98;
     cursor: pointer;

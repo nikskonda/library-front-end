@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import axios from "axios";
 import {Button, Container, Item, Message, Statistic} from "semantic-ui-react";
 import BasketItem from "./BasketItem";
 import AddressForm from "./AddressForm";
 import './Basket.css'
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 
 class BasketPage extends Component {
@@ -111,6 +113,8 @@ class BasketPage extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         const alert =
             (<Message
                 warning
@@ -135,8 +139,9 @@ class BasketPage extends Component {
                                     )}
                                 </Item.Group>
                                 <Button
+                                    className='showAddresButton'
                                     onClick={this.viewAddressFields}>
-                                    OFORMIT
+                                    {this.state.showAddressField? strings.basket.hide:strings.basket.checkout}
                                 </Button>
                                 {this.state.showAddressField ? <AddressForm returnAddress={this.getAddress}/> : false}
                             </React.Fragment>

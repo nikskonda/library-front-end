@@ -17,8 +17,8 @@
         border-radius: 4px;
     }
 
-    #bookCatalog .booksPagination .dropdown, #bookCatalog .booksPagination .dropdown::after{
-        background-color: #CACF98;
+    #userIcon .authorized .visible, #userIcon .authorized .visible::after{
+        background-color: #F4f4db;
         color: #40453B;
     }
 

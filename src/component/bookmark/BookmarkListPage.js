@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
 import queryString from "query-string";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,PAGINATION_BOOKMARKS_PER_ROW, PAGINATION_BOOKMARKS_ROWS} from "../../context";
 import axios from 'axios'
 import {Container} from "semantic-ui-react";
 import BookmarkList from "./BookmarkList";
+import './Bookmark.css';
 
 class BookmarkListPage extends Component {
 
     state = {
         number: 1,
-        size: 10,
+        size: PAGINATION_BOOKMARKS_PER_ROW*PAGINATION_BOOKMARKS_ROWS,
         sort: 'dateTime',
         direction: 'DESC',
 
@@ -53,10 +54,15 @@ class BookmarkListPage extends Component {
         this.setState({number: page}, this.changeUrl);
     };
 
+    setSize = (size) => {
+        this.setState({size: size}, this.changeUrl);
+    };
+
     loadBookmarks = () => {
         let url = BACK_END_SERVER_URL + `/bookmark/`;
         this.loadBookmarksByUrl(url);
     };
+
 
 
     loadBookmarksByUrl = (url) => {
@@ -91,15 +97,21 @@ class BookmarkListPage extends Component {
             });
     };
 
+    setSize = (size) => {
+        this.setState({size: size}, this.changeUrl);
+    };
 
     render() {
+        console.log(this.state);
         return (
-            <Container>
+            <Container id='bookmarkList'>
                 <BookmarkList
                     activePage={this.state.number}
                     bookmarks={this.state.bookmarks}
                     totalPages={this.state.totalPages}
                     setActivePage={this.setActivePage}
+                    size={this.state.size}
+                    setSize={this.setSize}
                 />
             </Container>
         );

@@ -1,0 +1,83 @@
+#orderList{
+    margin-top: 20px;
+}
+
+#orderList .dropdown{
+    margin-bottom: 20px;
+    background-color: #F4f4db ;
+    color: #40453B;
+}
+
+#orderList .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#orderList .dropdown .visible .item{
+    border-top: none;
+}
+
+#orderList .cards .card{
+    background-color: #f4f4db;
+}
+
+#orderList .cards .card .steps .step, #orderList .cards .card .steps .step::after{
+    background-color: #cacf98;
+    /* background-color: #809955; */
+}
+
+#orderList .cards .card .button{
+    background-color: #cacf98;
+}
+
+#orderList .cards .card .address{
+    font-size: 11pt;
+}
+
+#orderList .cards .card .date{
+    font-size: 12pt;
+    text-align: right;
+}
+
+#orderList .cards .card table .bookTitle{
+    font-size: 15pt;
+    text-decoration: none;
+}
+
+#orderList .cards .card table .bookTitle a{
+    color: #254868;
+}
+
+#orderList .cards .card table .bookCount{
+    color: #254868;
+    font-size: 15pt;
+    min-width: 70px;
+    text-align: center;
+}
+
+#orderList .cards .card table .total{
+    text-align: right;
+    color: #254868;
+    font-size: 15pt;
+}
+
+
+#orderList .orderPagination{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#orderList .orderPagination .pagination{
+    background-color: #CACF98;
+}
+
+#orderList .orderPagination .dropdown{
+    background-color: #CACF98;
+    color: #40453B;
+}
+
+#orderList .orderPagination .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}

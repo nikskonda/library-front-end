@@ -1,32 +1,21 @@
 import React, {Component} from 'react';
 import {Dropdown, Image} from "semantic-ui-react";
-import {LOCAL_STORAGE_USER_DATA, USER_AVATAR_DEFAULT} from "../../context";
+import {LOCAL_STORAGE_USER_DATA, USER_AVATAR_DEFAULT, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import {Link} from "react-router-dom";
+import { string } from 'prop-types';
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 
-const Trigger = props => (
-    <span>
-        <Image avatar src={props.avatarUrl ? props.avatarUrl : USER_AVATAR_DEFAULT}/> {props.username}
-    </span>
-);
+  
 
-const options = [
-    {key: 'user', text: (<Link to='/account'>Account</Link>), icon: 'user'},
-    {key: 'orders', text: (<Link to='/order/user'>Orders</Link>), icon: 'shopping cart'},
-    {key: 'bookmarks', text: (<Link to='/bookmarks'>Bookmarks</Link>), icon: 'bookmark'},
-    {key: 'settings', text: (<Link to='/user/settings'>Settings</Link>), icon: 'settings'},
-    {key: 'sign-out', text: (<Link to='/signOut'>Sign Out</Link>), icon: 'sign out'},
-];
-
-const Authorize = props => (
-    <Dropdown className='authorized' trigger={<Trigger username={props.username}/>} options={options} pointing='top left'/>);
-
-const NotAuthorize = () => (<Link className='unauthorized' to='signIn'> Sign In / Sing Up </Link>);
 
 class UserIcon extends Component {
 
     state = {
         isAuthorize: false,
+        username: '',
+        avatar: ''
     };
 
     componentWillMount() {
@@ -54,8 +43,30 @@ class UserIcon extends Component {
         }
     };
 
+
+    
+
+        
+
     render() {
-        return this.state.isAuthorize ? <Authorize username={this.state.username} avatar={this.state.avatar}/> : <NotAuthorize/>;
+        console.log(this.state);
+        let string = new LocalizedStrings(L10N);
+        string.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let options = [
+            {key: 'user', text: (<Link to='/account'>{string.menu.account}</Link>), icon: 'user'},
+            {key: 'orders', text: (<Link to='/order/user'>{string.menu.orders}</Link>), icon: 'shopping cart'},
+            {key: 'bookmarks', text: (<Link to='/bookmarks'>{string.menu.bookmarks}</Link>), icon: 'bookmark'},
+            {key: 'settings', text: (<Link to='/user/settings'>{string.menu.settings}</Link>), icon: 'settings'},
+            {key: 'sign-out', text: (<Link to='/signOut'>{string.menu.signOut}</Link>), icon: 'sign out'},
+        ];
+        return this.state.isAuthorize ? 
+        <Dropdown className='authorized' trigger={
+            <span>
+                <Image avatar src={this.state.avatar ? this.state.avatar : USER_AVATAR_DEFAULT}/> {this.state.username}
+            </span>
+        } options={options} pointing='top left'/> 
+        : 
+        <Link className='unauthorized' to='/signIn'>{string.menu.signIn}</Link>;
     };
 }
 

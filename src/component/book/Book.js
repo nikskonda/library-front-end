@@ -1,15 +1,18 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
 import {
+    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_BASKET,
     LOCAL_STORAGE_USER_DATA,
     URL_DOWNLOAD_FILE,
-    USER_ROLE_LIBRARIAN
+    ROLE_LIBRARIAN
 } from "../../context";
 import {Button, Container, Header, Image, Message, Popup, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class Book extends Component {
 
@@ -33,7 +36,7 @@ class Book extends Component {
             });
     }
 
-    getAuthor = (author, i, array) => {
+    getAuthor = (author, i, array, book) => {
         let authorName = !author.firstName ?
             author.lastName :
             (!author.lastName ?
@@ -56,14 +59,14 @@ class Book extends Component {
                         fluid
                         as='a'
                         href={author.wikiLink}
-                    >WIKIPEDIA</Button> : false}
+                    >{book.wiki}</Button> : false}
 
                 <Button
                     fluid
                     as={Link}
-                    to={`../../../../../catalog?authors=${authorName}`}
+                    to={`/catalog?authors=${authorName}`}
                 >
-                    Find All His Books
+                    {book.findByAuthor}
                 </Button>
             </Popup>
         );
@@ -71,7 +74,7 @@ class Book extends Component {
 
     isLibrarian = () => {
         const user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(USER_ROLE_LIBRARIAN);
+        if (user) return user.includes(ROLE_LIBRARIAN);
         return false;
     };
 
@@ -101,14 +104,13 @@ class Book extends Component {
         this.setState({isBasketSuccess: true});
     };
 
-    getText = () => {
-        let desc = this.state.description;
-        return desc.split(/\n/g).map((p, index) => <p key={index}>{p}</p>);
-
+    getDesc = () => {
+        let description = this.state.book.description.split(/\n/g);
+        return description.map((p, i) => <p key={i}>{p}</p>);
     };
+    
 
-
-    getBody() {
+    getBody(book) {
         return (
             <div id='book'>
                 <div className='firstPart'>
@@ -137,38 +139,38 @@ class Book extends Component {
                                 className={this.state.book.inLibraryUseOnly ? 'redButton' : 'greenButton'}
                                 style={{cursor: this.isLibrarian() ? 'pointer' : 'default'}}
                                 onClick={this.addBookToBasket}>
-                                {this.state.book.inLibraryUseOnly ? 'inLibraryUseOnly' : 'Add to basket'}
+                                {this.state.book.inLibraryUseOnly ? book.inLibraryUseOnly : book.toBusket}
                             </Button>
                             {this.isLibrarian() ?
                                 <React.Fragment>
                                     <Button
                                         as={Link}
-                                        to={`../../../admin/orderList?bookId=${this.state.book.id}`}>
-                                        IN ORDERS
+                                        to={`/admin/orderList?bookId=${this.state.book.id}`}>
+                                        {book.findInOrders}
                                     </Button>
                                     <Button
                                         as={Link}
-                                        to={`../../../book/edit/${this.state.book.id}`}>
-                                        EDIT
+                                        to={`/admin/edit/book/${this.state.book.id}`}>
+                                        {book.edit}
                                     </Button>
                                 </React.Fragment> : false}
                             {this.state.book.pdfUrl ?
                                 <Button
                                     as={Link}
                                     to={`/book/${this.state.book.id}/read/pdf`}>
-                                    PDF READER
+                                    {book.readPdf}
                                 </Button>
                                 : false}
                             {this.state.book.ePubUrl ?
                                 <Button
                                     as={Link}
                                     to={`/book/${this.state.book.id}/read/epub`}>
-                                    EPUB READER
+                                    {book.readEpub}
                                 </Button>
                                 : false}
                         </div>
 
-                        <p>{this.state.book.description}</p>
+                        {this.getDesc()}
                     </div>
 
 
@@ -181,7 +183,7 @@ class Book extends Component {
 
                             {this.state.book.genres !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>Genre</Table.Cell>
+                                    <Table.Cell>{book.genres}</Table.Cell>
                                     <Table.Cell>{this.state.book.genres.map((genre, i, list) => genre.name + (list.length - 1 !== i ? ', ' : ' '))}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -190,23 +192,23 @@ class Book extends Component {
 
                             {this.state.book.authors !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>authors</Table.Cell>
-                                    <Table.Cell>{this.state.book.authors ? this.state.book.authors.map((author, i, array) => this.getAuthor(author, i, array)) : false}</Table.Cell>
+                                    <Table.Cell>{book.authors}</Table.Cell>
+                                    <Table.Cell>{this.state.book.authors ? this.state.book.authors.map((author, i, array) => this.getAuthor(author, i, array, book)) : false}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
                             }
                             {this.state.book.translators !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>translators</Table.Cell>
-                                    <Table.Cell>{this.state.book.translators ? this.state.book.translators.map((translator, i, array) => this.getAuthor(translator, i, array)) : false}</Table.Cell>
+                                    <Table.Cell>{book.translators}</Table.Cell>
+                                    <Table.Cell>{this.state.book.translators ? this.state.book.translators.map((translator, i, array) => this.getAuthor(translator, i, array, book)) : false}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
                             }
                             {this.state.book.size !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>Size</Table.Cell>
+                                    <Table.Cell>{book.size}</Table.Cell>
                                     <Table.Cell>{this.state.book.size}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -214,7 +216,7 @@ class Book extends Component {
                             }
                             {this.state.book.type !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>type</Table.Cell>
+                                    <Table.Cell>{book.type}</Table.Cell>
                                     <Table.Cell>{this.state.book.type}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -222,7 +224,7 @@ class Book extends Component {
                             }
                             {this.state.book.ageRestriction ?
                                 <Table.Row>
-                                    <Table.Cell>ageRestriction</Table.Cell>
+                                    <Table.Cell>{book.ageRestriction}</Table.Cell>
                                     <Table.Cell>{this.state.book.ageRestriction}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -230,7 +232,7 @@ class Book extends Component {
                             }
                             {this.state.book.rating ?
                                 <Table.Row>
-                                    <Table.Cell>rating</Table.Cell>
+                                    <Table.Cell>{book.rating}</Table.Cell>
                                     <Table.Cell>{this.state.book.rating}/100</Table.Cell>
                                 </Table.Row>
                                 :
@@ -238,23 +240,16 @@ class Book extends Component {
                             }
                             {this.state.book.year ?
                                 <Table.Row>
-                                    <Table.Cell>year</Table.Cell>
+                                    <Table.Cell>{book.year}</Table.Cell>
                                     <Table.Cell>{this.state.book.year === -1 ? ' unknown' : this.state.book.year}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
                             }
-                            {this.state.book.status !== undefined ?
-                                <Table.Row>
-                                    <Table.Cell>status</Table.Cell>
-                                    <Table.Cell>{this.state.book.status}</Table.Cell>
-                                </Table.Row>
-                                :
-                                false
-                            }
+            
                             {this.state.book.weight !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>weight</Table.Cell>
+                                    <Table.Cell>{book.weight}</Table.Cell>
                                     <Table.Cell>{this.state.book.weight}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -262,7 +257,7 @@ class Book extends Component {
                             }
                             {this.state.book.pages !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>pages</Table.Cell>
+                                    <Table.Cell>{book.pages}</Table.Cell>
                                     <Table.Cell>{this.state.book.pages}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -270,7 +265,7 @@ class Book extends Component {
                             }
                             {this.state.book.isbn !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>ISBN</Table.Cell>
+                                    <Table.Cell>{book.isbn}</Table.Cell>
                                     <Table.Cell>{this.state.book.isbn}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -278,7 +273,7 @@ class Book extends Component {
                             }
                             {this.state.book.publishingHouse !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>publishingHouse</Table.Cell>
+                                    <Table.Cell>{book.publishingHouse}</Table.Cell>
                                     <Table.Cell>{this.state.book.publishingHouse.title}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -286,7 +281,7 @@ class Book extends Component {
                             }
                             {this.state.book.producer !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>producer</Table.Cell>
+                                    <Table.Cell>{book.producer}</Table.Cell>
                                     <Table.Cell>{this.state.book.producer.title}</Table.Cell>
                                 </Table.Row>
                                 :
@@ -294,21 +289,12 @@ class Book extends Component {
                             }
                             {this.state.book.importer !== undefined ?
                                 <Table.Row>
-                                    <Table.Cell>importer</Table.Cell>
+                                    <Table.Cell>{book.importer}</Table.Cell>
                                     <Table.Cell>{this.state.book.importer.title}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
                             }
-                            {this.state.book.price !== undefined ?
-                                <Table.Row>
-                                    <Table.Cell>price</Table.Cell>
-                                    <Table.Cell>{this.state.book.price}</Table.Cell>
-                                </Table.Row>
-                                :
-                                false
-                            }
-
                         </Table.Body>
                     </Table>
                 </div>
@@ -318,6 +304,9 @@ class Book extends Component {
 
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        
         const notFount =
             (<Message
                 warning
@@ -333,7 +322,7 @@ class Book extends Component {
         return (
             <Container>
                 {this.state.isBasketSuccess ? inBasket : false}
-                {this.state.book === null ? notFount : this.getBody()}
+                {this.state.book === null ? notFount : this.getBody(strings.book)}
             </Container>
         );
     }

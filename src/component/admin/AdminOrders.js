@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
 import queryString from "query-string";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, ORDER_STATUS} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import axios from "axios";
 import OrderList from "../order/OrderList";
 import {Dropdown} from "semantic-ui-react";
+import "./../order/OrderList.css"
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class AdminOrders extends Component {
 
@@ -39,6 +42,10 @@ class AdminOrders extends Component {
 
     setActivePage = (page) => {
         this.setState({number: page}, this.loadOrders);
+    };
+
+    setSize = (size) => {
+        this.setState({size: size}, this.changeUrl);
     };
 
     loadOrders = () => {
@@ -97,9 +104,11 @@ class AdminOrders extends Component {
             });
     };
 
-    statusOptions = () => {
-        let array = [{key: 'ALL', text: 'ALL', value: 'ALL'}];
-        Array.from( new Map(ORDER_STATUS).values()).map(value => array.push({key: value, text: value, value: value}));
+    statusOptions = (orderStatus, all) => {
+        let array = [{key: 'ALL', text: all, value: 'ALL'}];
+
+        orderStatus.forEach(status => array.push({key: status[0], text: status[1].text, value: status[0]}));
+        // Array.from( new Map(ORDER_STATUS).values()).map((value, i) => array.push({key: i, text: value.text, value: value.text}));
         return array;
     };
 
@@ -108,24 +117,30 @@ class AdminOrders extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
-            <React.Fragment>
+            <div id='orderList'>
                 <Dropdown
                     placeholder='Select status'
                     fluid
                     selection
-                    defaultValue='ALL'
-                    options={this.statusOptions()}
+                    defaultValue={strings.orders.all}
+                    options={this.statusOptions(strings.orderStatus, strings.orders.all)}
                     onChange={this.handleChangeStatus}
                 />
+                
                 <OrderList
-                    activePage={this.state.number}
-                    orders={this.state.orders}
-                    totalPages={this.state.totalPages}
-                    setActivePage={this.setActivePage}
-                    refresh={this.loadOrders}
+                        activePage={this.state.number}
+                        orders={this.state.orders}
+                        totalPages={this.state.totalPages}
+                        setActivePage={this.setActivePage}
+                        refresh={this.loadOrders}
+                        size={this.state.size}
+                            setSize={this.setSize}
+                            errorText={this.state.errorText}
                 />
-            </React.Fragment>
+            </div>
         );
     };
 }

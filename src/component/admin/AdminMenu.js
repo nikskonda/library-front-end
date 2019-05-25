@@ -6,12 +6,69 @@ import UserList from "./UserList";
 import queryString from "query-string";
 import AdminOrders from "./AdminOrders";
 import UserSettings from "../UserSettings";
+import "./AdminMenu.css";
+import AdminHome from './AdminHome';
+import NewsEdit from '../news/NewsEdit';
+import BookEditPage from '../book/BookEditPage';
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
+import {LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+
+
+const HOME = 'home';
+const USER_LIST = 'userList';
+const ORDER_LIST = 'orderList';
+const USER_SETTING = 'userSettings';
+const BOOK_EDIT = 'bookEdit';
+const NEWS_EDIT = 'newsEdit';
+
+const LINKS = new Map([
+    [HOME, {
+        name: 'home',
+        url: '/admin',
+        value: 'Home',
+    }],
+    [USER_LIST, {
+        name: 'userList',
+        url: '/admin/userList',
+        value: 'UserList',
+    }],
+    [ORDER_LIST, {
+        name: 'orderList',
+        url: '/admin/orderList',
+        value: 'OrderList',
+    }],
+    [USER_SETTING, {
+        name: 'userSettings',
+        url: '/admin/user/settings',
+        value: 'UserSettings',
+    }],
+    [BOOK_EDIT, {
+        name: 'bookEdit',
+        url: '/admin/edit/book',
+        value: 'BookEdit',
+    }],
+    [NEWS_EDIT, {
+        name: 'newsEdit',
+        url: '/admin/edit/news',
+        value: 'NewsEdit',
+    }],
+]);
 
 class AdminMenu extends Component {
 
     state = {
         activeItem: 'home'
     };
+
+    componentWillMount(){
+        let url = this.props.location.pathname;
+        console.log(url);
+        Array.from(LINKS.values()).forEach(value => {
+            if (value.name!==HOME && url.includes(value.url))
+                this.setState({activeItem: value.name});
+        });
+    }
 
     changeUrl = (params) => {
         this.props.history.push({search: queryString.stringify(params)});
@@ -21,61 +78,77 @@ class AdminMenu extends Component {
         this.setState({activeItem: name},);
     };
 
-    UserListComponent = () => <UserList changeUrl={this.changeUrl} queryString={this.props.location.search}/>;
-
-    OrderListComponent = () => <AdminOrders changeUrl={this.changeUrl} queryString={this.props.location.search}/>;
-
-    Home = () => <h1>Welcome to admin panel</h1>;
-
-    UserSettings = () => <UserSettings userId={this.props.match.params.userId}/>;
-
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let adminMenu = strings.adminMenu;
+        let menu = new Map(LINKS);
         return (
-            <Container>
+            <Container id='adminMenu'>
                 <Menu attached='top' tabular>
                     <Menu.Item
                         as={Link}
-                        to='../../../../admin/'
-                        name='home'
-                        active={this.state.activeItem === 'home'}
-                        onClick={this.handleItemClick}/>
+                        to={menu.get(HOME).url}
+                        name={menu.get(HOME).name}
+                        active={this.state.activeItem === menu.get(HOME).name}
+                        onClick={this.handleItemClick}>
+                            {adminMenu.home}
+                    </Menu.Item>
                     <Menu.Item
                         as={Link}
-                        to='../admin/userList'
-                        name='userList'
-                        active={this.state.activeItem === 'userList'}
-                        onClick={this.handleItemClick}/>
-                    <Menu.Item
-                        as={Link}
-                        to='../admin/orderList'
-                        name='orders'
-                        active={this.state.activeItem === 'orders'}
-                        onClick={this.handleItemClick}
-                    />
-                    {this.state.activeItem === 'userSettings'?
+                        to={menu.get(USER_LIST).url}
+                        name={menu.get(USER_LIST).name}
+                        active={this.state.activeItem ===  menu.get(USER_LIST).name}
+                        onClick={this.handleItemClick}>
+                            {adminMenu.userList}
+                    </Menu.Item>
+                    {this.state.activeItem === menu.get(USER_SETTING).name?
                         <Menu.Item
-                            name='userSettings'
-                            active={this.state.activeItem === 'userSettings'}
-                            onClick={this.handleItemClick}
-                        />
-                    : false }
-                    <Menu.Menu position='right'>
-                        <Menu.Item>
-                            <Input
-                                transparent
-                                icon={{name: 'search', link: true}}
-                                placeholder='Search users...'
-                            />
+                            name={menu.get(USER_SETTING).name}
+                            active={this.state.activeItem === menu.get(USER_SETTING).name}
+                            onClick={this.handleItemClick}>
+                            {adminMenu.userSettings}
                         </Menu.Item>
-                    </Menu.Menu>
+                    : false }
+                    <Menu.Item
+                        as={Link}
+                        to={menu.get(ORDER_LIST).url}
+                        name={menu.get(ORDER_LIST).name}
+                        active={this.state.activeItem ===  menu.get(ORDER_LIST).name}
+                        onClick={this.handleItemClick}>
+                            {adminMenu.orderList}
+                    </Menu.Item>
+                    <Menu.Item
+                        as={Link}
+                        to={menu.get(BOOK_EDIT).url}
+                        name={menu.get(BOOK_EDIT).name}
+                        active={this.state.activeItem ===  menu.get(BOOK_EDIT).name}
+                        onClick={this.handleItemClick}>
+                            {adminMenu.bookEdit}
+                    </Menu.Item>
+                    <Menu.Item
+                        as={Link}
+                        to={menu.get(NEWS_EDIT).url}
+                        name={menu.get(NEWS_EDIT).name}
+                        active={this.state.activeItem === menu.get(NEWS_EDIT).name}
+                        onClick={this.handleItemClick}>
+                            {adminMenu.newsEDit}
+                    </Menu.Item>
+                    
                 </Menu>
 
                 <Segment attached='bottom'>
                     <Switch>
-                        <Route exact path='/admin' component={this.Home}/>
-                        <Route path='/admin/userList' component={this.UserListComponent}/>
-                        <Route path='/admin/orderList' component={this.OrderListComponent}/>
-                        <Route path='/admin/user/settings/:userId' component={UserSettings}/>
+                        <Route exact path='/admin' component={AdminHome}/>
+                        <Route path='/admin/userList' render={() => <UserList changeUrl={this.changeUrl} queryString={this.props.location.search}/>}/>
+                        <Route path='/admin/orderList' render={() => <AdminOrders changeUrl={this.changeUrl} queryString={this.props.location.search}/>}/>
+                        <Route path='/admin/user/settings/:userId' render={() => <UserSettings userId={this.props.match.params.userId}/>}/>
+                        <Route path='/admin/edit/news/:newsId' component={NewsEdit}/>
+                        <Route path='/admin/edit/news' component={NewsEdit}/>
+                        <Route path='/admin/edit/book/:bookId' component={BookEditPage}/>
+                        <Route path='/admin/edit/book' component={BookEditPage}/>
+                        
+                        
                     </Switch>
                 </Segment>
 

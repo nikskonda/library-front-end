@@ -33,6 +33,7 @@ class MainRouter extends Component {
         let str = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (str && JSON.parse(str).username){
             this.setState({isAuthorize: true});
+            console.log('kek');
         }
     }
 
@@ -44,33 +45,28 @@ class MainRouter extends Component {
 
     render() {
         return (
-            <React.Fragment>
-                {/*<Header ref={this.headerRef}/>*/}
-                <Header isAuthorize={this.state.isAuthorize}/>
-                <Switch>
-                    <Route exact path='/' component={BookCatalogPage}/>
-                    <Route path='/book' component={BookRouter}/>
-                    <Route path='/catalog' component={BookCatalogPage}/>
-                    <Route exact path='/news' component={NewsListPage}/>
+            <div style={{position: 'relative', minHeight: '100vh'}}>
+                <div style={{paddingBottom: '2.5rem'}}>
+                    <Header isAuthorize={this.state.isAuthorize}/>
+                    <Switch>
+                        <Route exact path='/' component={BookCatalogPage}/>
+                        <Route path='/book' component={BookRouter}/>
+                        <Route path='/catalog' component={BookCatalogPage}/>
+                        <Route exact path='/news' component={NewsListPage}/>
 
-                    <Route path='/news/edit/:newsId' component={NewsEdit}/>
-                    <Route path='/news/edit' component={NewsEdit}/>
-
-                    <Route path='/news/:newsId' component={NewsPage}/>
-                    <Route path='/order/book/:bookId' component={OrderListPage}/>
-                    <Route path='/order/user/:userId' component={OrderListPage}/>
-                    <Route path='/order/user' component={OrderListPage}/>
-                    <Route path='/signIn' render={() => <SignIn changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
-                    <Route path='/signUp' component={SignUp}/>
-                    <Route path='/signOut' render={() => <SignOut changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
-                    <Route path='/user/settings/:userId' component={UserSettings}/>
-                    <Route path='/user/settings' component={UserSettings}/>
-                    <Route path='/bookmarks' component={BookmarkListPage}/>
-                    <Route path='/basket' component={BasketPage}/>
-                    <Route path='/admin' component={AdminMenu}/>
-                </Switch>
+                        <Route path='/news/:newsId' component={NewsPage}/>
+                        <Route path='/order/user' component={OrderListPage}/>
+                        <Route path='/signIn' render={() => <SignIn changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
+                        <Route path='/signUp' component={SignUp}/>
+                        <Route path='/signOut' render={() => <SignOut changeAuthorizeStatus={this.changeAuthorizeStatus}/>}/>
+                        <Route path='/user/settings' component={UserSettings}/>
+                        <Route path='/bookmarks' component={BookmarkListPage}/>
+                        <Route path='/basket' component={BasketPage}/>
+                        <Route path='/admin' component={AdminMenu}/>
+                    </Switch>
+                </div>
                 <Footer/>
-            </React.Fragment>
+            </div>
         );
     }
 
@@ -79,7 +75,7 @@ class MainRouter extends Component {
 class Footer extends Component{
     render() {
         return (
-            <footer style={{backgroundColor: 'black', color: 'white'}}>
+            <footer style={{backgroundColor: 'black', color: 'white',position: 'absolute', bottom: 0, width: '100%', height: '2.5rem'}}>
                 footer
             </footer>
         );

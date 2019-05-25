@@ -2,6 +2,16 @@
     margin: 30px 0;
 }
 
+#basket .items .item .content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+#basket .items .item .content::after{
+    content: none;
+}
+
 #basket .items .item .content .header{
     text-decoration: none;
     color: #254868;
@@ -16,3 +26,13 @@
 #basket .items .item .content .extra .button{
     background-color: #CACF98;
 }
+
+#basket .showAddresButton{
+    background-color: #CACF98;
+}
+
+#basket .showAddresButton{
+    background-color: #CACF98;
+}
+
+

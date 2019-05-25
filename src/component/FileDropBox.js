@@ -60,6 +60,14 @@ class FileDropBox extends Component {
         this.props.removeFile();
     };
 
+    isImg = () => {
+        let accepts = this.props.accepts;
+        for (let i=0; i<accepts.length; i++){
+            if (accepts[i].includes('image')) return true;
+        }
+        return false;
+    }
+
     render() {
         return (
             <div className='field'>
@@ -77,17 +85,18 @@ class FileDropBox extends Component {
                     >
                         {this.state.firstFile ?
                             <React.Fragment>
-                                <Icon name='close'/>
-                                <Image src={this.state.firstFile.preview.url} size='small'/>
-
+                                <Icon name='close' onClick={this.clear}/>
+                                {this.isImg()?
+                                <Image src={this.state.firstFile.preview.url} size='small'/>:
+                                <Icon name='file pdf' size='massive' color='black'/>}
                             </React.Fragment>
-
                             :
                             (this.props.defFileUrl ?
                                     <React.Fragment>
                                         <Icon name='close' onClick={this.clear}/>
-                                        <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.props.defFileUrl}
-                                               size='small'/>
+                                        {this.isImg()?
+                                        <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.props.defFileUrl} size='small'/>:
+                                        <Icon name='file pdf' size='massive' color='black'/>}
                                     </React.Fragment>
                                     :
                                     <div>

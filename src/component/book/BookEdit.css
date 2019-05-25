@@ -1,0 +1,80 @@
+#bookEdit{
+    margin: 20px 0;
+}
+
+#bookEdit .threeFour{
+    width: 65%;
+    padding-left: .5em;
+    padding-right: .5em;
+}
+
+#bookEdit .oneFour{
+    width: 35%;
+    padding-left: .5em;
+    padding-right: .5em;
+}
+
+#bookEdit .halfScreen{
+    width: 50%;
+    padding-left: .5em;
+    padding-right: .5em;
+}
+
+#bookEdit .selection  {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookEdit .label  {
+    background-color: #CACF98 !important;
+    color: #40453B !important;
+}
+
+#bookEdit .selection .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookEdit .selection .visible .item{
+    border-top: 1px solid #40453B4a;
+}
+
+#bookEdit input, #bookEdit textarea{
+    background-color: #F4f4db;
+}
+
+#bookEdit #bookLangDropdown{
+    background-color: #CACF98;
+    border: none;
+    color: #40453B;
+    text-align: center;
+    text-decoration: none;
+}
+
+#bookEdit #bookLangDropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookEdit #bookLangDropdown .visible .item {
+    text-align: center;
+    text-decoration: none;
+}
+
+#bookEdit .bottomButtons{
+
+    display: flex;
+    justify-content: flex-end;
+}
+
+#bookEdit .bottomButtons button{
+
+    background-color: #CACF98;
+    color: #1f2222;
+}
+
+#bookEdit .bottomButtons a{
+
+    background-color: #809955;
+    color: #1f2222;
+}

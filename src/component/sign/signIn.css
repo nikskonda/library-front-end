@@ -1,0 +1,37 @@
+#signIn{
+    margin: 20px 0;
+    background-color: #f4f4db;
+}
+
+#signIn .errorBox{
+    margin: 30px;
+}
+
+#signIn form{
+    margin: 30px;
+}
+
+#signIn input{
+    background-color: #cacf98;
+    color: #1f2222;
+}
+
+
+#signIn .errorMsg{
+    color: #9f3a38;
+}
+
+#signIn input::placeholder{
+    color: #40453Ba8;
+}
+
+#signIn .submit{
+    background-color: #809955;
+    color: #1f2222;
+}
+
+#signIn .redirect{
+    background-color: #cacf98;
+    color: #1f2222;
+}
+

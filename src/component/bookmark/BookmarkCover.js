@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import {Button, Card, Image, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, ORDER_STATUS, URL_DOWNLOAD_FILE} from "../../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import {Link} from "react-router-dom";
+import './Bookmark.css';
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class BookmarkCover extends Component {
 
@@ -13,40 +16,29 @@ class BookmarkCover extends Component {
 
     };
 
-    status = () => {
-        let status = new Map(ORDER_STATUS);
-        if (this.props.bookmark.status === status.get('new')) {
-            return (
-                <Label as='a' color='red' tag>{this.props.bookmark.status}</Label>
-            );
-        }
-        if (this.props.bookmark.status === status.get('in_progress')) {
-            return (
-                <Label as='a' color='violet' tag>{this.props.bookmark.status}</Label>
-            );
-        }
-        if (this.props.bookmark.status === status.get('completed')) {
-            return (
-                <Label as='a' color='green' tag>{this.props.bookmark.status}</Label>
-            );
-        }
-    };
-
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         const bookmark = this.props.bookmark;
         return (<Card>
-                        <Image src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+bookmark.book.thumbnailUrl}/>
                         <Card.Content>
-                            <Card.Header>
-                                <Link to={`../book/` + bookmark.book.id}>{bookmark.book.title}</Link>
-                            </Card.Header>
-                            <Card.Description>Page: {bookmark.page ? bookmark.page : false}</Card.Description>
-                            {bookmark.type === 'PDF' ? <Button>
-                                <Link to={`/book/${bookmark.book.id}/read/pdf`}>PDF READER</Link>
+                            <Link to={'/book/' + bookmark.book.id}>
+                                <Card.Header textAlign='center'>{bookmark.book.title.toUpperCase()}</Card.Header>
+                                <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + bookmark.book.thumbnailUrl}/>
+                            </Link>
+                            {bookmark.page ? <Card.Description>{strings.bookmarks.page+bookmark.page}</Card.Description> : false}
+                            {bookmark.type === 'PDF' ? 
+                            <Button
+                                as={Link}
+                                to={`/book/${bookmark.book.id}/read/pdf`}>
+                                {strings.bookmarks.pdfRead}
                             </Button> : false}
                             {bookmark.type === 'EPUB' ?
-                                <Link to={`/book/${bookmark.book.id}/read/epub`}><Button>EBUP
-                                    READER</Button></Link> : false}
+                            <Button
+                                as={Link}
+                                to={`/book/${bookmark.book.id}/read/epub`}>
+                                {strings.bookmarks.epubRead}
+                            </Button> : false}
                             <Card.Meta>{this.dateSign()}</Card.Meta>
                         </Card.Content>
                     </Card>);

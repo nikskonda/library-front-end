@@ -1,0 +1,55 @@
+#bookmarkList{
+    margin: 20px 0;
+}
+
+
+#bookmarkList .bookmarksPagination{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#bookmarkList .bookmarksPagination .pagination{
+    background-color: #CACF98;
+}
+
+#bookmarkList .bookmarksPagination .dropdown{
+    background-color: #CACF98;
+    color: #40453B;
+}
+
+#bookmarkList .bookmarksPagination .dropdown .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#bookmarkList .cards .card{
+    background-color: #F4f4db;
+    border: 1px solid;
+}
+
+
+#bookmarkList .cards .card .content a .header{
+    text-decoration: none;
+    color: #254868;
+    font-size: 15pt;
+}
+
+#bookmarkList .cards .card .content a img{
+    margin: 10px 0;
+}
+
+#bookmarkList .cards .card .content .meta{
+    align-self: flex-end;
+}
+
+#bookmarkList .cards .card .content .button{
+    background-color: #CACF98;
+    color: #1f2222;
+}
+
+#bookmarkList .cards .card .content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}

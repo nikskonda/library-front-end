@@ -1,9 +1,9 @@
 import React from 'react'
 import {Step} from 'semantic-ui-react'
-import {ORDER_STATUS} from "../../context";
+import {LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
-
-const statusList = new Map(ORDER_STATUS);
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 const dateSign = (dateString) => {
     // return <Moment>{this.state.newsCover.creationDate}</Moment>;
@@ -13,20 +13,23 @@ const dateSign = (dateString) => {
 
 };
 
-const icon = (status) => {
-    let value = statusList.get(status);
-        return <Icon name={value.icon} size='large' color={value.color} />
-};
 
-const OrderStatusStep = (props) => (
-    <Step.Group size='mini'>
+const OrderStatusStep = (props) => {
+    let strings = new LocalizedStrings(L10N);
+    strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+    let statusText = new Map(strings.orderStatus);  
+    return (
+        <Step.Group size='mini'>
         {props.statusList ? props.statusList.map((status) =>
             <Step
                 key={status.id}
             >
-                {icon(status.status)}
+                <Icon
+                    name={statusText.get(status.status).icon}
+                    size='large'
+                    color={statusText.get(status.status).color} />
                 <Step.Content>
-                    <Step.Title>{statusList.get(status.status).text}</Step.Title>
+                    <Step.Title>{statusText.get(status.status).text}</Step.Title>
                     <Step.Description>{dateSign(status.dateTime)}</Step.Description>
                 </Step.Content>
             </Step>  )
@@ -34,5 +37,7 @@ const OrderStatusStep = (props) => (
 
     </Step.Group>
 );
+}
+    
 
 export default OrderStatusStep;

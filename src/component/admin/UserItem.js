@@ -7,10 +7,16 @@ import {
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     ROLE,
     URL_DOWNLOAD_FILE,
-    USER_AVATAR_DEFAULT
+    USER_AVATAR_DEFAULT,
+    ROLE_ADMIN,
+    ROLE_LIBRARIAN,
+    LOCAL_STORAGE_USER_DATA,
+    LOCAL_STORAGE_UI_LANGUAGE
 } from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class UserItem extends Component {
 
@@ -133,7 +139,22 @@ class UserItem extends Component {
             });
     };
 
+    isLibrarian = () => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_LIBRARIAN);
+        else return false;
+    }
+
+    isAdmin = () => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_ADMIN);
+        else return false;
+    }
+
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let userL10n = strings.userList;
         let user = this.props.user;
         return (
             <Item>
@@ -146,51 +167,56 @@ class UserItem extends Component {
                         <p>{this.address(user.registrationAddress)}</p>
                     </Item.Description>
                     <Item.Extra>
+                        {this.isLibrarian()?
                         <Button
                             icon
                             labelPosition='right'
                             floated='right'
                             onClick={this.giveBooksFromBasket}
                             >
-                            giveBooksFromBasket
-                            <Icon name='ban'/>
-                        </Button>
+                            {userL10n.giveBook}
+                            <Icon name='hand paper'/>
+                        </Button> : false}
+                        {this.isLibrarian()?
                         <Button
                             as={Link}
                             to={`../../../admin/orderList?userId=${user.id}`}
                             icon
                             labelPosition='right'
                             floated='right'>
-                            ORDERS
-                            <Icon name='ban'/>
-                        </Button>
+                            {userL10n.orders}
+                            <Icon name='unordered list'/>
+                        </Button>: false}
+                        {this.isAdmin()?
                         <Button
                             as={Link}
                             to={`../admin/user/settings/${user.id}`}
                             icon
                             labelPosition='right'
                             floated='right'>
-                            UserSettings
-                            <Icon name='ban'/>
-                        </Button>
+                            {userL10n.userSettings}
+                            <Icon name='setting'/>
+                        </Button>: false}
+                        {this.isAdmin()?
                         <Button
                             icon
                             labelPosition='right'
                             floated='right'
                             onClick={this.ban}
                         >
-                            {!user.banned?'unBan':'Ban'}
-                            <Icon name='ban'/>
-                        </Button>
+                            {!user.banned? userL10n.unban: userL10n.ban}
+                            <Icon name='remove user'/>
+                        </Button>: false}
+                        {this.isAdmin()?
                         <Button
                             icon
                             labelPosition='right'
                             floated='right'
                             onClick={this.clear}
                         >
-                            To Clear
+                            {userL10n.clear}
                             <Icon name='ban'/>
-                        </Button>
+                        </Button>: false}
 
                     </Item.Extra>
                 </Item.Content>
@@ -268,21 +294,23 @@ class RoleList extends Component {
 
     render() {
         let user = this.props.user;
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
             <React.Fragment>
                 {user.authorities.map(role => <Role key={role.id} username={user.username} role={role} refresh={this.props.refresh} />)}
+                {this.state.roleSearchList && this.state.roleSearchList.length>0 ? 
                 <Dropdown
                     compact
                     onChange={this.handleChangeRole}
                     onSearchChange={this.handleSearchChangeRole}
                     options={this.state.roleSearchList}
-                    placeholder='role'
                     search
                     searchQuery={this.state.roleSearchString}
                     selection
-                    text='select new role'
+                    text={strings.userList.role}
                     value={this.state.newAuthority}
-                    />
+                    /> : false}
                 <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.addAuthority} />
             </React.Fragment>
             );
@@ -320,7 +348,9 @@ class Role extends Component {
     openClose = () => this.setState({showModal: !this.state.showModal});
 
     render() {
-        let roleColor = new Map(ROLE);
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let roleColor = new Map(strings.role);
         let role = this.props.role;
         return (
             <React.Fragment>

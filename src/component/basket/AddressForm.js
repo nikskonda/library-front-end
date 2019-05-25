@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
-import {Button, Dropdown, Form, Input, TextArea} from "semantic-ui-react";
+import {Button, Dropdown, Form, Input, TextArea, Message} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import "./AddressForm.css"
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class AddressForm extends Component {
 
@@ -16,23 +19,36 @@ class AddressForm extends Component {
 
         country: {name: 'qwe'},
         countryList: [],
+        countrySearchList: [],
         countrySearchString: '',
 
         state: {name: ''},
         stateList: [],
+        stateSearchList: [],
         stateSearchString: '',
 
         city: {name: ''},
         cityList: [],
+        citySearchList: [],
         citySearchString: '',
+        
 
         firstName: '',
         lastName: '',
-        postalCode: 0,
+        postalCode: '',
         phone: '',
         addressDesc: '',
 
         userId: null,
+
+        cityWasChanged: false,
+        firstNameWasChanged: false,
+        lastNameWasChanged: false,
+        postalCodeWasChanged: false,
+        phoneWasChanged: false,
+        addressDescWasChanged: false,
+
+        isValidAddress: false,
     };
 
     componentWillReceiveProps(nextProps) {
@@ -81,7 +97,12 @@ class AddressForm extends Component {
                     text: this.addressToText(address),
                     value: address
                 }));
-                this.setState({addressList: array});
+                this.setState({
+                    addressList: array,
+                    addressSearchList: array,
+                    willNew: array.length>0?false:true,
+                });
+
             })
             .catch(function (error) {
                 console.log(error);
@@ -95,19 +116,23 @@ class AddressForm extends Component {
 
 
     handleChangeAddress = (event, {value}) => {
-        this.setState({addressSearchString: '', address: value});
+        this.setState({
+            addressSearchString: '',
+            address: value, 
+            isValidAddress: value?true:false,
+        });
+
     };
 
     handleSearchChangeAddress = (event, {searchQuery}) => {
         this.setState({addressSearchString: searchQuery});
-        this.loadAddressList();
         let newList = [];
         this.state.addressList.forEach(address => {
             if (address.text.toLowerCase().includes(searchQuery.toLowerCase())) {
                 newList.push(address);
             }
         });
-        this.setState({addressList: newList});
+        this.setState({addressSearchList: newList});
     };
 
 
@@ -128,7 +153,7 @@ class AddressForm extends Component {
                     text: country.name,
                     value: country
                 }));
-                this.setState({countryList: array});
+                this.setState({countryList: array, countrySearchList: array});
             })
             .catch(function (error) {
                 console.log(error);
@@ -143,6 +168,8 @@ class AddressForm extends Component {
             country: value,
             showStateList: true,
             showCityList: false,
+            state: {name: ''},
+            city: {name: ''},
         }, this.loadStateList);
     };
 
@@ -156,7 +183,7 @@ class AddressForm extends Component {
             }
         });
 
-        this.setState({countryList: newList});
+        this.setState({countrySearchList: newList});
     };
 
     loadStateList = () => {
@@ -190,6 +217,7 @@ class AddressForm extends Component {
             stateSearchString: '',
             state: value,
             showCityList: true,
+            city: {name: ''},
         }, this.loadCityList);
     };
 
@@ -203,7 +231,7 @@ class AddressForm extends Component {
             }
         });
 
-        this.setState({stateList: newList});
+        this.setState({stateSearchList: newList});
     };
 
 
@@ -227,13 +255,33 @@ class AddressForm extends Component {
                 this.setState({cityList: array});
             })
             .catch(function (error) {
-                console.log(error);
+                
             });
 
     };
 
     handleChangeCity = (event, {value}) => {
-        this.setState({citySearchString: '', city: value});
+        this.setState({
+            citySearchString: '',
+            city: value,
+            cityWasChanged: true});
+    };
+
+    isValidCity = () => {
+        if (!this.state.cityWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid city</p>);
+        let value = true;
+        let city = this.state.city;
+        let state = this.state.state;
+        let country = this.state.country;
+
+        if (!city || !state || !country) {
+            value = false;
+        }
+        if (city.name==='' || state.name==='' || country.name==='') {
+            value = false;
+        }
+        return {value: value, message: message};
     };
 
     handleSearchChangeCity = (event, {searchQuery}) => {
@@ -246,27 +294,132 @@ class AddressForm extends Component {
             }
         });
 
-        this.setState({cityList: newList});
+        this.setState({citySearchList: newList});
     };
 
     handleChangeFirstName = (event, {value}) => {
-        this.setState({firstName: value});
+        this.setState({firstName: value, firstNameWasChanged:true});
+    };
+
+    isValidFirstName = () => {
+        if (!this.state.firstNameWasChanged) return {value: true};
+        let firstName = this.state.firstName;
+
+        let message = (<p className='errorMsg'>enter valid ({firstName.length}/30)</p>);
+        let value = true;
+
+        if (!firstName) {
+            value = false;
+        } else {
+            if (firstName.length === 0) {
+                value = false;
+            }
+
+            if (firstName.length > 30) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     handleChangeLastName = (event, {value}) => {
-        this.setState({lastName: value});
+        this.setState({lastName: value, lastNameWasChanged:true});
+    };
+
+    isValidLastName = () => {
+        if (!this.state.lastNameWasChanged) return {value: true};
+        let lastName = this.state.lastName;
+
+        let message = (<p className='errorMsg'>enter valid ({lastName.length}/30)</p>);
+        let value = true;
+
+        if (!lastName) {
+            value = false;
+        } else {
+            if (lastName.length === 0) {
+                value = false;
+            }
+
+            if (lastName.length > 30) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     handleChangePostalCode = (event, {value}) => {
-        this.setState({postalCode: value});
+        this.setState({postalCode: value, postalCodeWasChanged: true});
+    };
+
+    isValidPostalCode = () => {
+        if (!this.state.postalCodeWasChanged) return {value: true};
+        let postalCode = this.state.postalCode;
+
+        let message = (<p className='errorMsg'>enter valid ({postalCode.length}/20)</p>);
+        let value = true;
+
+        if (!postalCode) {
+            value = false;
+        } else {
+            if (postalCode.length === 0) {
+                value = false;
+            }
+
+            if (postalCode.length > 30) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     handleChangePhone = (event, {value}) => {
-        this.setState({phone: value});
+        this.setState({phone: value, phoneWasChanged:true});
+    };
+
+    isValidPhone = () => {
+        if (!this.state.phoneWasChanged) return {value: true};
+        let phone = this.state.phone;
+
+        let message = (<p className='errorMsg'>enter valid ({phone.length}/20)</p>);
+        let value = true;
+
+        if (!phone) {
+            value = false;
+        } else {
+            if (phone.length === 0) {
+                value = false;
+            }
+
+            if (phone.length > 30) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     handleChangeAddressDesc = (event, {value}) => {
-        this.setState({addressDesc: value});
+        this.setState({addressDesc: value, addressDescWasChanged:true});
+    };
+
+    isValidAddressDesc = () => {
+        if (!this.state.addressDescWasChanged) return {value: true};
+        let addressDesc = this.state.addressDesc;
+
+        let message = (<p className='errorMsg'>enter valid ({addressDesc.length}/400)</p>);
+        let value = true;
+
+        if (!addressDesc) {
+            value = false;
+        } else {
+            if (addressDesc.length === 0) {
+                value = false;
+            }
+
+            if (addressDesc.length > 400) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     returnAddress = () => {
@@ -284,24 +437,64 @@ class AddressForm extends Component {
         this.props.returnAddress(address);
     };
 
+    wasChanged = () => {
+        return this.state.cityWasChanged &&
+            this.state.firstNameWasChanged &&
+            this.state.lastNameWasChanged &&
+            this.state.phoneWasChanged &&
+            this.state.postalCodeWasChanged &&
+            this.state.addressDescWasChanged;
+    };
+
+    isDisableButton = () => {
+        return this.state.willNew ?
+            this.isValidCity().value &&
+            this.isValidFirstName().value &&
+            this.isValidLastName().value &&
+            this.isValidPhone().value &&
+            this.isValidPostalCode().value &&
+            this.isValidAddressDesc().value &&
+            this.wasChanged() 
+        : this.state.isValidAddress;
+    };
+
+    handleDismiss = () => {
+        this.setState({errorMsg: null});
+    };
+
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let address=strings.address;
         return (
-            <React.Fragment>
+            <div id='addressForm'>
+                {this.state.errorMsg?
+                        <Message
+                            className='errorBox'
+                            onDismiss={this.handleDismiss}
+                            error
+                            header='Your user registration was successful'
+                            content='You may now log-in with the username you have chosen'
+                        />:false}
                 {this.state.addressList && this.state.addressList.length > 0 ?
-                    <Button
-                        onClick={this.changeAddressForm}
-                    >
-                        {!this.state.willNew ? 'ADD NEW ADDRESS' : 'select from list of last addresses'}
-                    </Button>
+                    <div>
+                        <Button
+                            className='newOrList'
+                            onClick={this.changeAddressForm}
+                        >
+                            {!this.state.willNew ? address.addNewAddress : address.lastList}
+                        </Button>
+                    </div>
                     : false}
                 {!this.state.willNew ?
                     <Form>
                         <Form.Dropdown
-                            label='producer'
+                            className='addressDropdown'
+                            label={address.selectAddress}
                             onChange={this.handleChangeAddress}
                             onSearchChange={this.handleSearchChangeAddress}
-                            options={this.state.addressList}
-                            placeholder='Select Address'
+                            options={this.state.addressSearchList}
+                            placeholder={address.selectAddress}
                             search
                             searchQuery={this.state.addressSearchString}
                             selection
@@ -314,83 +507,118 @@ class AddressForm extends Component {
                             widths='equal'
                         >
                             <Form.Dropdown
-                                label='Country'
+                                className='addressDropdown'
+                                label={address.country}
                                 fluid
                                 onChange={this.handleChangeCountry}
                                 onSearchChange={this.handleSearchChangeCountry}
-                                options={this.state.countryList}
-                                placeholder='Select Country'
+                                options={this.state.countrySearchList}
+                                placeholder={address.country}
                                 search
                                 searchQuery={this.state.countrySearchString}
                                 selection
                                 value={this.state.country}
                             />
-                            {this.state.showStateList ?
+                            
                                 <Form.Dropdown
-                                    label='State'
+                                    className='addressDropdown'
+                                    disabled={!this.state.showStateList}
+                                    label={address.state}
                                     fluid
                                     onChange={this.handleChangeState}
                                     onSearchChange={this.handleSearchChangeState}
-                                    options={this.state.stateList}
-                                    placeholder='Select City'
+                                    options={this.state.stateSearchList}
+                                    placeholder={address.state}
                                     search
                                     searchQuery={this.state.stateSearchString}
                                     selection
                                     value={this.state.state}
                                 />
-                                : false}
-                            {this.state.showCityList ?
                                 <Form.Dropdown
-                                    label='City'
+                                    className='addressDropdown'
+                                    disabled={!this.state.showCityList}
+                                    label={address.city}
                                     fluid
                                     onChange={this.handleChangeCity}
                                     onSearchChange={this.handleSearchChangeCity}
-                                    options={this.state.cityList}
-                                    placeholder='Select State'
+                                    options={this.state.citySearchList}
+                                    placeholder={address.city}
                                     search
                                     searchQuery={this.state.citySearchString}
                                     selection
-                                    value={this.state.city}/>
-                                : false}
+                                    value={this.state.city}
+                                    error={!this.isValidCity().value}/>    
+                        </Form.Group>
+                        {this.isValidCity().value ? false : this.isValidCity().message}
+                        <Form.Group>
+                            <div
+                                className='halfScreen'>
+                                <Form.Input
+                                    className='addressInput'
+                                    label={address.firstName}
+                                    placeholder={address.firstName}
+                                    value={this.state.firstName}
+                                    onChange={this.handleChangeFirstName}
+                                    error={!this.isValidFirstName().value}/>
+                                {this.isValidFirstName().value ? false : this.isValidFirstName().message}
+                            </div>     
+                            <div
+                                className='halfScreen'>
+                                <Form.Input
+                                    className='addressInput'
+                                    label={address.lastName}
+                                    placeholder={address.lastName}
+                                    value={this.state.lastName}
+                                    onChange={this.handleChangeLastName}
+                                    error={!this.isValidLastName().value}/>
+                                {this.isValidLastName().value ? false : this.isValidLastName().message}
+                            </div>     
+                            
                         </Form.Group>
                         <Form.Group>
+                        <div
+                                className='halfScreen'>
                             <Form.Input
-                                width={8}
-                                label='firstName'
-                                placeholder="firstName"
-                                value={this.state.firstName}
-                                onChange={this.handleChangeFirstName}/>
-                            <Form.Input
-                                width={8}
-                                label='lastName'
-                                placeholder="lastName"
-                                value={this.state.lastName}
-                                onChange={this.handleChangeLastName}/>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Input
-                                width={8}
-                                label='phone'
-                                placeholder="phone"
+                                className='addressInput'
+                                label={address.phone}
+                                placeholder={address.phone}
                                 value={this.state.phone}
-                                onChange={this.handleChangePhone}/>
+                                onChange={this.handleChangePhone}
+                                error={!this.isValidPhone().value}/>
+                                {this.isValidPhone().value ? false : this.isValidPhone().message}
+                            </div>    
+
+                        <div
+                                className='halfScreen'>
                             <Form.Input
-                                width={8}
-                                label='postalCode'
-                                placeholder="postalCode"
+                                className='addressInput'
+                                label={address.postalCode}
+                                placeholder={address.postalCode}
                                 value={this.state.postalCode}
-                                onChange={this.handleChangePostalCode}/>
+                                onChange={this.handleChangePostalCode}
+                                error={!this.isValidPostalCode().value}/>
+                            {this.isValidPostalCode().value ? false : this.isValidPostalCode().message}
+                        </div> 
                         </Form.Group>
                         <Form.TextArea
-                            label='About'
-                            placeholder='address'
+                            className='addressInput'
+                            label={address.address}
+                            placeholder={address.address}
                             value={this.state.addressDesc}
-                            onChange={this.handleChangeAddressDesc}/>
+                            onChange={this.handleChangeAddressDesc}
+                            error={!this.isValidAddressDesc().value}/>
+                        {this.isValidAddressDesc().value ? false : this.isValidAddressDesc().message}
                     </Form>}
-                <Button
-                    onClick={this.returnAddress}>
-                    ThisIsMyAddress</Button>
-            </React.Fragment>
+                    <div>
+                        <Button
+                            disabled={!this.isDisableButton()}
+                            className='addressConfirmButton'
+                            onClick={this.returnAddress}>
+                            {address.confirm}
+                        </Button>
+                    </div>
+                
+            </div>
         );
     };
 }

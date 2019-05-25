@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
 import {Button, Container, Dropdown, Form, Message, TextArea} from "semantic-ui-react";
 import './NewsEdit.css'
 import FileDropBox from "../FileDropBox";
 import {Link} from "react-router-dom";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 // BookEdit.propTypes = {
 //     id: PropTypes.number,
@@ -336,12 +338,15 @@ class NewsEdit extends Component {
 
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        
         return (
             <Container>
                 {this.state.errorText ?
                     <Message
                         warning
-                        header='error Not found'
+                        header={strings.news.notFound}
                         content={this.state.errorText}
                     />
                     : false}
@@ -357,14 +362,14 @@ class NewsEdit extends Component {
                         labeled
                         icon='world'
                         options={this.state.languageList}
-                        text={this.state.language === null ? 'Select Language' : this.state.language.name}
+                        text={this.state.language === null ? strings.news.lang: this.state.language.name}
                         onChange={this.handleChangeLanguage}
                     />
                     {this.isValidLanguage().value ? false : this.isValidLanguage().message}
 
                     <Form.Input
-                        label='title'
-                        placeholder="title"
+                        label={strings.news.title}
+                        placeholder={strings.news.title}
                         value={this.state.title}
                         onChange={this.handleChangeTitle}
                         error={!this.isValidTitle().value}
@@ -373,10 +378,9 @@ class NewsEdit extends Component {
 
 
                     <Form.Field
-                        className='w-100'
-                        label='text'
+                        label={strings.news.text}
                         control={TextArea}
-                        placeholder="text"
+                        placeholder={strings.news.text}
                         value={this.state.text}
                         onChange={this.handleChangeText}
                         error={!this.isValidText().value}
@@ -384,30 +388,30 @@ class NewsEdit extends Component {
                     {this.isValidText().value ? false : this.isValidText().message}
 
                     <FileDropBox
-                        label='thumb'
+                        label={strings.news.thumbnail}
                         accepts={['image/*']}
                         defFileUrl={this.state.thumbnailUrl}
                         removeFile={this.removeThumbnailUrl}
                         handleChangeFile={this.handleChangeThumbnailFile}
-                        textBox={'select file'}
+                        textBox={strings.news.selectFile}
                     />
 
                     {this.isValidThumbnail().value ? false : this.isValidThumbnail().message}
 
                     <FileDropBox
-                        label='pictureUrl'
+                        label={strings.news.picture}
                         accepts={['image/*']}
                         defFileUrl={this.state.pictureUrl}
                         removeFile={this.removePictureUrl}
                         handleChangeFile={this.handleChangePictureFile}
-                        textBox={'select file'}
+                        textBox={strings.news.selectFile}
                     />
 
                     {this.isValidPicture().value ? false : this.isValidPicture().message}
 
                     <div className='bottomButtons'>
                         <Button
-                            content='save'
+                            content={strings.news.save}
                             icon='save'
                             labelPosition='right'
                             disabled={!this.isDisableButton()}
@@ -416,7 +420,7 @@ class NewsEdit extends Component {
                         {this.state.id ?
                             <Button
                                 color='green'
-                                content='Go To News'
+                                content={strings.news.toNews}
                                 icon='right arrow'
                                 labelPosition='right'
                                 as={Link}

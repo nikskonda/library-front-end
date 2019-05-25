@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {BACK_END_SERVER_URL, BOOK_YEAR_MIN, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
+import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, BOOK_YEAR_MIN, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
 // https://react.semantic-ui.com
 import {Button, Container, Dropdown, Form, Image, Input, Modal, TextArea} from "semantic-ui-react";
-import './BookEdit.css'
-import ModalYesNo from './../ModalYesNo'
+import './BookEdit.css';
+import FileDropBox from './../FileDropBox'
+import ModalYesNo from './../ModalYesNo';
+import {Link} from "react-router-dom";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
+import { string as strings } from 'prop-types';
 
 class BookEdit extends Component {
 
@@ -18,12 +23,12 @@ class BookEdit extends Component {
         genres: [],
         type: '',
         ageRestriction: '',
-        rating: 0,
-        year: -1,
+        rating: 1,
+        year: null,
         status: '',
         weight: '',
         size: '',
-        pages: 0,
+        pages: null,
         pictureUrl: null,
         thumbnailUrl: null,
         pdfUrl: null,
@@ -31,7 +36,7 @@ class BookEdit extends Component {
         publishingHouse: null,
         producer: null,
         importer: null,
-        count: 0,
+        count: 1,
         inLibraryUseOnly: false,
 
 
@@ -495,42 +500,42 @@ class BookEdit extends Component {
             });
     };
 
-    handleChangePictureFile = (event) => {
-        this.setState({picture: event.target.files[0]});
+    handleChangePictureFile = (file) => {
+        this.setState({picture: file}, this.handleLoadFilePicture);
     };
 
-    handleChangeThumbnailFile = (event) => {
-        this.setState({thumbnail: event.target.files[0]});
+    isValidThumbnail = () => {
+        if (!this.state.thumbnailUrlWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid Thumbnai</p>);
+        let value = true;
+        let thumbnailUrl = this.state.thumbnailUrl;
+
+        if (!thumbnailUrl) {
+            value = false;
+        }
+
+        return {value: value, message: message};
     };
 
-    handleChangePdfFile = (event) => {
-        this.setState({pdf: event.target.files[0]});
+    handleChangeThumbnailFile = (file) => {
+        this.setState({thumbnail: file}, this.handleLoadFileThumbnail);
     };
 
-    handleLoadFilePicture = (event) => {
-        let data = new FormData();
-        data.append('file', this.state.picture);
-        axios
-            .post(BACK_END_SERVER_URL + `/file/upload`,
-                data,
-                {
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'form/data',
-                        // 'Accept-Language': locale.tag || ''
-                    },
-                })
-            .then(res => {
-                this.setState({
-                    pictureUrl: res.data.fileName
-                })
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    isValidPicture = () => {
+        if (!this.state.pictureUrlWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid Picture</p>);
+        let value = true;
+        let pictureUrl = this.state.pictureUrl;
+
+        if (!pictureUrl) {
+            value = false;
+        }
+
+        return {value: value, message: message};
     };
 
-    handleLoadFileThumbnail = (event) => {
+
+    handleLoadFileThumbnail = () => {
         let data = new FormData();
         data.append('file', this.state.thumbnail);
         axios
@@ -545,17 +550,17 @@ class BookEdit extends Component {
                 })
             .then(res => {
                 this.setState({
-                    thumbnailUrl: res.data.fileName
+                    thumbnailUrl: res.data.fileName, thumbnailUrlWasChanged: true
                 })
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
-    handleLoadFilePdf = (event) => {
+    handleLoadFilePicture = () => {
         let data = new FormData();
-        data.append('file', this.state.pdf);
+        data.append('file', this.state.picture);
         axios
             .post(BACK_END_SERVER_URL + `/file/upload`,
                 data,
@@ -568,11 +573,51 @@ class BookEdit extends Component {
                 })
             .then(res => {
                 this.setState({
-                    pdfUrl: res.data.fileName
+                    pictureUrl: res.data.fileName, pictureUrlWasChanged: true
                 })
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
+            });
+    };
+
+    handleChangePdfFile = (file) => {
+        this.setState({pdf: file}, this.handleLoadFilePdf);
+    };
+
+    isValidPdf = () => {
+        if (!this.state.pdfUrlWasChanged) return {value: true};
+        let message = (<p className='errorMsg'>enter valid pdf</p>);
+        let value = true;
+        let pdfUrl = this.state.pdfUrl;
+
+        if (!pdfUrl) {
+            value = false;
+        }
+
+        return {value: value, message: message};
+    };
+
+    handleLoadFilePdf = () => {
+        let data = new FormData();
+        data.append('file', this.state.picture);
+        axios
+            .post(BACK_END_SERVER_URL + `/file/upload`,
+                data,
+                {
+                    headers: {
+                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                        'Content-type': 'form/data',
+                        // 'Accept-Language': locale.tag || ''
+                    },
+                })
+            .then(res => {
+                this.setState({
+                    pdfUrl: res.data.fileName, pdfUrlWasChanged: true
+                })
+            })
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
@@ -642,57 +687,80 @@ class BookEdit extends Component {
         }
     }
 
+    removeThumbnailUrl = () => {
+        this.setState({thumbnailUrl: null,})
+    };
+
+    removePictureUrl = () => {
+        this.setState({pictureUrl: null,})
+    };
+
+    removePdfUrl = () => {
+        this.setState({pdfUrl: null,})
+    };
+
+    removeEpubUrl = () => {
+        this.setState({pictureUrl: null,})
+    };
+
+
+    isDisableButton = () => {
+        return false;
+    };
+
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        
         return (
             <React.Fragment>
             <ModalYesNo size='tiny' header={this.state.header} content={this.state.content} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.state.modalAction} />
-            <Container>
-                <Form>
-                    <Form.Group>
+            <Container >
+                <Form id='bookEdit'>
+          
                         <Dropdown
+                        id="bookLangDropdown"
                             button
                             className='icon'
                             floating
                             labeled
                             icon='world'
                             options={this.state.languageList}
-                            text={this.state.language === null ? 'Select Language' : this.state.language.name}
+                            text={this.state.language === null ? strings.book.lang : this.state.language.name}
                             onChange={this.handleChangeLanguage}
                         />
-                    </Form.Group>
+              
 
-                    <Form.Group>
-                        <Form.Field
-                            className='w-100'
-                            label='title'
+      
+                    <Form.Field
+                            label={strings.book.title}
                             control={Input}
-                            placeholder="title"
+                            placeholder={strings.book.title}
                             value={this.state.title}
                             onChange={this.handleChangeTitle}/>
-                    </Form.Group>
+    
 
-                    <Form.Group>
-                        <Form.Field
-                            className='w-100'
-                            label='description'
+  
+                    <Form.Field
+                            label={strings.book.description}
                             control={TextArea}
-                            placeholder="description"
+                            placeholder={strings.book.description}
                             value={this.state.description}
                             onChange={this.handleChangeDescription}/>
-                    </Form.Group>
+   
 
-                    <Form.Group>
+                    <Form.Group >
+                        <div className="threeFour">
                         <Form.Field
-                            width={10}
-                            label='authors'
+                            label={strings.book.authors}
                             control={Dropdown}
-                                fluid
+                                
                                 multiple
                                 clearable
                                 onChange={this.handleChangeAuthors}
                                 onSearchChange={this.handleSearchChangeAuthors}
                                 options={this.state.authorList}
-                                placeholder='authors'
+                                placeholder={strings.book.authors}
                                 search
                                 searchQuery={this.state.authorSearchString}
                                 selection
@@ -701,17 +769,19 @@ class BookEdit extends Component {
                                 additionLabel={<i style={{ color: 'red' }}>New author: </i>}
                                 onAddItem={this.openCloseAddAuthor}
                             />
-                        <Form.Field
-                            width={6}
-                            label='genres'
-                            control={Dropdown}
-                                fluid
+                        </div>
+                        
+                            <div className="oneFour">
+                            <Form.Field
+                                label={strings.book.genres}
+                                control={Dropdown}
+                                
                                 multiple
                                 clearable
                                 onChange={this.handleChangeGenres}
                                 onSearchChange={this.handleSearchChangeGenres}
                                 options={this.state.genreList}
-                                placeholder='genres'
+                                placeholder={strings.book.genres}
                                 search
                                 searchQuery={this.state.genreSearchString}
                                 selection
@@ -721,21 +791,23 @@ class BookEdit extends Component {
                                 onAddItem={this.handleAdditionGenre}
                                 onGenreLabelClick={this.onGenreLabelClick}
                             />
+</div>
+                        
                     </Form.Group>
                     <AddAuthorModal size='tiny' open={this.state.showModalAddAuthor} openClose={this.openCloseAddAuthor} isCreated={this.isCreatedAuthor} />
                     <Form.Group>
+                        <div className="threeFour">
                         <Form.Field
-                            width={10}
-                            label='translator'
+                            label={strings.book.translators}
                             control={Dropdown}
 
-                                fluid
+                                
                                 multiple
                                 clearable
                                 onChange={this.handleChangeTranslators}
                                 onSearchChange={this.handleSearchChangeTranslators}
                                 options={this.state.translatorList}
-                                placeholder='translators'
+                                placeholder={strings.book.translators}
                                 search
                                 searchQuery={this.state.translatorSearchString}
                                 selection
@@ -744,157 +816,144 @@ class BookEdit extends Component {
                                 additionLabel={<i style={{ color: 'red' }}>New trans: </i>}
                                 onAddItem={this.openCloseAddAuthor}
                             />
-                        <Form.Field
-                            width={6}
-                            label='year'
+                        </div>
+                        
+                            <div className="oneFour">
+                            <Form.Field
+                            label={strings.book.year}
                             control={Dropdown}
-                                fluid
+                                
                                 clearable
                                 onChange={this.handleChangeYear}
                                 options={this.state.yearList}
-                                placeholder='year'
+                                placeholder={strings.book.year}
                                 selection
                                 value={this.state.year}
                             />
+</div>
+                        
                     </Form.Group>
 
                     <Form.Group>
+                        <div className="threeFour">
                         <Form.Field
-                            width={10}
-                            label='ageRestriction'
+                            
+                            label={strings.book.ageRestriction}
                             control={Input}
-                            placeholder="ageRestriction"
+                            placeholder={strings.book.ageRestriction}
                             value={this.state.ageRestriction}
                             onChange={this.handleChangeAgeRestriction}/>
-                        <Form.Field
-                            width={6}
-                            label='rating'
+                        </div>
+                        
+                            <div className="oneFour">
+                            <Form.Field
+                            label={strings.book.rating}
                             control={Input}
                             type='number'
                             pattern='\d*'
                             min={0}
                             max={100}
                             step={1}
-                            placeholder="rating"
+                            placeholder={strings.book.rating}
                             value={this.state.rating}
                             onChange={this.handleChangeRating}/>
+                            </div>
                     </Form.Group>
 
+                    <FileDropBox
+                        label={strings.book.thumbnail}
+                        accepts={['image/*']}
+                        defFileUrl={this.state.thumbnailUrl}
+                        removeFile={this.removeThumbnailUrl}
+                        handleChangeFile={this.handleChangeThumbnailFile}
+                        textBox={strings.news.selectFile}
+                    />
+
+                    {this.isValidThumbnail().value ? false : this.isValidThumbnail().message}
+
+                    <FileDropBox
+                        label={strings.book.picture}
+                        accepts={['image/*']}
+                        defFileUrl={this.state.pictureUrl}
+                        removeFile={this.removePictureUrl}
+                        handleChangeFile={this.handleChangePictureFile}
+                        textBox={strings.book.selectFile}
+                    />
+
+                    {this.isValidPicture().value ? false : this.isValidPicture().message}
+
+                    <FileDropBox
+                        label={strings.book.pdf}
+                        accepts={['.pdf']}
+                        defFileUrl={this.state.pdfUrl}
+                        removeFile={this.removePdfUrl}
+                        handleChangeFile={this.handleChangePdfFile}
+                        textBox={strings.news.selectFile}
+                    />
+
+                    {this.isValidPdf().value ? false : this.isValidPdf().message}
+
                     <Form.Group>
-                        <div className="input-group file-loader">
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" id="inputGroupFile01"
-                                       aria-describedby="inputGroupFileAddon01"
-                                       onChange={this.handleChangeThumbnailFile}/>
-                                <label className="custom-file-label" htmlFor="inputGroupFile01">Choose Thumbnail
-                                    file</label>
-                            </div>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon01"
-                                        onClick={this.handleLoadFileThumbnail}
-                                        disabled={this.state.thumbnail === null}>Upload Thumbnail
-                                </button>
-                            </div>
-                        </div>
-                    </Form.Group>
-                    {this.state.thumbnailUrl !== null ?
-                        <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.thumbnailUrl}
-                               size='small'/> : false}
-                    <br/>
-                    <Form.Group>
-                        <div className="input-group file-loader">
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" id="inputGroupFile02"
-                                       aria-describedby="inputGroupFileAddon02"
-                                       onChange={this.handleChangePictureFile}/>
-                                <label className="custom-file-label" htmlFor="inputGroupFile02">Choose picture
-                                    file</label>
-                            </div>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon02"
-                                        onClick={this.handleLoadFilePicture}
-                                        disabled={this.state.picture === null}>Upload picture
-                                </button>
-                            </div>
-                        </div>
-                    </Form.Group>
-                    {this.state.pictureUrl !== null ?
-                        <div>
-                            <Image src={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.pictureUrl}/>
-                        </div> : false}
-                    <br/>
-                    <Form.Group>
-                        <div className="input-group file-loader">
-                            <div className="custom-file">
-                                <input type="file" className="custom-file-input" id="inputGroupFile03"
-                                       aria-describedby="inputGroupFileAddon03"
-                                       onChange={this.handleChangePdfFile}/>
-                                <label className="custom-file-label" htmlFor="inputGroupFile03">Choose pdf file</label>
-                            </div>
-                            <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button" id="inputGroupFileAddon03"
-                                        onClick={this.handleLoadFilePdf} disabled={this.state.pdf === null}>Upload pdf
-                                </button>
-                            </div>
-                        </div>
-                    </Form.Group>
-                    {this.state.pdfUrl !== null ?
-                        <div>
-                            <a href={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.pdfUrl}> YourPdfFile</a>
-                        </div> : false}
-                    <br/>
-                    <Form.Group>
+                        <div className='halfScreen'>
                         <Form.Field
-                            width={8}
                             type='number'
                             min={0}
                             max={100000}
-                            label='weight'
+                            label={strings.book.weight}
                             control={Input}
-                            placeholder="weight"
+                            placeholder={strings.book.weight}
                             value={this.state.weight}
                             onChange={this.handleChangeWeight}/>
-                        <Form.Field
-                            width={8}
-                            label='size'
+                        </div>
+
+                        
+                            <div className='halfScreen'>
+                            <Form.Field
+                            label={strings.book.size}
                             control={Input}
-                            placeholder="size"
+                            placeholder={strings.book.size}
                             value={this.state.size}
                             onChange={this.handleChangeSize}/>
+                            </div>
+                        
                     </Form.Group>
                     <Form.Group>
-                        <Form.Input
-                            width={8}
-                            label='pages'
+                    <div className='halfScreen'>
+                    <Form.Input
+                            label={strings.book.pages}
                             type='number'
                             step={1}
                             min={0}
                             max={10000}
-                            placeholder="pages"
+                            placeholder={strings.book.pages}
                             value={this.state.pages}
                             onChange={this.handleChangePages}/>
-                        <Form.Input
-                            width={8}
+                            </div>
+                        
+                            <div className='halfScreen'>
+                            <Form.Input
                             type='number'
                             step={1}
                             min={0}
                             max={1000}
-                            label='count'
-                            placeholder="count"
+                            label={strings.book.count}
+                            placeholder={strings.book.count}
                             value={this.state.count}
                             onChange={this.handleChangeCount}/>
+                            </div>
+                        
 
                     </Form.Group>
                     <Form.Group>
                         <Form.Dropdown
                             width={8}
-                            label='publishingHouse'
+                            label={strings.book.publishingHouse}
                                 fluid
                                 clearable
                                 onChange={this.handleChangePublishingHouse}
                                 onSearchChange={this.handleSearchChangePublishingHouse}
                                 options={this.state.publishingHouseList}
-                                placeholder='publishingHouse'
+                                placeholder={strings.book.publishingHouse}
                                 search
                                 searchQuery={this.state.publishingHouseSearchString}
                                 selection
@@ -904,24 +963,26 @@ class BookEdit extends Component {
                                 onAddItem={this.openCloseAddPH}
                             />
                         <AddPHModal size='tiny' open={this.state.showModalAddPH} openClose={this.openCloseAddPH} isCreated={this.isCreatedPH} title={this.state.publishingHouseSearchString}/>
+                        <div className='halfScreen'>
                         <Form.Input
-                            width={8}
-                            label='isbn'
-                            placeholder="isbn"
+                            label={strings.book.isbn}
+                            placeholder={strings.book.isbn}
                             value={this.state.isbn}
-                            onChange={this.handleChangeISBN}/>
+                            onChange={this.handleChangeISBN}/> 
+                        </div>
+                        
                     </Form.Group>
 
                     <Form.Group>
                         <Form.Dropdown
                             width={8}
-                            label='producer'
+                            label={strings.book.producer}
                                 fluid
                                 clearable
                                 onChange={this.handleChangeProducer}
                                 onSearchChange={this.handleSearchChangeProducer}
                                 options={this.state.producerList}
-                                placeholder='producer'
+                                placeholder={strings.book.producer}
                                 search
                                 searchQuery={this.state.producerSearchString}
                                 selection
@@ -932,13 +993,13 @@ class BookEdit extends Component {
                             />
                         <Form.Dropdown
                             width={8}
-                            label='importer'
+                            label={strings.book.importer}
                                 fluid
                                 clearable
                                 onChange={this.handleChangeImporter}
                                 onSearchChange={this.handleSearchChangeImporter}
                                 options={this.state.importerList}
-                                placeholder='producer'
+                                placeholder={strings.book.producer}
                                 search
                                 searchQuery={this.state.importerSearchString}
                                 selection
@@ -949,11 +1010,29 @@ class BookEdit extends Component {
                             />
                     </Form.Group>
                     <Form.Checkbox
-                        label='inLibraryUseOnly'
+                        label={strings.book.inLibraryUseOnly}
                         checked={this.state.inLibraryUseOnly}
                         onClick={this.handleChangeInLibraryUseOnly}
                         />
-                    <Button size='big' color='purple' fluid onClick={this.handleButtonSubmit}>Create BOOK!!!!</Button>
+                        <div className='bottomButtons'>
+                        <Button
+                            content={strings.book.save}
+                            icon='save'
+                            labelPosition='right'
+                            disabled={!this.isDisableButton()}
+                            onClick={this.handleButtonSubmit}
+                        />
+                        {this.state.id ?
+                            <Button
+                                color='green'
+                                content={strings.book.toBook}
+                                icon='right arrow'
+                                labelPosition='right'
+                                as={Link}
+                                to={'../../../news/' + this.state.id}
+                            />
+                            : false}
+                    </div>
                 </Form>
             </Container>
             </React.Fragment>

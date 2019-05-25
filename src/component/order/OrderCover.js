@@ -4,7 +4,6 @@ import {Link} from "react-router-dom";
 import {
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
-    ORDER_STATUS,
     ORDER_STATUS_AT_COURIER,
     ORDER_STATUS_CANCELLED,
     ORDER_STATUS_CONFIRMED,
@@ -13,16 +12,31 @@ import {
     ORDER_STATUS_RECEIVED,
     ORDER_STATUS_RETURN_TO_COURIER,
     ORDER_STATUS_RETURNED,
-    URL_DOWNLOAD_FILE
+    URL_DOWNLOAD_FILE,
+    ROLE_COURIER,
+    ROLE_LIBRARIAN,
+    LOCAL_STORAGE_USER_DATA,
+    LOCAL_STORAGE_UI_LANGUAGE
 } from "../../context";
 import OrderStatusStep from "./OrderStatusStep";
 import axios from "axios";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class OrderCover extends Component {
 
     state = {
         showDetails: false,
+        totalBooks: 0,
     };
+
+    componentWillMount(){
+        let totalCount = 0;
+        this.props.order.details.forEach(detail => {
+            totalCount+=detail.count;
+        });
+        this.setState({totalBooks: totalCount});
+    }
 
     dateSign = () => {
         // return <Moment>{this.state.newsCover.creationDate}</Moment>;
@@ -35,8 +49,10 @@ class OrderCover extends Component {
     address = () => {
         const address = this.props.order.address;
         if (address) {
-            return address.address + ' ' + address.postalCode + ', ' + address.city.name + '/' + address.city.state.name + '/'
-                + address.city.state.country.name + ', ' + address.firstName + ' ' + address.lastName + ' ' + address.phone;
+            return <React.Fragment>
+            {address.address + ' ' + address.postalCode + ', ' + address.city.name + '/' + address.city.state.name + '/'
+                + address.city.state.country.name + ', '}<b>{address.firstName + ' ' + address.lastName }</b> {' ' + address.phone}
+            </React.Fragment>;
             }
         return false;
     };
@@ -46,8 +62,9 @@ class OrderCover extends Component {
     };
 
     getOrderDetailTable = (order) => {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
-
             <Table basic='very' celled>
                 <Table.Body>
                     {order.details.map(detail =>
@@ -61,27 +78,24 @@ class OrderCover extends Component {
                             <Table.Cell
                                 textAlign='center'
                                 verticalAlign='middle'
+                                className='bookTitle'
                             >
                                 <Link to={'../book/' + detail.book.id}>
-                                    {detail.book.title}
+                                    {detail.book.title.toUpperCase()}
                                 </Link></Table.Cell>
                             <Table.Cell
                                 textAlign='center'
                                 verticalAlign='middle'
+                                className='bookCount'
                             >{detail.count}</Table.Cell>
-                            <Table.Cell
-                                textAlign='center'
-                                verticalAlign='middle'
-                            >{detail.price}</Table.Cell>
                         </Table.Row>
                     )}
                 </Table.Body>
                 <Table.Footer>
                     <Table.Row>
                         <Table.HeaderCell/>
-                        <Table.HeaderCell/>
-                        <Table.HeaderCell>Total:</Table.HeaderCell>
-                        <Table.HeaderCell>{order.totalPrice}</Table.HeaderCell>
+                        <Table.HeaderCell className='total'>{strings.orders.total}:</Table.HeaderCell>
+                        <Table.HeaderCell className='bookCount'>{this.state.totalBooks}</Table.HeaderCell>
                     </Table.Row>
                 </Table.Footer>
             </Table>);
@@ -204,89 +218,145 @@ class OrderCover extends Component {
         this.addStatus(ORDER_STATUS_RETURN_TO_COURIER);
     };
 
+    isLibrarian = () => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_LIBRARIAN);
+        else return false;
+    }
+    isCourier = () => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) return user.includes(ROLE_COURIER);
+        else return false;
+    }
+    isOwner = () => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user && this.props.order.user) return JSON.parse(user).username===this.props.order.user.username;
+        else return false;
+    }
+
     buttonsForOrderControl = () => {
-        let status = new Map(ORDER_STATUS);
         let result;
         let statusList = this.props.order.statusList;
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let statusText = new Map(strings.orderStatus);  
         if (statusList[statusList.length - 1].status === (ORDER_STATUS_NEW)) {
             result = (
                 <React.Fragment>
-                    <Button
-                        icon
-                        labelPosition='right'
-                        onClick={this.confirmOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_CONFIRMED).button}
-                    </Button>
-                    <Button
-                        icon
-                        labelPosition='right'
-                        onClick={this.handOutOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_HANDED_OUT).button}
-                    </Button>
+                    {this.isLibrarian()?
+                        <React.Fragment>
+                            <Button
+                                icon
+                                labelPosition='right'
+                                onClick={this.confirmOrder}>
+                                <Icon name={statusText.get(ORDER_STATUS_CONFIRMED).icon}/>
+                                {statusText.get(ORDER_STATUS_CONFIRMED).button}
+                            </Button>
+                            <Button
+                                icon
+                                labelPosition='right'
+                                onClick={this.handOutOrder}>
+                                <Icon name={statusText.get(ORDER_STATUS_HANDED_OUT).icon}/>
+                                {statusText.get(ORDER_STATUS_HANDED_OUT).button}
+                            </Button>
+                    </React.Fragment>: false}
+                    {this.isLibrarian()||this.isOwner()?
                     <Button
                         icon
                         labelPosition='right'
                         onClick={this.cancelOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_CANCELLED).button}
-                    </Button>
+                        <Icon name={statusText.get(ORDER_STATUS_CANCELLED).icon}/>
+                        {statusText.get(ORDER_STATUS_CANCELLED).button}
+                    </Button> :false}
                 </React.Fragment>
             );
         }
         if (statusList[statusList.length - 1].status === ORDER_STATUS_CONFIRMED) {
             result = (
-                <Button
-                    icon
-                    labelPosition='right'
-                    onClick={this.atCourierOrder}>
-                    <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                    {status.get(ORDER_STATUS_AT_COURIER).button}
-                </Button>
+                <React.Fragment>
+                    {this.isLibrarian()?
+                    <Button
+                            icon
+                            labelPosition='right'
+                            onClick={this.handOutOrder}>
+                            <Icon name={statusText.get(ORDER_STATUS_HANDED_OUT).icon}/>
+                            {statusText.get(ORDER_STATUS_HANDED_OUT).button}
+                        </Button> : false}
+                    {this.isCourier()?
+                    <Button
+                        icon
+                        labelPosition='right'
+                        onClick={this.atCourierOrder}>
+                        <Icon name={statusText.get(ORDER_STATUS_AT_COURIER).icon}/>
+                        {statusText.get(ORDER_STATUS_AT_COURIER).button}
+                    </Button> : false}
+                </React.Fragment>
+            );
+        }
+        if (statusList[statusList.length - 1].status === ORDER_STATUS_HANDED_OUT) {
+            result = (
+                <React.Fragment>
+                    {this.isOwner()?
+                    <Button
+                            icon
+                            labelPosition='right'
+                            onClick={this.returnToCourierOrder}>
+                            <Icon name={statusText.get(ORDER_STATUS_RETURN_TO_COURIER).icon}/>
+                            {statusText.get(ORDER_STATUS_RETURN_TO_COURIER).button}
+                        </Button> : false}
+                        {this.isLibrarian()?
+                    <Button
+                        icon
+                        labelPosition='right'
+                        onClick={this.returnOrder}>
+                        <Icon name={statusText.get(ORDER_STATUS_RETURNED).icon}/>
+                        {statusText.get(ORDER_STATUS_RETURNED).button}
+                    </Button> : false}
+                </React.Fragment>
             );
         }
         if (statusList[statusList.length - 1].status === ORDER_STATUS_AT_COURIER) {
-            result = (
-                <Button
-                    icon
-                    labelPosition='right'
-                    onClick={this.receiveOrder}>
-                    <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                    {status.get(ORDER_STATUS_RECEIVED).button}
-                </Button>
-            );
+            result = 
+                this.isOwner()?
+                    <Button
+                        icon
+                        labelPosition='right'
+                        onClick={this.receiveOrder}>
+                        <Icon name={statusText.get(ORDER_STATUS_RECEIVED).icon}/>
+                        {statusText.get(ORDER_STATUS_RECEIVED).button}
+                    </Button> : false;
         }
         if (statusList[statusList.length - 1].status === ORDER_STATUS_RECEIVED) {
             result = (
                 <React.Fragment>
+                    {this.isOwner()?
                     <Button
                         icon
                         labelPosition='right'
                         onClick={this.returnToCourierOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_RETURN_TO_COURIER).button}
-                    </Button>
+                        <Icon name={statusText.get(ORDER_STATUS_RETURN_TO_COURIER).icon}/>
+                        {statusText.get(ORDER_STATUS_RETURN_TO_COURIER).button}
+                    </Button> : false}
+                    {this.isLibrarian()?
                     <Button
                         icon
                         labelPosition='right'
                         onClick={this.returnOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_RETURNED).button}
-                    </Button>
+                        <Icon name={statusText.get(ORDER_STATUS_RETURNED).icon}/>
+                        {statusText.get(ORDER_STATUS_RETURNED).button}
+                    </Button>:false}
                 </React.Fragment>
             );
         }
         if (statusList[statusList.length - 1].status === ORDER_STATUS_RETURN_TO_COURIER) {
-            result = (
+            result = this.isLibrarian()?
                     <Button
                         icon
                         labelPosition='right'
                         onClick={this.returnOrder}>
-                        <Icon name={status.get(ORDER_STATUS_RETURNED).icon}/>
-                        {status.get(ORDER_STATUS_RETURNED).button}
-                    </Button>
-            );
+                        <Icon name={statusText.get(ORDER_STATUS_RETURNED).icon}/>
+                        {statusText.get(ORDER_STATUS_RETURNED).button}
+                    </Button> : false;
         }
 
         return result;
@@ -295,23 +365,24 @@ class OrderCover extends Component {
 
     render() {
         const order = this.props.order;
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
             <Card fluid>
-
-                <Card.Content>
-                    <Icon name='shopping cart' size='huge'/>
+                <Card.Content className='order'>
                     <OrderStatusStep statusList={order.statusList}/>
 
-                    <Card.Description>{this.address()}</Card.Description>
-                    <Card.Meta>{this.dateSign()}</Card.Meta>
+                    <Card.Description className='address'>{this.address()}</Card.Description>
+                    <Card.Meta className='date'>{this.dateSign()}</Card.Meta>
                     {order.comment ? <p>{order.comment}</p> : false}
 
                     <Button
+                        floated='right'
                         icon
                         labelPosition='left'
                         onClick={this.changeShowDetails}>
                         <Icon name='unordered list'/>
-                        {this.state.showDetails ? 'hide details' : 'show details'}
+                        {this.state.showDetails ? strings.orders.hideDetails : strings.orders.showDetails}
                     </Button>
                     {this.buttonsForOrderControl()}
                     {this.state.showDetails ? this.getOrderDetailTable(order) : false}

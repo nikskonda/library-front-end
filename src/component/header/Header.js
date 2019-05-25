@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 import LanguageTumbler from "./LanguageTumbler";
 import {Link} from "react-router-dom";
 import './Header.css'
 import {Container, Label, Menu} from "semantic-ui-react";
 import UserIcon from "./UserIcon";
-import {LOCAL_STORAGE_BASKET} from "../../context";
+import {LOCAL_STORAGE_BASKET, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 
 const HOME = 'home';
 const NEWS = 'news';
@@ -71,6 +72,8 @@ class Header extends Component {
     };
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         return (
             <div className='backgroundImage'>
                 <Container>
@@ -92,7 +95,7 @@ class Header extends Component {
                                 as={Link}
                                 to={links.get(HOME).url}
                                 onClick={this.handleItemClick}>
-                                {links.get(HOME).value}
+                                {strings.menu.home}
                             </Menu.Item>
                             <Menu.Item
                                 name={links.get(NEWS).name}
@@ -100,7 +103,7 @@ class Header extends Component {
                                 as={Link}
                                 to={links.get(NEWS).url}
                                 onClick={this.handleItemClick}>
-                                {links.get(NEWS).value}
+                                {strings.menu.news}
                             </Menu.Item>
                             <Menu.Item
                                 name={links.get(CATALOG).name}
@@ -108,7 +111,7 @@ class Header extends Component {
                                 as={Link}
                                 to={links.get(CATALOG).url}
                                 onClick={this.handleItemClick}>
-                                {links.get(CATALOG).value}
+                                {strings.menu.catalog}
                             </Menu.Item>
                             <Menu.Item
                                 name={links.get(BASKET).name}
@@ -116,7 +119,7 @@ class Header extends Component {
                                 as={Link}
                                 to={links.get(BASKET).url}
                                 onClick={this.handleItemClick}>
-                                {links.get(BASKET).value}
+                                {strings.menu.basket}
                                 {this.state.countInBasket>0 ?
                                     <Label color='green' floating>
                                         {this.state.countInBasket}
@@ -129,7 +132,7 @@ class Header extends Component {
                                 as={Link}
                                 to={links.get(ADMIN).url}
                                 onClick={this.handleItemClick}>
-                                {links.get(ADMIN).value}
+                                {strings.menu.admin}
                             </Menu.Item>
                         </Menu.Menu>
 

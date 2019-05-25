@@ -1,0 +1,46 @@
+#addressForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+#addressForm .newOrList{
+    background-color: #CACF98;
+    float: right;
+}
+
+#addressForm .addressDropdown .search{
+    background-color: #F4f4db ;
+    color: #40453B;
+}
+
+#addressForm .addressDropdown .selection .visible {
+    background-color: #F4f4db !important;
+    color: #40453B !important;
+}
+
+#addressForm .addressDropdown .selection .visible .item{
+    border-top: 1px solid #40453B4a;
+}
+
+#addressForm .addressInput input, #addressForm .addressInput textarea{
+    background-color: #F4f4db;
+}
+
+#addressForm .halfScreen{
+    width: 50%;
+    padding-left: .5em;
+    padding-right: .5em;
+}
+
+#addressForm .addressConfirmButton{
+    background-color: #CACF98;
+    float: right;
+    margin-top: 20px;
+}
+
+
+#addressForm .errorMsg{
+    color: #9f3a38;
+}
+

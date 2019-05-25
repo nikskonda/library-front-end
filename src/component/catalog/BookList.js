@@ -53,7 +53,7 @@ class BookList extends Component {
             />);
         return (this.props.books) ?
             (<React.Fragment>
-                <Card.Group itemsPerRow={this.state.itemPerRow}>
+                <Card.Group itemsPerRow={PAGINATION_BOOKS_PER_ROW}>
                     {this.props.books.map((book) =>
                         <BookCover
                             key={book.id}

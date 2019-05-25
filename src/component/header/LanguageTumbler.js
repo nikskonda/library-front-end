@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import axios from "axios";
 import Language from "./Language";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_BOOK_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class LanguageTumbler extends Component {
 
@@ -33,15 +35,17 @@ class LanguageTumbler extends Component {
     }
 
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         let body =
             (<React.Fragment>
                 <span>
                      <Language
-                         buttonName={'UI language'}
+                         buttonName={strings.menu.uiLang}
                          languageList={this.state.languageList}
                          localStorage={LOCAL_STORAGE_UI_LANGUAGE}/>
                     <Language
-                        buttonName={'Book language'}
+                        buttonName={strings.menu.bookLang}
                         languageList={this.state.languageList}
                         localStorage={LOCAL_STORAGE_BOOK_LANGUAGE}/>
                 </span>

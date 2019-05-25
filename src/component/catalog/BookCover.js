@@ -3,12 +3,15 @@ import StarRatings from 'react-star-ratings';
 import {Button, Card, Header, Image, Label, Popup} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
+    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
     LOCAL_STORAGE_BASKET,
     LOCAL_STORAGE_USER_DATA,
     URL_DOWNLOAD_FILE,
-    USER_ROLE_LIBRARIAN
+    ROLE_LIBRARIAN
 } from "../../context";
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class BookCover extends Component {
 
@@ -21,7 +24,7 @@ class BookCover extends Component {
         this.setState({bookCover: nextProps.bookCover});
     }
 
-    getAuthor = (author, i, array) => {
+    getAuthor = (author, i, array, book) => {
         let authorName = !author.firstName ?
             author.lastName :
             (!author.lastName ?
@@ -43,14 +46,14 @@ class BookCover extends Component {
                         fluid
                         as='a'
                         href={author.wikiLink}
-                    >WIKIPEDIA</Button> : false}
+                    >{book.wiki}</Button> : false}
 
                 <Button
                     fluid
                     as={Link}
-                    to={`../../../../../catalog?authors=${authorName}`}
+                    to={`/catalog?authors=${authorName}`}
                 >
-                    Find All His Books
+                    {book.findByAuthor}
                 </Button>
             </Popup>
         );
@@ -58,7 +61,7 @@ class BookCover extends Component {
 
     isLibrarian = () => {
         const user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(USER_ROLE_LIBRARIAN);
+        if (user) return user.includes(ROLE_LIBRARIAN);
         return false;
     };
 
@@ -103,7 +106,9 @@ class BookCover extends Component {
 
 
     render() {
-        let bookCover = this.state.bookCover
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let bookCover = this.state.bookCover;
         return (
             <React.Fragment>
                 <Card>
@@ -114,11 +119,11 @@ class BookCover extends Component {
                         </Link>
                         <Card.Meta>
                             {bookCover.authors !== undefined ? bookCover.authors.map(
-                                (author, i, array) => this.getAuthor(author, i, array)) : false}
+                                (author, i, array) => this.getAuthor(author, i, array, strings.book)) : false}
                             {bookCover.year && bookCover.year !== -1 ? ', ' + bookCover.year : false}
                         </Card.Meta>
                         <Card.Description>
-                            {bookCover.ageRestriction ? <p>ageRestriction: {bookCover.ageRestriction}</p> : false}
+                            {bookCover.ageRestriction ? <p>{strings.book.ageRestriction}: {bookCover.ageRestriction}</p> : false}
                         </Card.Description>
                         {this.isInBasket()}
                     </Card.Content>
@@ -158,7 +163,7 @@ class BookCover extends Component {
                                     basic
                                     color='green'
                                     onClick={this.addBookToBasket}
-                                >To Busket</Button>
+                                >{strings.book.toBusket}</Button>
                                 :
                                 <Button
                                     style={{cursor: this.isLibrarian() ? 'pointer' : 'default'}}
@@ -166,7 +171,7 @@ class BookCover extends Component {
                                     basic
                                     color='red'
                                     onClick={this.addBookToBasket}
-                                >inLibraryUseOnly</Button>}
+                                >{strings.book.inLibraryUseOnly}</Button>}
                         </div>
                     </Card.Content>
                 </Card>
