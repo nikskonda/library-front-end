@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_BASKET,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE
+} from "../../context";
 import axios from "axios";
 import {Button, Container, Item, Message, Statistic} from "semantic-ui-react";
 import BasketItem from "./BasketItem";
@@ -114,8 +120,7 @@ class BasketPage extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        const alert =
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        const alert =
             (<Message
                 warning
                 header='Your Basket is empty'

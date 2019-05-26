@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import {
     LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
-    DEFAULT_LANGUAGE_TAG,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_BOOK_LANGUAGE,
     PAGINATION_BOOKS_PER_ROW,
     PAGINATION_BOOKS_ROWS
@@ -64,7 +64,7 @@ class BookCatalogPage extends Component {
             lang = JSON.parse(lang);
         }
         if (lang === null || lang.tag === undefined) {
-            return DEFAULT_LANGUAGE_TAG;
+            return DEFAULT_L10N_LANGUAGE;
         }
         return lang.tag;
     };
@@ -160,8 +160,7 @@ class BookCatalogPage extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <div id='bookCatalog'>
                 <Container>
                     <Grid>

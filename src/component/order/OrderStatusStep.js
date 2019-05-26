@@ -1,6 +1,6 @@
 import React from 'react'
 import {Step} from 'semantic-ui-react'
-import {LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
@@ -16,8 +16,7 @@ const dateSign = (dateString) => {
 
 const OrderStatusStep = (props) => {
     let strings = new LocalizedStrings(L10N);
-    strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-    let statusText = new Map(strings.orderStatus);  
+    strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);    let statusText = new Map(strings.orderStatus);
     return (
         <Step.Group size='mini'>
         {props.statusList ? props.statusList.map((status) =>

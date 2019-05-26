@@ -16,7 +16,7 @@ import {
     ROLE_COURIER,
     ROLE_LIBRARIAN,
     LOCAL_STORAGE_USER_DATA,
-    LOCAL_STORAGE_UI_LANGUAGE
+    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
 } from "../../context";
 import OrderStatusStep from "./OrderStatusStep";
 import axios from "axios";
@@ -63,8 +63,7 @@ class OrderCover extends Component {
 
     getOrderDetailTable = (order) => {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <Table basic='very' celled>
                 <Table.Body>
                     {order.details.map(detail =>
@@ -238,8 +237,7 @@ class OrderCover extends Component {
         let result;
         let statusList = this.props.order.statusList;
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let statusText = new Map(strings.orderStatus);  
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let statusText = new Map(strings.orderStatus);
         if (statusList[statusList.length - 1].status === (ORDER_STATUS_NEW)) {
             result = (
                 <React.Fragment>
@@ -366,8 +364,7 @@ class OrderCover extends Component {
     render() {
         const order = this.props.order;
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <Card fluid>
                 <Card.Content className='order'>
                     <OrderStatusStep statusList={order.statusList}/>

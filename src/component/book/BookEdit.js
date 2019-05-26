@@ -1,6 +1,13 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, BOOK_YEAR_MIN, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, URL_DOWNLOAD_FILE} from "../../context";
+import {
+    LOCAL_STORAGE_UI_LANGUAGE,
+    BACK_END_SERVER_URL,
+    BOOK_YEAR_MIN,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    URL_DOWNLOAD_FILE,
+    DEFAULT_L10N_LANGUAGE
+} from "../../context";
 // https://react.semantic-ui.com
 import {Button, Container, Dropdown, Form, Image, Input, Modal, TextArea} from "semantic-ui-react";
 import './BookEdit.css';
@@ -710,8 +717,7 @@ class BookEdit extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         return (
             <React.Fragment>
             <ModalYesNo size='tiny' header={this.state.header} content={this.state.content} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.state.modalAction} />

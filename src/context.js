@@ -14,6 +14,7 @@ export const OAUTH2_CLIENT_ID = 'devglan-client';
 export const OAUTH2_CLIENT_SECRET = 'devglan-secret';
 
 export const DEFAULT_LANGUAGE = 'English';
+export const DEFAULT_L10N_LANGUAGE = 'enUS';
 export const DEFAULT_LANGUAGE_TAG = 'en-US';
 
 export const BOOK_TYPE_BOOK = 'BOOK';

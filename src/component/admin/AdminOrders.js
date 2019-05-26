@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import queryString from "query-string";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE
+} from "../../context";
 import axios from "axios";
 import OrderList from "../order/OrderList";
 import {Dropdown} from "semantic-ui-react";
@@ -118,8 +123,7 @@ class AdminOrders extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <div id='orderList'>
                 <Dropdown
                     placeholder='Select status'

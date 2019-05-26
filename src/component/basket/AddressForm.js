@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import {Button, Dropdown, Form, Input, TextArea, Message} from "semantic-ui-react";
 import axios from "axios";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE
+} from "../../context";
 import "./AddressForm.css"
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
@@ -464,8 +469,7 @@ class AddressForm extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let address=strings.address;
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let address=strings.address;
         return (
             <div id='addressForm'>
                 {this.state.errorMsg?

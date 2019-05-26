@@ -33,7 +33,6 @@ class MainRouter extends Component {
         let str = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (str && JSON.parse(str).username){
             this.setState({isAuthorize: true});
-            console.log('kek');
         }
     }
 

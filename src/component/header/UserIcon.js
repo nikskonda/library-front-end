@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import {Dropdown, Image} from "semantic-ui-react";
-import {LOCAL_STORAGE_USER_DATA, USER_AVATAR_DEFAULT, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    LOCAL_STORAGE_USER_DATA,
+    USER_AVATAR_DEFAULT,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    DEFAULT_L10N_LANGUAGE
+} from "../../context";
 import {Link} from "react-router-dom";
 import { string } from 'prop-types';
 import {L10N} from "../../l10n"
@@ -49,10 +54,8 @@ class UserIcon extends Component {
         
 
     render() {
-        console.log(this.state);
         let string = new LocalizedStrings(L10N);
-        string.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let options = [
+        string.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let options = [
             {key: 'user', text: (<Link to='/account'>{string.menu.account}</Link>), icon: 'user'},
             {key: 'orders', text: (<Link to='/order/user'>{string.menu.orders}</Link>), icon: 'shopping cart'},
             {key: 'bookmarks', text: (<Link to='/bookmarks'>{string.menu.bookmarks}</Link>), icon: 'bookmark'},

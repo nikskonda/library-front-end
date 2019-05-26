@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Dropdown} from 'semantic-ui-react'
-import {DEFAULT_LANGUAGE_TAG} from "../../context";
+import {DEFAULT_L10N_LANGUAGE, DEFAULT_LANGUAGE_TAG} from "../../context";
 import './Language.css'
 
 class Language extends Component {

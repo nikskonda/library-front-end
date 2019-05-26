@@ -6,7 +6,12 @@ import {Link} from "react-router-dom";
 import './Header.css'
 import {Container, Label, Menu} from "semantic-ui-react";
 import UserIcon from "./UserIcon";
-import {LOCAL_STORAGE_BASKET, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_BASKET,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, ROLE_COURIER, ROLE_JOURNALIST, ROLE_LIBRARIAN, ROLE_OPERATOR
+} from "../../context";
 
 const HOME = 'home';
 const NEWS = 'news';
@@ -71,10 +76,21 @@ class Header extends Component {
         }
     };
 
+
+    isHasRole = (role) => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user){
+            let roles = JSON.parse(user).authorities;
+            if (roles && roles.includes(role)){
+                return true;
+            }
+        }
+        return false;
+    };
+
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <div className='backgroundImage'>
                 <Container>
                     <Menu secondary id='headerMenuFirst'>
@@ -126,6 +142,9 @@ class Header extends Component {
                                     </Label>
                                 :false}
                             </Menu.Item>
+                            { this.isHasRole(ROLE_JOURNALIST) ||  this.isHasRole(ROLE_LIBRARIAN)
+                                || this.isHasRole(ROLE_COURIER) || this.isHasRole(ROLE_OPERATOR)
+                                || this.isHasRole(ROLE_ADMIN)?
                             <Menu.Item
                                 name={links.get(ADMIN).name}
                                 active={this.state.activeItem === links.get(ADMIN).name}
@@ -133,25 +152,8 @@ class Header extends Component {
                                 to={links.get(ADMIN).url}
                                 onClick={this.handleItemClick}>
                                 {strings.menu.admin}
-                            </Menu.Item>
+                            </Menu.Item> : false}
                         </Menu.Menu>
-
-
-                        {/*<Menu.Item*/}
-                        {/*    name='friends'*/}
-                        {/*    active={activeItem === 'friends'}*/}
-                        {/*    onClick={this.handleItemClick}*/}
-                        {/*/>*/}
-                        {/*<Menu.Menu position='right'>*/}
-                        {/*    <Menu.Item>*/}
-                        {/*        <Input icon='search' placeholder='Search...'/>*/}
-                        {/*    </Menu.Item>*/}
-                        {/*    <Menu.Item*/}
-                        {/*        name='logout'*/}
-                        {/*        active={activeItem === 'logout'}*/}
-                        {/*        onClick={this.handleItemClick}*/}
-                        {/*    />*/}
-                        {/*</Menu.Menu>*/}
                     </Menu>
                 </Container>
             </div>

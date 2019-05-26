@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
-import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN} from "../../context";
+import {
+    LOCAL_STORAGE_UI_LANGUAGE,
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    DEFAULT_L10N_LANGUAGE
+} from "../../context";
 import {Button, Container, Dropdown, Form, Message, TextArea} from "semantic-ui-react";
 import './NewsEdit.css'
 import FileDropBox from "../FileDropBox";
@@ -339,8 +344,7 @@ class NewsEdit extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         return (
             <Container>
                 {this.state.errorText ?

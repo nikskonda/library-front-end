@@ -1,7 +1,18 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Message, Pagination, Dropdown} from "semantic-ui-react";
 import axios from "axios";
-import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, PAGINATION_BOUNDARY_RANGE, PAGINATION_SIBLING_RANGE, PAGINATION_USERS_PER_ROW, PAGINATION_USERS_ROWS, PAGINATION_COUNT_IN_DROPDOWN, PAGINATION_STEP_IN_DROPDOWN} from "../../context";
+import {
+    LOCAL_STORAGE_UI_LANGUAGE,
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    PAGINATION_BOUNDARY_RANGE,
+    PAGINATION_SIBLING_RANGE,
+    PAGINATION_USERS_PER_ROW,
+    PAGINATION_USERS_ROWS,
+    PAGINATION_COUNT_IN_DROPDOWN,
+    PAGINATION_STEP_IN_DROPDOWN,
+    DEFAULT_L10N_LANGUAGE
+} from "../../context";
 import queryString from "query-string";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
 import UserItem from "./UserItem";
@@ -101,8 +112,7 @@ class UserList extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         const alert =
             (<Message
                 warning

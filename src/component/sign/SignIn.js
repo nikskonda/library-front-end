@@ -9,7 +9,7 @@ import {
     OAUTH2_CLIENT_SECRET,
     OAUTH2_GRANT_TYPE_PASSWORD,
     OAUTH2_GRANT_TYPE_REFRESH_TOKEN,
-    LOCAL_STORAGE_UI_LANGUAGE
+    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
 } from "../../context";
 import axios from "axios";
 import "./signIn.css"
@@ -29,7 +29,8 @@ class SignIn extends Component {
 
             usernameWasChanged: false,
             passwordWasChanged: false,
-        
+
+            authorities: [],
         };
 
 
@@ -122,9 +123,10 @@ class SignIn extends Component {
                     username: decoded.user_name,
                     authorities: decoded.authorities,
                 };
+
                 localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
-                this.loadUserData();
-                this.setState({expires_in: res.data.expires_in});
+                this.setState({expires_in: res.data.expires_in, authorities: userData.authorities}, this.loadUserData);
+
                 this.startRefreshCycle();
                 // this.setState({books: this.state.books.concat(res.data.content)});
                 this.props.changeAuthorizeStatus();
@@ -148,7 +150,9 @@ class SignIn extends Component {
                 }
             )
             .then(res => {
-                localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(res.data));
+                let userData = res.data;
+                userData.authorities = this.state.authorities;
+                localStorage.setItem(LOCAL_STORAGE_USER_DATA, JSON.stringify(userData));
             })
             .catch(function (error) {
                 console.log(error);
@@ -215,8 +219,7 @@ class SignIn extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         return (
         <Container id='signIn'>
             <SegmentGroup 

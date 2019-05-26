@@ -6,7 +6,7 @@ import {
     LOCAL_STORAGE_BASKET,
     LOCAL_STORAGE_USER_DATA,
     URL_DOWNLOAD_FILE,
-    ROLE_LIBRARIAN
+    ROLE_LIBRARIAN, DEFAULT_L10N_LANGUAGE
 } from "../../context";
 import {Button, Container, Header, Image, Message, Popup, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
@@ -305,8 +305,7 @@ class Book extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         const notFount =
             (<Message
                 warning

@@ -8,7 +8,7 @@ import {
     LOCAL_STORAGE_BASKET,
     LOCAL_STORAGE_USER_DATA,
     URL_DOWNLOAD_FILE,
-    ROLE_LIBRARIAN
+    ROLE_LIBRARIAN, DEFAULT_L10N_LANGUAGE
 } from "../../context";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
@@ -107,8 +107,7 @@ class BookCover extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let bookCover = this.state.bookCover;
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let bookCover = this.state.bookCover;
         return (
             <React.Fragment>
                 <Card>

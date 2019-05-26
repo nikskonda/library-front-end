@@ -3,7 +3,7 @@ import NewsList from "./NewsList";
 import "./NewsList.css";
 import {
     BACK_END_SERVER_URL,
-    DEFAULT_LANGUAGE_TAG,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_UI_LANGUAGE,
     PAGINATION_NEWS_PER_ROW,
     PAGINATION_NEWS_ROWS
@@ -48,7 +48,7 @@ class NewsListPage extends Component {
             lang = JSON.parse(lang);
         }
         if (lang === null || lang.tag === undefined) {
-            return DEFAULT_LANGUAGE_TAG;
+            return DEFAULT_L10N_LANGUAGE;
         }
         return lang.tag;
     };
@@ -89,7 +89,7 @@ class NewsListPage extends Component {
         if (langStr){
             langStr = JSON.parse(langStr).tag;
         } else {
-            langStr = DEFAULT_LANGUAGE_TAG;
+            langStr = DEFAULT_L10N_LANGUAGE;
         }
         axios
             .get(BACK_END_SERVER_URL + `/news`,

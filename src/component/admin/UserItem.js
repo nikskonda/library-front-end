@@ -11,7 +11,7 @@ import {
     ROLE_ADMIN,
     ROLE_LIBRARIAN,
     LOCAL_STORAGE_USER_DATA,
-    LOCAL_STORAGE_UI_LANGUAGE
+    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
 } from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
@@ -153,8 +153,7 @@ class UserItem extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let userL10n = strings.userList;
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let userL10n = strings.userList;
         let user = this.props.user;
         return (
             <Item>
@@ -295,8 +294,7 @@ class RoleList extends Component {
     render() {
         let user = this.props.user;
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <React.Fragment>
                 {user.authorities.map(role => <Role key={role.id} username={user.username} role={role} refresh={this.props.refresh} />)}
                 {this.state.roleSearchList && this.state.roleSearchList.length>0 ? 
@@ -349,8 +347,7 @@ class Role extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let roleColor = new Map(strings.role);
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let roleColor = new Map(strings.role);
         let role = this.props.role;
         return (
             <React.Fragment>

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Card, Image, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE} from "../../context";
 import {Link} from "react-router-dom";
 import './Bookmark.css';
 import {L10N} from "../../l10n"
@@ -18,8 +18,7 @@ class BookmarkCover extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        const bookmark = this.props.bookmark;
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        const bookmark = this.props.bookmark;
         return (<Card>
                         <Card.Content>
                             <Link to={'/book/' + bookmark.book.id}>

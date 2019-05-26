@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {BACK_END_SERVER_URL, DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import axios from "axios";
 import {Button, Container, Divider, Form, Grid, SegmentGroup, Message} from "semantic-ui-react";
 import "./signIn.css"
@@ -134,8 +134,7 @@ class SignUp extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         return (<Container id='signIn'>
             <SegmentGroup placeholder>
                 <Grid columns={2} relaxed='very' stackable>

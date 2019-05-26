@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import axios from "axios";
 import Language from "./Language";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_BOOK_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_BOOK_LANGUAGE,
+    LOCAL_STORAGE_UI_LANGUAGE
+} from "../../context";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
@@ -36,8 +41,7 @@ class LanguageTumbler extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        let body =
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let body =
             (<React.Fragment>
                 <span>
                      <Language

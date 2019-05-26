@@ -1,7 +1,14 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
-import {LOCAL_STORAGE_UI_LANGUAGE, BACK_END_SERVER_URL, LOCAL_STORAGE_USER_DATA, ROLE_ADMIN, URL_DOWNLOAD_FILE} from "../../context";
+import {
+    LOCAL_STORAGE_UI_LANGUAGE,
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_USER_DATA,
+    ROLE_ADMIN,
+    URL_DOWNLOAD_FILE,
+    DEFAULT_L10N_LANGUAGE
+} from "../../context";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
@@ -46,8 +53,7 @@ class NewsCover extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
-        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
             <Card>
                 <Image
                     src={BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+this.state.newsCover.thumbnailUrl}
