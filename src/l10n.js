@@ -50,6 +50,7 @@ export const L10N = {
             notFound: "News not found"
         },
         book:{
+            searchPlaceholder: "Search ...",
             search: "Search",
             toBusket: "To Busket",
             inLibraryUseOnly: 'In library use only',
@@ -219,6 +220,7 @@ export const L10N = {
             notFound: "Новость не найдена"
         },
         book:{
+            searchPlaceholder: "Поиск ...",
             search: "Поиск",
             toBusket: "В корзину",
             inLibraryUseOnly: 'Только в библиотеке',

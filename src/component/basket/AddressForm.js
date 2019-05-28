@@ -175,12 +175,12 @@ class AddressForm extends Component {
             showCityList: false,
             state: {name: ''},
             city: {name: ''},
+            countrySearchList: this.state.countryList,
         }, this.loadStateList);
     };
 
     handleSearchChangeCountry = (event, {searchQuery}) => {
         this.setState({countrySearchString: searchQuery});
-        this.loadAddressList();
         let newList = [];
         this.state.countryList.forEach(country => {
             if (country.text.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -208,7 +208,7 @@ class AddressForm extends Component {
                     text: state.name,
                     value: state
                 }));
-                this.setState({stateList: array});
+                this.setState({stateList: array, stateSearchList: array});
             })
             .catch(function (error) {
                 console.log(error);
@@ -223,12 +223,12 @@ class AddressForm extends Component {
             state: value,
             showCityList: true,
             city: {name: ''},
+            stateSearchList: this.state.stateList,
         }, this.loadCityList);
     };
 
     handleSearchChangeState = (event, {searchQuery}) => {
         this.setState({stateSearchString: searchQuery});
-        this.loadAddressList();
         let newList = [];
         this.state.stateList.forEach(state => {
             if (state.text.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -257,7 +257,7 @@ class AddressForm extends Component {
                     text: city.name,
                     value: city
                 }));
-                this.setState({cityList: array});
+                this.setState({cityList: array, citySearchList: array});
             })
             .catch(function (error) {
                 
@@ -269,7 +269,9 @@ class AddressForm extends Component {
         this.setState({
             citySearchString: '',
             city: value,
-            cityWasChanged: true});
+            cityWasChanged: true,
+            citySearchList: this.state.cityList,
+        });
     };
 
     isValidCity = () => {
@@ -291,7 +293,6 @@ class AddressForm extends Component {
 
     handleSearchChangeCity = (event, {searchQuery}) => {
         this.setState({citySearchString: searchQuery});
-        this.loadAddressList();
         let newList = [];
         this.state.cityList.forEach(city => {
             if (city.text.toLowerCase().includes(searchQuery.toLowerCase())) {

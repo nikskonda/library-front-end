@@ -712,7 +712,7 @@ class BookEdit extends Component {
 
 
     isDisableButton = () => {
-        return false;
+        return true;
     };
 
     render() {

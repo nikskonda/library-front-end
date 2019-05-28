@@ -171,7 +171,7 @@ class BookCatalogPage extends Component {
                             <div className='searchBook'>
                                 <Input
                                     fluid
-                                    placeholder='Search...'
+                                    placeholder={strings.book.searchPlaceholder}
                                     action
                                     value={this.state.searchString}
                                     onChange={this.changeSearchHandler}
