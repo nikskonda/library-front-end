@@ -2,21 +2,21 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom'
 import {
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
     LOCAL_STORAGE_OAUTH2_REFRESH_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE,
     LOCAL_STORAGE_USER_DATA,
     OAUTH2_CLIENT_ID,
     OAUTH2_CLIENT_SECRET,
     OAUTH2_GRANT_TYPE_PASSWORD,
-    OAUTH2_GRANT_TYPE_REFRESH_TOKEN,
-    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
+    OAUTH2_GRANT_TYPE_REFRESH_TOKEN
 } from "../../context";
 import axios from "axios";
 import "./signIn.css"
-import {Button, Container, Divider, Form, Grid, SegmentGroup, Message} from "semantic-ui-react";
-import {L10N} from "../../l10n"
+import {Button, Container, Divider, Form, Grid, Message, SegmentGroup} from "semantic-ui-react";
+import {getLang, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
-import { string } from 'prop-types';
 
 const jwt = require('jsonwebtoken');
 
@@ -38,11 +38,11 @@ class SignIn extends Component {
             this.setState({username: value, usernameWasChanged: true});
         };
     
-        isValidUsername = () => {
+        isValidUsername = (text) => {
             if (!this.state.usernameWasChanged) return {value: true};
             let username = this.state.username;
     
-            let message = (<p className='errorMsg'>enter valid (4/{username.length}/30)</p>);
+            let message = (<p className='errorMsg'>{text+' '+username.length}</p>);
             let value = true;
     
             if (!username) {
@@ -62,11 +62,11 @@ class SignIn extends Component {
             this.setState({password: value, passwordWasChanged: true});
         };
     
-        isValidPassword = () => {
+        isValidPassword = (text) => {
             if (!this.state.passwordWasChanged) return {value: true};
             let password = this.state.password;
     
-            let message = (<p className='errorMsg'>enter valid (5/{password.length}/20)</p>);
+            let message = (<p className='errorMsg'>{text + password.length}</p>);
             let value = true;
     
             if (!password) {
@@ -99,7 +99,6 @@ class SignIn extends Component {
             grant_type: OAUTH2_GRANT_TYPE_PASSWORD,
             client_id: OAUTH2_CLIENT_ID
         };
-
         // let locale = JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE));
         let client_secret = btoa(OAUTH2_CLIENT_ID + ':' + OAUTH2_CLIENT_SECRET);
         axios
@@ -111,7 +110,7 @@ class SignIn extends Component {
                     headers: {
                         'Authorization': 'Basic ' + client_secret,
                         'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     }
                 }
             )
@@ -134,7 +133,7 @@ class SignIn extends Component {
 
             })
             .catch(({response}) => {
-                this.setState({errorMsg: response.data.message});
+                this.setState({errorMsg: response.data.error_description});
             });
     };
 
@@ -231,8 +230,8 @@ class SignIn extends Component {
                             className='errorBox'
                             onDismiss={this.handleDismiss}
                             error
-                            header='Your user registration was successful'
-                            content='You may now log-in with the username you have chosen'
+                            header={strings.error.user.signIn}
+                            content={this.state.errorMsg}
                         />:false}
                         <Form>
                             <Form.Input
@@ -243,7 +242,7 @@ class SignIn extends Component {
                                 value={this.state.username}
                                 onChange={this.changeUsernameHandler}
                                 error={!this.isValidUsername().value}/>
-                                {this.isValidUsername().value ? false : this.isValidUsername().message}
+                                {this.isValidUsername().value ? false : this.isValidUsername(strings.error.user.username).message}
                             <Form.Input
                                 icon='lock'
                                 iconPosition='left'
@@ -253,7 +252,7 @@ class SignIn extends Component {
                                 value={this.state.password}
                                 onChange={this.changePasswordHandler}
                                 error={!this.isValidPassword().value}/>
-                                {this.isValidPassword().value ? false : this.isValidPassword().message}
+                                {this.isValidPassword().value ? false : this.isValidPassword(strings.error.user.password).message}
                             <Button
                                 className='submit'
                                 content={strings.user.signIn}

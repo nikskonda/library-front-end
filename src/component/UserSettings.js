@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import {Button, Container, Form, Input, Message} from "semantic-ui-react";
+import {Button, Container, Form, Message} from "semantic-ui-react";
 import AddressForm from "./basket/AddressForm";
 import axios from "axios";
 import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN, LOCAL_STORAGE_UI_LANGUAGE} from "../context";
 import {withRouter} from 'react-router-dom';
 import './UserSettings.css';
-import {L10N} from "../l10n"
+import {getLang, L10N} from "../l10n"
 import LocalizedStrings from 'react-localization';
 
 class UserSettings extends Component {
@@ -33,16 +33,16 @@ class UserSettings extends Component {
 
     changeFirstNameHandle = (event, {value}) => this.setState({firstName: value, firstNameWasChanged: true});
 
-    isValidFirstName = () => {
+    isValidFirstName = (text) => {
         if (!this.state.firstNameWasChanged) return {value: true};
         let firstName = this.state.firstName;
 
-        let message = (<p className='errorMsg'>enter valid ({firstName.length}/30)</p>);
+        let message = (<p className='errorMsg'>{text + firstName.length}</p>);
         let value = true;
-        if (!firstName && firstName!=='') {
+        if (!firstName && firstName !== '') {
             value = false;
         } else {
-            
+
             if (firstName.length > 30) {
                 value = false;
             }
@@ -52,17 +52,17 @@ class UserSettings extends Component {
 
     changeLastNameHandle = (event, {value}) => this.setState({lastName: value, lastNameWasChanged: true});
 
-    isValidLastName = () => {
+    isValidLastName = (text) => {
         if (!this.state.lastNameWasChanged) return {value: true};
         let lastName = this.state.lastName;
 
-        let message = (<p className='errorMsg'>enter valid ({lastName.length}/30)</p>);
+        let message = (<p className='errorMsg'>{text + lastName.length}</p>);
         let value = true;
 
-        if (!lastName && lastName!=='') {
+        if (!lastName && lastName !== '') {
             value = false;
         } else {
-           
+
             if (lastName.length > 30) {
                 value = false;
             }
@@ -72,32 +72,32 @@ class UserSettings extends Component {
 
     changeEmailHandle = (event, {value}) => this.setState({email: value, emailWasChanged: true});
 
-    isValidEmail = () => {
+    isValidEmail = (text) => {
         if (!this.state.emailWasChanged) return {value: true};
         let email = this.state.email;
 
-        let message = (<p className='errorMsg'>enter valid ({email.length}/20)</p>);
+        let message = (<p className='errorMsg'>{text}</p>);
         let value = true;
-        
+
         if (!email) {
-            
-            value = email===''?true:false;
+
+            value = email === '';
         } else {
-            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             value = re.test(email);
         }
         return {value: value, message: message};
     };
 
     loadUserData = () => {
-        let url = BACK_END_SERVER_URL + '/user/data/' + (this.state.userId?this.state.userId:'');
+        let url = BACK_END_SERVER_URL + '/user/data/' + (this.state.userId ? this.state.userId : '');
         axios
             .get(url,
                 {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 })
             .then(res => {
@@ -111,17 +111,17 @@ class UserSettings extends Component {
                     registrationAddress: res.data.registrationAddress || this.state.address,
                 })
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({isErrorA: true, errorMsg: response.data.message});
             });
     };
 
     changeUserData = () => {
         let params = {
             username: this.state.username,
-            firstName: this.state.firstName===''?null:this.state.firstName,
-            lastName: this.state.lastName===''?null:this.state.lastName,
-            email: this.state.email===''?null:this.state.email,
+            firstName: this.state.firstName === '' ? null : this.state.firstName,
+            lastName: this.state.lastName === '' ? null : this.state.lastName,
+            email: this.state.email === '' ? null : this.state.email,
             registrationAddress: this.state.registrationAddress,
         };
         axios
@@ -131,7 +131,7 @@ class UserSettings extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 })
             .then(res => {
@@ -143,9 +143,8 @@ class UserSettings extends Component {
                     isSuccess: true,
                 })
             })
-            .catch((error) => {
-                console.log(error);
-                this.setState({isErrorA: true});
+            .catch(({response}) => {
+                this.setState({isErrorA: true, errorMsg: response.data.message});
             });
     };
 
@@ -175,21 +174,21 @@ class UserSettings extends Component {
     };
 
     render() {
-        let string = new LocalizedStrings(L10N);
-        string.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         const successAlert =
             (<Message
                 onDismiss={this.handleDismiss}
                 success
-                header='Success'
-                content='qwer123'
+                header={strings.success.success}
+                content={strings.success.userData}
             />);
         const errorAlert =
             (<Message
                 onDismiss={this.handleDismiss}
                 error
-                header='Error'
-                content='qwer123'
+                header={strings.error.error}
+                content={this.state.errorMsg}
             />);
         return (
             <Container id='userSettings'>
@@ -197,41 +196,42 @@ class UserSettings extends Component {
                 {this.state.isErrorA ? errorAlert : false}
                 <Form>
                     <Form.Input
-                        label={string.user.username}
+                        label={strings.user.username}
                         readOnly
-                        placeholder={string.user.username}
+                        placeholder={strings.user.username}
                         value={this.state.username}/>
                     <Form.Input
-                        label={string.user.firstName}
-                        placeholder={string.user.firstName}
+                        label={strings.user.firstName}
+                        placeholder={strings.user.firstName}
                         value={this.state.firstName}
                         onChange={this.changeFirstNameHandle}
                         error={!this.isValidFirstName().value}/>
-                    {this.isValidFirstName().value ? false : this.isValidFirstName().message}
-                
+                    {this.isValidFirstName().value ? false : this.isValidFirstName(strings.error.user.firstName).message}
+
                     <Form.Input
-                        label={string.user.lastName}
-                        placeholder={string.user.lastName}
+                        label={strings.user.lastName}
+                        placeholder={strings.user.lastName}
                         value={this.state.lastName}
                         onChange={this.changeLastNameHandle}
                         error={!this.isValidLastName().value}/>
-                    {this.isValidLastName().value ? false : this.isValidLastName().message}
-                    
+                    {this.isValidLastName().value ? false : this.isValidLastName(strings.error.user.lastName).message}
+
                     <Form.Input
-                        label={string.user.email}
-                        placeholder={string.user.email}
+                        label={strings.user.email}
+                        placeholder={strings.user.email}
                         value={this.state.email}
                         onChange={this.changeEmailHandle}
                         error={!this.isValidEmail().value}/>
-                    {this.isValidEmail().value ? false : this.isValidEmail().message}
-                    <AddressForm returnAddress={this.getAddress} defaultAddress={this.state.registrationAddress} userId={this.state.userId}/>
+                    {this.isValidEmail().value ? false : this.isValidEmail(strings.error.user.email).message}
+                    <AddressForm returnAddress={this.getAddress} defaultAddress={this.state.registrationAddress}
+                                 userId={this.state.userId}/>
                     {this.state.userData ?
                         <Button
-                        className='submitButton'
+                            className='submitButton'
                             type='submit'
                             disabled={!this.isDisableButton()}
                             onClick={this.changeUserData}
-                        >{string.user.changeData}</Button>
+                        >{strings.user.changeData}</Button>
                         : false}
                 </Form>
             </Container>

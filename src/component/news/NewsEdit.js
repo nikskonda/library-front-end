@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
 import {
-    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
-    DEFAULT_L10N_LANGUAGE
+    LOCAL_STORAGE_UI_LANGUAGE
 } from "../../context";
 import {Button, Container, Dropdown, Form, Message, TextArea} from "semantic-ui-react";
 import './NewsEdit.css'
 import FileDropBox from "../FileDropBox";
 import {Link} from "react-router-dom";
-import {L10N} from "../../l10n"
+import {getLang, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 // BookEdit.propTypes = {
@@ -124,9 +124,9 @@ class NewsEdit extends Component {
         this.setState({language: value, languageWasChanged: true});
     };
 
-    isValidLanguage = () => {
+    isValidLanguage = (text) => {
         if (!this.state.languageWasChanged) return {value: true};
-        let message = (<p className='errorMsg'>enter valid lang</p>);
+        let message = (<p className='errorMsg'>{text}</p>);
         let value = true;
         let language = this.state.language;
 
@@ -141,11 +141,11 @@ class NewsEdit extends Component {
         this.setState({title: value, titleWasChanged: true});
     };
 
-    isValidTitle = () => {
+    isValidTitle = (text) => {
         if (!this.state.titleWasChanged) return {value: true};
         let title = this.state.title;
 
-        let message = (<p className='errorMsg'>enter valid ({title.length}/255)</p>);
+        let message = (<p className='errorMsg'>{text + title.length}</p>);
         let value = true;
 
         if (!title) {
@@ -168,11 +168,11 @@ class NewsEdit extends Component {
         this.setState({text: value, textWasChanged: true});
     };
 
-    isValidText = () => {
+    isValidText = (txt) => {
         if (!this.state.textWasChanged) return {value: true};
         let text = this.state.text;
 
-        let message = (<p className='errorMsg'>enter valid text ({text.length}/10000)</p>);
+        let message = (<p className='errorMsg'>{txt + text.length}</p>);
         let value = true;
 
         if (!text) {
@@ -208,9 +208,9 @@ class NewsEdit extends Component {
         this.setState({picture: file}, this.handleLoadFilePicture);
     };
 
-    isValidThumbnail = () => {
+    isValidThumbnail = (text) => {
         if (!this.state.thumbnailUrlWasChanged) return {value: true};
-        let message = (<p className='errorMsg'>enter valid Thumbnai</p>);
+        let message = (<p className='errorMsg'>{text}</p>);
         let value = true;
         let thumbnailUrl = this.state.thumbnailUrl;
 
@@ -225,9 +225,9 @@ class NewsEdit extends Component {
         this.setState({thumbnail: file}, this.handleLoadFileThumbnail);
     };
 
-    isValidPicture = () => {
+    isValidPicture = (text) => {
         if (!this.state.pictureUrlWasChanged) return {value: true};
-        let message = (<p className='errorMsg'>enter valid Picture</p>);
+        let message = (<p className='errorMsg'>{text}</p>);
         let value = true;
         let pictureUrl = this.state.pictureUrl;
 
@@ -249,7 +249,7 @@ class NewsEdit extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'form/data',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 })
             .then(res => {
@@ -272,7 +272,7 @@ class NewsEdit extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'form/data',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 })
             .then(res => {
@@ -310,7 +310,7 @@ class NewsEdit extends Component {
             headers: {
                 'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                 'Content-type': 'application/json',
-                // 'Accept-Language': locale.tag || ''
+                'Accept-Language': getLang()
             },
             data: {
                 title: this.state.title,
@@ -369,7 +369,7 @@ class NewsEdit extends Component {
                         text={this.state.language === null ? strings.news.lang: this.state.language.name}
                         onChange={this.handleChangeLanguage}
                     />
-                    {this.isValidLanguage().value ? false : this.isValidLanguage().message}
+                    {this.isValidLanguage().value ? false : this.isValidLanguage(strings.error.news.language).message}
 
                     <Form.Input
                         label={strings.news.title}
@@ -378,7 +378,7 @@ class NewsEdit extends Component {
                         onChange={this.handleChangeTitle}
                         error={!this.isValidTitle().value}
                     />
-                    {this.isValidTitle().value ? false : this.isValidTitle().message}
+                    {this.isValidTitle().value ? false : this.isValidTitle(strings.error.news.title).message}
 
 
                     <Form.Field
@@ -389,7 +389,7 @@ class NewsEdit extends Component {
                         onChange={this.handleChangeText}
                         error={!this.isValidText().value}
                     />
-                    {this.isValidText().value ? false : this.isValidText().message}
+                    {this.isValidText().value ? false : this.isValidText(strings.error.news.text).message}
 
                     <FileDropBox
                         label={strings.news.thumbnail}
@@ -400,7 +400,7 @@ class NewsEdit extends Component {
                         textBox={strings.news.selectFile}
                     />
 
-                    {this.isValidThumbnail().value ? false : this.isValidThumbnail().message}
+                    {this.isValidThumbnail().value ? false : this.isValidThumbnail(strings.error.news.thumbnail).message}
 
                     <FileDropBox
                         label={strings.news.picture}
@@ -411,7 +411,7 @@ class NewsEdit extends Component {
                         textBox={strings.news.selectFile}
                     />
 
-                    {this.isValidPicture().value ? false : this.isValidPicture().message}
+                    {this.isValidPicture().value ? false : this.isValidPicture(strings.error.news.picture).message}
 
                     <div className='bottomButtons'>
                         <Button

@@ -1,19 +1,19 @@
 import React, {Component} from 'react';
 import BookList from "./BookList";
 import GenreList from "./GenreList"
-import {Button, Container, Grid, Input, Select} from "semantic-ui-react";
+import {Button, Container, Grid, Input} from "semantic-ui-react";
 import queryString from 'query-string';
 import {
-    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
     DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_BOOK_LANGUAGE,
+    LOCAL_STORAGE_UI_LANGUAGE,
     PAGINATION_BOOKS_PER_ROW,
     PAGINATION_BOOKS_ROWS
 } from "../../context";
 import axios from "axios";
 import './BookList.css'
-import {L10N} from "../../l10n"
+import {getLang, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 
@@ -22,7 +22,7 @@ class BookCatalogPage extends Component {
     state = {
         searchString: '',
         number: 1,
-        size: PAGINATION_BOOKS_PER_ROW*PAGINATION_BOOKS_ROWS,
+        size: PAGINATION_BOOKS_PER_ROW * PAGINATION_BOOKS_ROWS,
         sort: 'rating',
         direction: 'DESC',
         genres: [],
@@ -37,7 +37,7 @@ class BookCatalogPage extends Component {
         books: [],
         totalPages: 0,
 
-        errorText: 'default message',
+        errorText: null,
     };
 
     componentDidMount() {
@@ -70,7 +70,7 @@ class BookCatalogPage extends Component {
     };
 
     changeUrl = (params) => {
-        if (!params){
+        if (!params) {
             params = {
                 searchString: this.state.searchString,
                 number: this.state.number,
@@ -87,13 +87,13 @@ class BookCatalogPage extends Component {
     };
 
     addGenre = (genreName) => {
-        this.setState({genres: genreName}, this.changeUrl);
+        this.setState({genres: genreName, number: 1}, this.changeUrl);
         // this.state.genres.push(genreName);
         // this.changeUrl();
     };
 
     setGenres = (genres) => {
-        this.setState({genres: genres}, this.changeUrl);
+        this.setState({genres: genres, number: 1}, this.changeUrl);
     };
 
     setActivePage = (page) => {
@@ -101,7 +101,7 @@ class BookCatalogPage extends Component {
     };
 
     setSize = (size) => {
-        this.setState({size: size}, this.changeUrl);
+        this.setState({size: size, number: 1}, this.changeUrl);
     };
 
     loadBooks = () => {
@@ -121,9 +121,12 @@ class BookCatalogPage extends Component {
                     params: params,
                     paramsSerializer: params => {
                         return queryString.stringify(params)
+                    },
+                    headers: {
+                        'Accept-Language': getLang()
                     }
                 }
-                )
+            )
             .then(res => {
                 this.setState({
                     number: res.data.number + 1,
@@ -131,25 +134,26 @@ class BookCatalogPage extends Component {
                     totalPages: res.data.totalPages,
                 });
             })
-            .catch(function (error) {
+            .catch((error) => {
                 console.log(error);
+                // this.setState({errorText: response.data.message});
             });
     };
 
-    changeSearchHandler = (event, {value}) =>{
+    changeSearchHandler = (event, {value}) => {
         this.setState({searchString: value});
     };
 
     searchBooks = () => {
-           let params = {
-                searchString: this.state.searchString,
-                number: 1,
-                size: this.state.size,
-                sort: this.state.sort,
-                direction: this.state.direction,
-                genres: [],
-                authors: [],
-            };
+        let params = {
+            searchString: this.state.searchString,
+            number: 1,
+            size: this.state.size,
+            sort: this.state.sort,
+            direction: this.state.direction,
+            genres: [],
+            authors: [],
+        };
         this.changeUrl(params);
 
     };
@@ -160,48 +164,45 @@ class BookCatalogPage extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE) ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        return (
             <div id='bookCatalog'>
                 <Container>
                     <Grid>
                         <Grid.Column width={3} className='genreList'>
-                            <GenreList selected={this.state.genres} addGenre={this.addGenre} setGenres={this.setGenres} lang={this.getLangTagFromLocalStorage()}/>
+                            <GenreList selected={this.state.genres} addGenre={this.addGenre} setGenres={this.setGenres}
+                                       lang={this.getLangTagFromLocalStorage()}/>
                         </Grid.Column>
                         <Grid.Column stretched width={13}>
-                            <div className='searchBook'>
-                                <Input
-                                    fluid
-                                    placeholder={strings.book.searchPlaceholder}
-                                    action
-                                    value={this.state.searchString}
-                                    onChange={this.changeSearchHandler}
-                                >
-                                    <input/>
-                                    <Select
-                                        compact
-                                        options={this.state.searchOptions}
-                                        defaultValue='all'
-                                        value={this.state.selectedSearchOption}
-                                        onChange={this.changeSearchOption}
-                                    />
-                                    <Button
-                                        type='submit'
-                                        onClick={this.searchBooks}
+                            <div>
+                                <div className='searchBook'>
+                                    <Input
+                                        fluid
+                                        placeholder={strings.book.searchPlaceholder}
+                                        action
+                                        value={this.state.searchString}
+                                        onChange={this.changeSearchHandler}
                                     >
-                                        {strings.book.search}
-                                    </Button>
-                                </Input>
+                                        <input/>
+                                        <Button
+                                            type='submit'
+                                            onClick={this.searchBooks}
+                                        >
+                                            {strings.book.search}
+                                        </Button>
+                                    </Input>
+                                </div>
+                                <BookList
+                                    activePage={this.state.number}
+                                    books={this.state.books}
+                                    totalPages={this.state.totalPages}
+                                    setActivePage={this.setActivePage}
+                                    addGenre={this.addGenre}
+                                    size={this.state.size}
+                                    setSize={this.setSize}
+                                    errorText={this.state.errorText}
+                                />
                             </div>
-                            <BookList
-                                activePage={this.state.number}
-                                books={this.state.books}
-                                totalPages={this.state.totalPages}
-                                setActivePage={this.setActivePage}
-                                addGenre={this.addGenre}
-                                size={this.state.size}
-                                setSize={this.setSize}
-                                errorText={this.state.errorText}
-                            />
                         </Grid.Column>
                     </Grid>
                 </Container>

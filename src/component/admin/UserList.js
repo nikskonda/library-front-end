@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
-import {Button, Icon, Item, Message, Pagination, Dropdown} from "semantic-ui-react";
+import {Button, Dropdown, Icon, Item, Message, Pagination} from "semantic-ui-react";
 import axios from "axios";
 import {
-    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE,
     PAGINATION_BOUNDARY_RANGE,
-    PAGINATION_SIBLING_RANGE,
-    PAGINATION_USERS_PER_ROW,
-    PAGINATION_USERS_ROWS,
     PAGINATION_COUNT_IN_DROPDOWN,
+    PAGINATION_SIBLING_RANGE,
     PAGINATION_STEP_IN_DROPDOWN,
-    DEFAULT_L10N_LANGUAGE
+    PAGINATION_USERS_PER_ROW,
+    PAGINATION_USERS_ROWS
 } from "../../context";
 import queryString from "query-string";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
@@ -19,7 +19,6 @@ import UserItem from "./UserItem";
 import './UserList.css';
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
-import { string } from 'prop-types';
 
 class UserList extends Component {
 
@@ -84,8 +83,8 @@ class UserList extends Component {
                         }
                     ));
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorText: response.data.message});
             });
     };
 
@@ -117,11 +116,10 @@ class UserList extends Component {
             (<Message
                 warning
                 header='Users Not found'
-                content='Plz change search query!'
+                content={this.state.errorText}
             />);
         return (
-        <div id='userList'>
-            
+            <div id='userList'>
                         <Input
                             className='search'
                         type='text'

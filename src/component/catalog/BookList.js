@@ -10,12 +10,14 @@ import {
     PAGINATION_SIBLING_RANGE,
     PAGINATION_STEP_IN_DROPDOWN
 } from "../../context";
+import {getStrings} from "../../l10n";
 
 class BookList extends Component {
 
     state = {
         defaultPage: 1,
         size: 1,
+        errorText: null,
     };
 
     componentWillReceiveProps(nextProps) {
@@ -23,6 +25,7 @@ class BookList extends Component {
         if (this.state.size !== number) {
             this.setState({size: number});
         }
+        this.setState({errorText: nextProps.errorText});
     }
 
     handlePaginationChange = (event, {activePage}) => {
@@ -36,22 +39,23 @@ class BookList extends Component {
 
     loadSizeList = () => {
         let min = PAGINATION_BOOKS_ROWS * PAGINATION_BOOKS_PER_ROW;
-        let attay = [];
+        let array = [];
         for (let i = 0; i < PAGINATION_COUNT_IN_DROPDOWN; i++) {
             let value = i * PAGINATION_STEP_IN_DROPDOWN + min;
-            attay.push({key: value, text: value, value: value});
+            array.push({key: value, text: value, value: value});
         }
-        return attay;
+        return array;
     };
 
     render() {
+        let strings = getStrings();
         const alert =
             (<Message
                 warning
-                header='Books Not found'
+                header={strings.error.book.catalog}
                 content={this.props.errorText}
             />);
-        return (this.props.books) ?
+        return (!this.props.errorText && this.props.books) ?
             (<React.Fragment>
                 <Card.Group itemsPerRow={PAGINATION_BOOKS_PER_ROW}>
                     {this.props.books.map((book) =>
@@ -61,7 +65,7 @@ class BookList extends Component {
                             addGenre={this.props.addGenre}
                         />)}
                 </Card.Group>
-                {this.props.books && this.props.books.length>0 ?
+                {this.props.books && this.props.books.length > 0 ?
                 <div className='booksPagination'>
                     <Pagination
                         activePage={this.props.activePage}

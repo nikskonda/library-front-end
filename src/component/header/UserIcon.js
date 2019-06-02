@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
 import {Dropdown, Image} from "semantic-ui-react";
 import {
-    LOCAL_STORAGE_USER_DATA,
-    USER_AVATAR_DEFAULT,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_UI_LANGUAGE,
-    DEFAULT_L10N_LANGUAGE
+    LOCAL_STORAGE_USER_DATA,
+    USER_AVATAR_DEFAULT
 } from "../../context";
 import {Link} from "react-router-dom";
-import { string } from 'prop-types';
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
-
-
-  
 
 
 class UserIcon extends Component {

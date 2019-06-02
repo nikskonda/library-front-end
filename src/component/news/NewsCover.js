@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
 import {Card, Icon, Image} from 'semantic-ui-react';
 import {
-    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_UI_LANGUAGE,
     LOCAL_STORAGE_USER_DATA,
     ROLE_ADMIN,
-    URL_DOWNLOAD_FILE,
-    DEFAULT_L10N_LANGUAGE
+    URL_DOWNLOAD_FILE
 } from "../../context";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';

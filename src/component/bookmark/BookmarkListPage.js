@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import queryString from "query-string";
-import {BACK_END_SERVER_URL, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,PAGINATION_BOOKMARKS_PER_ROW, PAGINATION_BOOKMARKS_ROWS} from "../../context";
+import {
+    BACK_END_SERVER_URL,
+    LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    PAGINATION_BOOKMARKS_PER_ROW,
+    PAGINATION_BOOKMARKS_ROWS
+} from "../../context";
 import axios from 'axios'
 import {Container} from "semantic-ui-react";
 import BookmarkList from "./BookmarkList";

@@ -7,7 +7,6 @@ import NewsListPage from "./news/NewsListPage";
 import NewsPage from "./news/NewsPage";
 import SignIn from "./sign/SignIn";
 import Header from "./header/Header";
-import NewsEdit from "./news/NewsEdit";
 import OrderListPage from "./order/OrderListPage";
 import SignUp from "./sign/SignUp";
 import SignOut from "./sign/SignOut";

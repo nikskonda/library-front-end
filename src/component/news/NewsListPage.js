@@ -23,7 +23,7 @@ class NewsListPage extends Component {
         newsLangTag: null,
         news: [],
         totalPages: 0,
-        errorText: 'default message',
+        errorText: null,
     };
 
     componentWillMount() {

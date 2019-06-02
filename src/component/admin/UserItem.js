@@ -3,15 +3,15 @@ import {Button, Dropdown, Icon, Item, Label} from "semantic-ui-react";
 import axios from "axios";
 import {
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_BASKET,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
-    ROLE,
-    URL_DOWNLOAD_FILE,
-    USER_AVATAR_DEFAULT,
-    ROLE_ADMIN,
-    ROLE_LIBRARIAN,
+    LOCAL_STORAGE_UI_LANGUAGE,
     LOCAL_STORAGE_USER_DATA,
-    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
+    ROLE_ADMIN,
+    ROLE_LIBRARIAN, ROLE_OPERATOR,
+    URL_DOWNLOAD_FILE,
+    USER_AVATAR_DEFAULT
 } from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
@@ -139,17 +139,16 @@ class UserItem extends Component {
             });
     };
 
-    isLibrarian = () => {
+    isHasRole = (role) => {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(ROLE_LIBRARIAN);
-        else return false;
-    }
-
-    isAdmin = () => {
-        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(ROLE_ADMIN);
-        else return false;
-    }
+        if (user){
+            let roles = JSON.parse(user).authorities;
+            if (roles && roles.includes(role)){
+                return true;
+            }
+        }
+        return false;
+    };
 
     render() {
         let strings = new LocalizedStrings(L10N);
@@ -160,13 +159,13 @@ class UserItem extends Component {
                 <Item.Image size='small' src={user.avatarUrl?BACK_END_SERVER_URL+URL_DOWNLOAD_FILE+user.avatarUrl:USER_AVATAR_DEFAULT}/>
                 <Item.Content>
                     <Item.Header as='a'>{user.username}</Item.Header><br/>
-                    <RoleList roleList={this.state.roleList} user={user} refresh={this.props.refresh}/>
+                    {this.isHasRole(ROLE_ADMIN)?<RoleList roleList={this.state.roleList} user={user} refresh={this.props.refresh}/>:false}
                     <Item.Description>
                         <p>{this.name(user.firstName, user.lastName)}</p>
                         <p>{this.address(user.registrationAddress)}</p>
                     </Item.Description>
                     <Item.Extra>
-                        {this.isLibrarian()?
+                        {this.isHasRole(ROLE_LIBRARIAN)?
                         <Button
                             icon
                             labelPosition='right'
@@ -176,27 +175,27 @@ class UserItem extends Component {
                             {userL10n.giveBook}
                             <Icon name='hand paper'/>
                         </Button> : false}
-                        {this.isLibrarian()?
+                        {this.isHasRole(ROLE_OPERATOR)?
                         <Button
                             as={Link}
-                            to={`../../../admin/orderList?userId=${user.id}`}
+                            to={`/admin/orderList?userId=${user.id}`}
                             icon
                             labelPosition='right'
                             floated='right'>
                             {userL10n.orders}
                             <Icon name='unordered list'/>
                         </Button>: false}
-                        {this.isAdmin()?
+                        {this.isHasRole(ROLE_ADMIN) || this.isHasRole(ROLE_OPERATOR)?
                         <Button
                             as={Link}
-                            to={`../admin/user/settings/${user.id}`}
+                            to={`/admin/user/settings/${user.id}`}
                             icon
                             labelPosition='right'
                             floated='right'>
                             {userL10n.userSettings}
                             <Icon name='setting'/>
                         </Button>: false}
-                        {this.isAdmin()?
+                        {this.isHasRole(ROLE_ADMIN)?
                         <Button
                             icon
                             labelPosition='right'
@@ -206,7 +205,7 @@ class UserItem extends Component {
                             {!user.banned? userL10n.unban: userL10n.ban}
                             <Icon name='remove user'/>
                         </Button>: false}
-                        {this.isAdmin()?
+                        {this.isHasRole(ROLE_ADMIN)?
                         <Button
                             icon
                             labelPosition='right'
@@ -269,7 +268,7 @@ class RoleList extends Component {
         let body = {
             username: this.props.user.username,
             authority: this.state.newAuthority,
-        }
+        };
         axios
             .post(BACK_END_SERVER_URL + '/user/role',
                 body,
@@ -319,7 +318,7 @@ class Role extends Component {
 
     state = {
         showModal: false,
-    }
+    };
 
     removeAuthority = () => {
         axios({

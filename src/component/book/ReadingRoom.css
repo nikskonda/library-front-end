@@ -1,0 +1,15 @@
+#readingRoom {
+    margin: 10px 0;
+}
+
+#readingRoom .grid button{
+    background-color: #cacf98;
+}
+
+#readingRoom .grid .or ::before{
+    color: #1f2222;
+}
+
+#readingRoom .grid .MuiSlider-thumb-7{
+    background-color: #3f51b5;
+}

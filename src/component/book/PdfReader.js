@@ -5,6 +5,8 @@ import {Button, Container, Grid, GridColumn, Icon, Message} from "semantic-ui-re
 import axios from "axios";
 import Slider from '@material-ui/lab/Slider';
 import {Link} from "react-router-dom";
+import {getLang, getStrings} from "../../l10n";
+import './ReadingRoom.css';
 
 
 class PdfReader extends Component {
@@ -30,40 +32,43 @@ class PdfReader extends Component {
                     bookId: res.data.id,
                 });
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({
+                    bookmarkErrorAlert: true,
+                    errorTxt: response.data.message,
+                });
             });
     }
 
     componentDidMount() {
-        axios
-            .get(BACK_END_SERVER_URL + `/bookmark/book/${this.props.match.params.bookId}`,
-                {
-                    headers: {
-                        'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
-                        'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''}
-                    }
-                })
-            .then(res => {
-
-                this.setState(
+        if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)){
+            axios
+                .get(BACK_END_SERVER_URL + `/bookmark/book/${this.props.match.params.bookId}`,
                     {
-                        bookmark: res.data.page>this.state.totalPage?this.state.totalPage:res.data.page,
-                        bookmarkId: res.data.id,
-                    }
-                    // ,
-                    // () => {
-                    //     console.log(this.state.bookmark);
-                    //     if (this.state.bookmark){
-                    //         this.setState({pageNumber: this.state.bookmark});
-                    //     }
-                    // }
-                );
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+                        headers: {
+                            'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                            'Content-type': 'application/json',
+                            'Accept-Language': getLang()
+                        }
+                    })
+                .then(res => {
+                    this.setState(
+                        {
+                            pageNumber: res.data.page > this.state.totalPage ? this.state.totalPage : res.data.page,
+                            bookmark: res.data.page > this.state.totalPage ? this.state.totalPage : res.data.page,
+                            bookmarkId: res.data.id,
+                        }
+                    );
+                })
+                .catch(({response}) => {
+                    this.setState({
+                        bookmarkErrorAlert: true,
+                        errorTxt: response.data.message,
+                    });
+                });
+        }
+
+
     }
 
     nextPage = () => {
@@ -105,6 +110,7 @@ class PdfReader extends Component {
                 {
                     id: this.state.bookmarkId,
                     page: this.state.pageNumber,
+                    type: 'PDF',
                     book: {
                         id: this.state.bookId
                     }
@@ -113,7 +119,7 @@ class PdfReader extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     }
                 }
             )
@@ -125,35 +131,35 @@ class PdfReader extends Component {
                 });
 
             })
-            .catch((error) => {
+            .catch(({response}) => {
                 this.setState({
                     bookmarkErrorAlert: true,
+                    errorTxt: response.data.message,
                 });
-                console.log(error);
             });
     };
 
     render() {
+        let strings = getStrings();
         const alert =
             (<Message
                 warning
-                header='Book Not found'
-                content='Plz change search query!'
+                header={strings.error.book.notFound}
+                content={this.state.errorText}
             />);
         const bookmarkSuccessAlert =
             (<Message
                 positive
-                header='Bookmark successfully created!'
-                content='qqqqqqqqqqqqqq!'
+                header={strings.success.bookmarkCreated}
             />);
         const bookmarkErrorAlert =
             (<Message
                 negative
-                header={`Bookmark didn't creat!`}
-                content='qqqqqqqqqqqqqq!'
+                header={strings.error.bookmark.didntCreate}
+                content={this.state.errorText}
             />);
         return (this.state.pdfUrl ?
-                <Container>
+                <Container id='readingRoom'>
                     <Grid>
                         {this.state.bookmarkSuccessAlert ? bookmarkSuccessAlert : false}
                         {this.state.bookmarkErrorAlert ? bookmarkErrorAlert : false}
@@ -161,17 +167,18 @@ class PdfReader extends Component {
                             <Link to='..'>
                                 <Button labelPosition='left' icon floated='right'>
                                     <Icon name='arrow left'/>
-                                    BACK
+                                    {strings.readingRoom.back}
                                 </Button>
                             </Link>
                             <Button
                                 labelPosition='right'
-                                icon floated='left'
+                                icon
+                                floated='right'
                                 onClick={this.saveBookmark}
                             >
                                 {this.state.bookmark === this.state.pageNumber ? <Icon name='bookmark'/> :
                                     <Icon name='bookmark outline'/>}
-                                Create Bookmark
+                                {strings.readingRoom.createBookmark}
                             </Button>
                         </Grid.Row>
                         <Grid.Row>
@@ -198,12 +205,12 @@ class PdfReader extends Component {
                                     <Button
                                         disabled={this.state.pageNumber === 1}
                                         onClick={this.prevPage}
-                                    >PREV</Button>
+                                    >{strings.readingRoom.prev}</Button>
                                     <Button.Or text={this.state.value}/>
                                     <Button
                                         disabled={this.state.pageNumber === this.state.totalPage}
                                         onClick={this.nextPage}
-                                    >NEXT</Button>
+                                    >{strings.readingRoom.next}</Button>
                                 </Button.Group>
                             </GridColumn>
                         </Grid.Row>

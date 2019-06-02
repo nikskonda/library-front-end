@@ -6,7 +6,12 @@ import {
     ORDER_STATUS_RECEIVED,
     ORDER_STATUS_RETURN_TO_COURIER,
     ORDER_STATUS_RETURNED,
-    ORDER_STATUS_CANCELLED
+    ORDER_STATUS_CANCELLED,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    DEFAULT_L10N_LANGUAGE,
+    BOOK_TYPE_BOOK,
+    BOOK_TYPE_COMICS,
+    BOOK_TYPE_MAGAZINE
 } from "./context"
 
 import {
@@ -17,11 +22,26 @@ import {
     ROLE_LIBRARIAN,
     ROLE_ADMIN,
 } from "./context"
+import LocalizedStrings from 'react-localization';
 
+export const getLang = () => {
+    let langStr = localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE);
+    if (langStr) {
+        return JSON.parse(langStr).tag;
+    } else {
+        return DEFAULT_L10N_LANGUAGE;
+    }
+};
+
+export const getStrings = () => {
+    let strings = new LocalizedStrings(L10N);
+    strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE) ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+    return strings;
+};
 
 export const L10N = {
     enUS: {
-        menu:{
+        menu: {
             home: "Home",
             news: "News",
             catalog: "Catalog",
@@ -37,7 +57,7 @@ export const L10N = {
             settings: "Settings",
             signOut: "Sign Out",
         },
-        news:{
+        news: {
             added: "Added",
             lang: "Select language",
             title: "Title",
@@ -46,16 +66,21 @@ export const L10N = {
             picture: "Picture",
             selectFile: "Select file",
             save: "Save",
+            edit: 'Edit',
+            remove: 'Remove',
             toNews: "Go to News",
             notFound: "News not found"
         },
-        book:{
+        book: {
             searchPlaceholder: "Search ...",
             search: "Search",
             toBusket: "To Busket",
             inLibraryUseOnly: 'In library use only',
+            addedToBasket: 'Current count in basket: ',
             findInOrders: 'Find in Orders',
             edit: 'Edit',
+            remove: 'Remove',
+            wasRemoved: 'Was successfully removed',
             readPdf: 'Read PDF',
             readEpub: 'Read EPUB',
             lang: "Select language",
@@ -81,13 +106,15 @@ export const L10N = {
             importer: "Importer",
             isbn: "ISBN",
             count: 'Count',
+            pdfDownload: 'Download PDF',
             wiki: 'WIKI',
             findByAuthor: 'Find All His Books',
 
             save: "Save",
             toBook: "Go to Book",
+            unknown: "unknown"
         },
-        orders:{
+        orders: {
             showDetails: 'Show Details',
             hideDetails: 'Hide Details',
             total: 'Total',
@@ -95,39 +122,44 @@ export const L10N = {
         },
         orderStatus: [
             [ORDER_STATUS_NEW, {
-                text:'NEW', button:'New', icon:'plus', color: 'teal'
+                text: 'NEW', button: 'New', icon: 'plus', color: 'teal'
             }],
             [ORDER_STATUS_CONFIRMED, {
-                text:'CONFIRMED', button:'Confirmed',  icon:'thumbs up', color: 'green'
-                }],
+                text: 'CONFIRMED', button: 'Confirmed', icon: 'thumbs up', color: 'green'
+            }],
             [ORDER_STATUS_HANDED_OUT, {
-                text:'HANDED OUT', button:'Handed out', icon:'hand paper', color: 'violet'
-                }],
+                text: 'HANDED OUT', button: 'Handed out', icon: 'hand paper', color: 'violet'
+            }],
             [ORDER_STATUS_AT_COURIER, {
-                text:'AT COURIER', button:'At courier', icon:'bicycle', color: 'violet'
-                }],
+                text: 'AT COURIER', button: 'At courier', icon: 'bicycle', color: 'violet'
+            }],
             [ORDER_STATUS_RECEIVED, {
-                text:'RECEIVED', button:'Received', icon:'user', color: 'yellow'
-                }],
+                text: 'RECEIVED', button: 'Received', icon: 'user', color: 'yellow'
+            }],
             [ORDER_STATUS_RETURN_TO_COURIER, {
-                text:'RETURNED TO COURIER', button:'Return to courier',  icon:'redo', color: 'brown'
-                }],
+                text: 'RETURNED TO COURIER', button: 'Return to courier', icon: 'redo', color: 'brown'
+            }],
             [ORDER_STATUS_RETURNED, {
-                text:'RETURNED', button:'Returned',  icon:'thumbs up', color: 'purple'
-                }],
+                text: 'RETURNED', button: 'Returned', icon: 'thumbs up', color: 'purple'
+            }],
             [ORDER_STATUS_CANCELLED, {
-                text:'CANCELLED', button:'Cancel',  icon:'delete', color: 'red'
-                }], 
+                text: 'CANCELLED', button: 'Cancel', icon: 'delete', color: 'red'
+            }],
         ],
         role: [
-            [ROLE_USER, { text:'user', color: 'green'}],
-            [ROLE_OPERATOR, { text:'operator', color: 'blue'}],
-            [ROLE_LIBRARIAN, { text:'librarian', color: 'violet'}],
-            [ROLE_COURIER, { text:'courier', color: 'purple'}],
-            [ROLE_JOURNALIST, { text:'journalist', color: 'orange'}],
-            [ROLE_ADMIN, { text:'admin', color: 'red'}]
+            [ROLE_USER, {text: 'user', color: 'green'}],
+            [ROLE_OPERATOR, {text: 'operator', color: 'blue'}],
+            [ROLE_LIBRARIAN, {text: 'librarian', color: 'violet'}],
+            [ROLE_COURIER, {text: 'courier', color: 'purple'}],
+            [ROLE_JOURNALIST, {text: 'journalist', color: 'orange'}],
+            [ROLE_ADMIN, {text: 'admin', color: 'red'}]
         ],
-        userList:{
+        bookType: [
+            [ BOOK_TYPE_BOOK, { name: 'BOOK'}],
+            [ BOOK_TYPE_COMICS, {name: 'COMICS'}],
+            [ BOOK_TYPE_MAGAZINE, {name: 'MAGAZINE'}]
+        ],
+        userList: {
             search: 'Search',
             searchPlaceholder: 'Username',
             clear: 'To Clear',
@@ -138,16 +170,17 @@ export const L10N = {
             giveBook: 'Give books from basket',
             role: 'Select role',
         },
-        basket:{
+        basket: {
             count: 'Count: ',
             addOne: 'Add One',
             removeOne: 'Remove One',
             remove: 'Remove',
+            removeAllButOne: 'Remove All but One',
             removeAll: 'Remove All',
             checkout: 'Checkout',
             hide: 'Hide address form',
         },
-        address:{
+        address: {
             selectAddress: 'Select Address',
             addNewAddress: 'Add New Address',
             lastList: 'Select from list of last addresses',
@@ -163,7 +196,7 @@ export const L10N = {
 
             confirm: 'This is my address',
         },
-        adminMenu:{
+        adminMenu: {
             home: 'Home',
             welcome: 'Welcome to admin panel!',
             userList: 'User list',
@@ -172,7 +205,7 @@ export const L10N = {
             bookEdit: 'Book edit',
             newsEDit: 'News edit',
         },
-        bookmarks:{
+        bookmarks: {
             page: 'Page: ',
             pdfRead: 'Read PDF',
             epubRead: 'Read EPUB',
@@ -188,10 +221,99 @@ export const L10N = {
             email: 'Email',
             changeData: 'Change',
             or: 'OR',
+        },
+        readingRoom: {
+            back: 'Back',
+            createBookmark: 'Create Bookmark',
+            prev: 'PREV',
+            next: 'NEXT',
+        },
+        modal: {
+            yes: 'Yes',
+            no: 'No',
+            cancel: 'Cancel',
+            remove: 'Remove?',
+            removeBook: 'You definitely want to delete the book "',
+            removeNews: 'You definitely want to delete the news "',
+            removeEnd: '"?',
+            author: {
+                header: 'Add author',
+                firstName: 'First name',
+                lastName: 'Last name',
+                description: 'Description',
+                wikiLink: 'Link to WIKIPEDIA',
+                errorFirstName: 'First name should be less than 30 symbols. You typed ',
+                errorLastName: 'Last name should be less than 30 symbols. You typed ',
+                errorDescription: 'Description should be less than 500 symbols. You typed ',
+                errorWikiLink: 'Link should be less than 255 symbols. You typed ',
+                create: 'Create'
+            },
+
+
+        },
+        success: {
+            success: 'Success',
+            userData: 'User data was successfully updated',
+            wasRemovedBook: 'Book was removed.',
+            wasRemovedNews: 'News was removed.',
+            inBasket: 'Book was added to basket.',
+            bookmarkCreated: 'Bookmark successfully created!',
+
+        },
+        error: {
+            error: 'Error',
+            user: {
+                signIn: "Authorization error",
+                signUp: 'Registration error',
+                username: 'Username must contain only the letters {a-z} and be between 4 and 30. You wrote ',
+                password: 'Password must be between 5 and 20. You wrote ',
+                confirmPassword: 'Passwords are different',
+                firstName: 'First name must be less than 30 characters',
+                lastName: 'Last name must be less than 30 characters',
+                email: 'Enter valid email'
+            },
+            book: {
+                catalog: 'Books not found',
+                notFound: 'Book not found',
+                language: 'Language must be selected',
+                title: 'Title must be filled and the number of characters up to 255. You typed ',
+                description: 'Text must be filled and the number of characters up to 3000. You typed ',
+                ageRestriction: 'Age restriction must be filled and the number of characters up to 255. You typed ',
+                genres: 'Genre must be selected',
+                rating: 'Count must be between 1 and 100.',
+                thumbnail: 'Thumbnail must be selected',
+                picture: 'Picture must be selected',
+                size: 'Size must be filled and the number of characters up to 255. You typed ',
+                count: 'Count must be more than 1.',
+                isbn: 'ISBN must be filled and the number of characters up to 255. You typed ',
+            },
+            news: {
+                notFound: 'News not found',
+                language: 'Language must be selected',
+                title: 'Title must be filled and the number of characters up to 255. You typed ',
+                text: 'Text must be filled and the number of characters up to 10000. You typed ',
+                thumbnail: 'Thumbnail must be selected',
+                picture: 'Picture must be selected',
+            },
+            basket: {
+                notFound: 'Your basket is empty',
+                notCreated: 'Your order has not been created',
+            },
+            address: {
+                city: 'Need to choose a city',
+                firstName: 'First name must be filled and the number of characters up to 30. You typed ',
+                lastName: 'Last name must be filled and the number of characters up to 30. You typed ',
+                postalCode: 'Postal code must be filled and the number of characters up to 30. You typed ',
+                phone: 'Phone must be filled and the number of characters up to 30. You typed ',
+                address: 'Address must be filled and the number of characters up to 400. You typed ',
+            },
+            bookmark: {
+                didntCreate: `Bookmark didn't creat!`,
+            }
         }
     },
     ruRU: {
-        menu:{
+        menu: {
             home: "Главная",
             news: "Новости",
             catalog: "Каталог",
@@ -207,7 +329,7 @@ export const L10N = {
             settings: "Настройки",
             signOut: "Выйти",
         },
-        news:{
+        news: {
             added: "Добавлено ",
             lang: "Выберите язык",
             title: "Заголовок",
@@ -216,16 +338,21 @@ export const L10N = {
             picture: "Изображение",
             selectFile: "Выберите файл",
             save: "Сохранить",
+            remove: 'Удалить',
+            edit: 'Редактировать',
             toNews: "К новости",
             notFound: "Новость не найдена"
         },
-        book:{
+        book: {
             searchPlaceholder: "Поиск ...",
             search: "Поиск",
             toBusket: "В корзину",
             inLibraryUseOnly: 'Только в библиотеке',
+            addedToBasket: 'На данный момент в корзине: ',
             findInOrders: 'Найти в заказах',
             edit: 'Реадктировать',
+            remove: 'Удалить',
+            wasRemoved: 'Была успешна удалена',
             readPdf: 'Читать PDF',
             readEpub: 'Читать EPUB',
             lang: "Выберите язык",
@@ -256,8 +383,10 @@ export const L10N = {
 
             save: "Сохранить",
             toBook: "К книге",
+            pdfDownload: 'Скачать PDF',
+            unknown: "не известен"
         },
-        orders:{
+        orders: {
             showDetails: 'Показать детали',
             hideDetails: 'Скрыть детали',
             total: 'Всего',
@@ -265,39 +394,44 @@ export const L10N = {
         },
         orderStatus: [
             [ORDER_STATUS_NEW, {
-                text:'НОВЫЙ', button:'Создан', icon:'plus', color: 'teal'
+                text: 'НОВЫЙ', button: 'Создан', icon: 'plus', color: 'teal'
             }],
             [ORDER_STATUS_CONFIRMED, {
-                text:'ПОДТВЕРЖЕНО', button:'Подтверждено', icon:'thumbs up', color: 'green'
+                text: 'ПОДТВЕРЖЕНО', button: 'Подтверждено', icon: 'thumbs up', color: 'green'
             }],
             [ORDER_STATUS_HANDED_OUT, {
-                text:'НА РУКАХ', button:'Отдано на руки',  icon:'hand paper', color: 'violet'
+                text: 'НА РУКАХ', button: 'Отдано на руки', icon: 'hand paper', color: 'violet'
             }],
             [ORDER_STATUS_AT_COURIER, {
-                text:'У КУРЬЕРА', button:'У курьера', icon:'bicycle', color: 'violet'
+                text: 'У КУРЬЕРА', button: 'У курьера', icon: 'bicycle', color: 'violet'
             }],
             [ORDER_STATUS_RECEIVED, {
-                text:'ПОЛУЧЕНО', button:'Получено', icon:'user', color: 'yellow'
+                text: 'ПОЛУЧЕНО', button: 'Получено', icon: 'user', color: 'yellow'
             }],
             [ORDER_STATUS_RETURN_TO_COURIER, {
-                text:'ВОЗВРАЩЕНО КУРЬЕРУ', button:'Вернуть курьеру', icon:'redo', color: 'brown'
+                text: 'ВОЗВРАЩЕНО КУРЬЕРУ', button: 'Вернуть курьеру', icon: 'redo', color: 'brown'
             }],
             [ORDER_STATUS_RETURNED, {
-                text:'ВОЗВРАЩЕНО', button:'Возвращено', icon:'thumbs up', color: 'purple'
+                text: 'ВОЗВРАЩЕНО', button: 'Возвращено', icon: 'thumbs up', color: 'purple'
             }],
             [ORDER_STATUS_CANCELLED, {
-                text:'ОТМЕНЕНО', button:'Отменить', icon:'delete', color: 'red'
-            }], 
+                text: 'ОТМЕНЕНО', button: 'Отменить', icon: 'delete', color: 'red'
+            }],
         ],
         role: [
-            [ROLE_USER, { text:'пользователь', color: 'green'}],
-            [ROLE_OPERATOR, { text:'оператор', color: 'blue'}],
-            [ROLE_LIBRARIAN, { text:'библиотекарь', color: 'violet'}],
-            [ROLE_COURIER, { text:'курьер', color: 'purple'}],
-            [ROLE_JOURNALIST, { text:'журналист', color: 'orange'}],
-            [ROLE_ADMIN, { text:'админ', color: 'red'}]
+            [ROLE_USER, {text: 'пользователь', color: 'green'}],
+            [ROLE_OPERATOR, {text: 'оператор', color: 'blue'}],
+            [ROLE_LIBRARIAN, {text: 'библиотекарь', color: 'violet'}],
+            [ROLE_COURIER, {text: 'курьер', color: 'purple'}],
+            [ROLE_JOURNALIST, {text: 'журналист', color: 'orange'}],
+            [ROLE_ADMIN, {text: 'админ', color: 'red'}]
         ],
-        userList:{
+        bookType: [
+            [ BOOK_TYPE_BOOK, { name: 'КНИГА'}],
+            [ BOOK_TYPE_COMICS, {name: 'КОМИКС'}],
+            [ BOOK_TYPE_MAGAZINE, {name: 'ЖУРНАЛ'}]
+        ],
+        userList: {
             search: 'Поиск',
             searchPlaceholder: 'Имя пользователя',
             clear: 'Очистить',
@@ -308,16 +442,17 @@ export const L10N = {
             giveBook: 'Выдать книги из корзины',
             role: 'Выбрать роль',
         },
-        basket:{
+        basket: {
             count: 'Количество: ',
             addOne: 'Добавить ещё одну',
             removeOne: 'Удалить одну',
             remove: 'Удалить',
+            removeAllButOne: 'Оставить только одну',
             removeAll: 'Удалить все',
             checkout: 'Оформить',
             hide: 'Скрыть форму ввода адреса',
         },
-        address:{
+        address: {
             selectAddress: 'Выберите адрес',
             addNewAddress: 'Добавить новый адрес',
             lastList: 'Выбрать адрес из списка последних',
@@ -333,7 +468,7 @@ export const L10N = {
 
             confirm: 'Это мой адрес',
         },
-        adminMenu:{
+        adminMenu: {
             home: 'Главная',
             welcome: 'Добро пожаловать в панель администрирования!',
             userList: 'Пользователи',
@@ -342,7 +477,7 @@ export const L10N = {
             bookEdit: 'Редактор книг',
             newsEDit: 'Редактор новостей',
         },
-        bookmarks:{
+        bookmarks: {
             page: 'Страница: ',
             pdfRead: 'Читать PDF',
             epubRead: 'Читать EPUB',
@@ -358,6 +493,93 @@ export const L10N = {
             email: 'Email',
             changeData: 'Изменить',
             or: 'ИЛИ',
+        },
+        readingRoom: {
+            back: 'Назад',
+            createBookmark: 'Создать закладку',
+            prev: 'ПРЕД',
+            next: 'СЛЕД',
+        },
+        modal: {
+            yes: 'Да',
+            no: 'Нет',
+            cancel: 'Отмена',
+            remove: 'Удалить?',
+            removeBook: 'Вы действительно хотите удалить книгу "',
+            removeNews: 'Вы действительно хотите удалить новость "',
+            removeEnd: '"?',
+            author: {
+                header: 'Автор',
+                firstName: 'Имя',
+                lastName: 'Фамилия',
+                description: 'Описание',
+                wikiLink: 'Ссылка на ВИКИПЕДИЮ',
+                errorFirstName: 'Имя должно быть менее 30 символов. Вы набрали ',
+                errorLastName: 'Фамилия должна быть менее 30 символов. Вы набрали ',
+                errorDescription: 'Описание должно быть менее 500 символов. Вы набрали ',
+                errorWikiLink: 'Имя должно быть менее 255 символов. Вы набрали ',
+                create: 'Создать'
+            },
+        },
+        success: {
+            success: 'Успех',
+            userData: 'Данные пользователя были успешно изменены',
+            wasRemovedBook: 'Книга была удалена.',
+            wasRemovedNews: 'Новость была удалена.',
+            inBasket: 'Книга добавлена в корзину.',
+            bookmarkCreated: 'Закладка успешно создана!',
+
+        },
+        error: {
+            error: 'Ошибка',
+            user: {
+                signIn: "Ошибка авторизации",
+                signUp: 'Ошибка регистрации',
+                username: 'Имя пользователя должно содержать символы {a-z} и от4 до 30. Вы набрали ',
+                password: 'Пароль должен содержать от 5 до 20 символов. Вы набрали ',
+                confirmPassword: 'Пароли различаются',
+                firstName: 'Имя должно быть менее 30 символов',
+                lastName: 'Фамилия должно быть менее 30 символов',
+                email: 'Введите существующий email'
+            },
+            book: {
+                catalog: 'Книги не были найдены',
+                notFound: 'Книга не найдена',
+                language: 'Язык долежн быть выбран',
+                title: 'Название должно быть менее 255 символов. Вы набрали ',
+                description: 'Описание должно быть менее 3 000 символов. Вы набрали ',
+                ageRestriction: 'Возрастное ограничение должно быть менее 255 символов. Вы набрали',
+                genres: 'Жанр должен быть выбран',
+                rating: 'Рейтинг должен быть между 1 и 100.',
+                thumbnail: 'Выберите миниатюру',
+                picture: 'Выберите изображение',
+                size: 'Размер должен быть менее 255 символов. Вы набрали ',
+                count: 'Количество должно быть болле 1.',
+                isbn: 'ISBN должен быть менее 255 символов. Вы набрали ',
+            },
+            news: {
+                notFound: 'Новость не найдена',
+                language: 'Выберите язык',
+                title: 'Заголовок должен быть менее 255 символов. Вы набрали ',
+                text: 'Текст должен быть менее 10 000 символов. Вы набрали ',
+                thumbnail: 'Выберите миниатюру',
+                picture: 'Выберите изображение',
+            },
+            basket: {
+                notFound: 'Ваша корзина пуста',
+                notCreated: 'Ваш заказ не был создан',
+            },
+            address: {
+                city: 'Выберите город',
+                firstName: 'Имя должно быть менее 30 символов. Вы набрали ',
+                lastName: 'Фамилия должна быть менее 30 символов. Вы набрали ',
+                postalCode: 'Почтовый код должен быть менее 255 символов. Вы набрали ',
+                phone: 'Телефон должен быть менее 30 символов. Вы набрали  ',
+                address: 'Адресс должен быть менее 400 символов. Вы набрали ',
+            },
+            bookmark: {
+                didntCreate: `Закладка не была создана!`,
+            }
         }
     }
 };

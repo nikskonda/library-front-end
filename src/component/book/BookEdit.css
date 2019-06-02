@@ -2,6 +2,10 @@
     margin: 20px 0;
 }
 
+#bookEdit .errorMsg{
+    color: #9f3a38;
+}
+
 #bookEdit .threeFour{
     width: 65%;
     padding-left: .5em;

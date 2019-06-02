@@ -3,7 +3,10 @@ import {Button, Card, Icon, Image, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     BACK_END_SERVER_URL,
+    DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    LOCAL_STORAGE_USER_DATA,
     ORDER_STATUS_AT_COURIER,
     ORDER_STATUS_CANCELLED,
     ORDER_STATUS_CONFIRMED,
@@ -12,11 +15,9 @@ import {
     ORDER_STATUS_RECEIVED,
     ORDER_STATUS_RETURN_TO_COURIER,
     ORDER_STATUS_RETURNED,
-    URL_DOWNLOAD_FILE,
     ROLE_COURIER,
     ROLE_LIBRARIAN,
-    LOCAL_STORAGE_USER_DATA,
-    LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE
+    URL_DOWNLOAD_FILE
 } from "../../context";
 import OrderStatusStep from "./OrderStatusStep";
 import axios from "axios";

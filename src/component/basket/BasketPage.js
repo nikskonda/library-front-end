@@ -7,11 +7,11 @@ import {
     LOCAL_STORAGE_UI_LANGUAGE
 } from "../../context";
 import axios from "axios";
-import {Button, Container, Item, Message, Statistic} from "semantic-ui-react";
+import {Button, Container, Item, Message} from "semantic-ui-react";
 import BasketItem from "./BasketItem";
 import AddressForm from "./AddressForm";
 import './Basket.css'
-import {L10N} from "../../l10n"
+import {getLang, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 
@@ -21,6 +21,7 @@ class BasketPage extends Component {
         basket: [],
         totalPrice: 0,
         showAddressField: false,
+        errorMsg: null,
     };
 
     componentWillMount() {
@@ -84,6 +85,17 @@ class BasketPage extends Component {
         this.updateBasket(basket);
     };
 
+    removeAllButOne = (bookId) => {
+        let basket = this.state.basket;
+        for (let i = 0; i < basket.length; i++) {
+            if (basket[i].book.id === bookId) {
+                basket[i].count = 1;
+                break;
+            }
+        }
+        this.updateBasket(basket);
+    };
+
     viewAddressFields = () => {
         this.setState({showAddressField: !this.state.showAddressField})
     };
@@ -100,15 +112,15 @@ class BasketPage extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
             .then(res => {
                 this.props.history.push('/order/user')
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                this.setState({errorMsg: response.data.message});
             });
     };
 
@@ -120,11 +132,17 @@ class BasketPage extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        const alert =
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        const alert =
             (<Message
                 warning
-                header='Your Basket is empty'
-                content='Plz change search query!'
+                header={strings.error.basket.notFound}
+            />);
+        const errorMsg =
+            (<Message
+                warning
+                header={strings.error.basket.notCreated}
+                content={this.state.errorMsg}
             />);
         return (
             <div id='basket'>
@@ -132,6 +150,7 @@ class BasketPage extends Component {
                     {
                         this.state.basket && this.state.basket.length !== 0 ?
                             <React.Fragment>
+                                {this.state.errorMsg?errorMsg:false}
                                 <Item.Group divided>
                                     {this.state.basket.map((goods) =>
                                         <BasketItem
@@ -140,6 +159,7 @@ class BasketPage extends Component {
                                             addOne={this.addOne}
                                             removeOne={this.removeOne}
                                             removeAll={this.removeAll}
+                                            removeAllButOne={this.removeAllButOne}
                                         />
                                     )}
                                 </Item.Group>

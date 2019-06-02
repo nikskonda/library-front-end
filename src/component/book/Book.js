@@ -1,38 +1,42 @@
 import React, {Component} from 'react';
 import axios from "axios/index";
 import {
-    LOCAL_STORAGE_UI_LANGUAGE,
     BACK_END_SERVER_URL,
-    LOCAL_STORAGE_BASKET,
-    LOCAL_STORAGE_USER_DATA,
-    URL_DOWNLOAD_FILE,
-    ROLE_LIBRARIAN, DEFAULT_L10N_LANGUAGE
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_BASKET, LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN,
+    LOCAL_STORAGE_UI_LANGUAGE,
+    LOCAL_STORAGE_USER_DATA, ROLE_LIBRARIAN,
+    ROLE_OPERATOR,
+    URL_DOWNLOAD_FILE
 } from "../../context";
 import {Button, Container, Header, Image, Message, Popup, Table} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import StarRatings from "react-star-ratings";
-import {L10N} from "../../l10n"
+import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
+import ModalYesNo from "../ModalYesNo";
+import {string} from "prop-types";
 
 class Book extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            id: props.id,
-            book: null
-        };
-        this.getBody = this.getBody.bind(this);
-    }
+    state = {
+        id: this.props.id,
+        book: null,
+        showModalRemove: false,
+    };
 
     componentWillMount() {
         axios
-            .get(BACK_END_SERVER_URL + `/book/${this.state.id}`)
+            .get(BACK_END_SERVER_URL + `/book/${this.state.id}`,
+                {
+                    headers:
+                        {'Accept-Language': getLang()}
+                })
             .then(res => {
                 this.setState({book: res.data});
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(({response}) => {
+                if (response) this.setState({errorText: response.data.message});
             });
     }
 
@@ -72,12 +76,6 @@ class Book extends Component {
         );
     };
 
-    isLibrarian = () => {
-        const user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(ROLE_LIBRARIAN);
-        return false;
-    };
-
     addBookToBasket = () => {
         if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()) {
             return;
@@ -105,12 +103,44 @@ class Book extends Component {
     };
 
     getDesc = () => {
-        let description = this.state.book.description.split(/\n/g);
-        return description.map((p, i) => <p key={i}>{p}</p>);
+        if (this.state.book.description){
+            let description = this.state.book.description.split(/\n/g);
+            return description.map((p, i) => <p key={i}>{p}</p>);
+        }
+        return false;
     };
-    
+
+    isHasRole = (role) => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) {
+            let roles = JSON.parse(user).authorities;
+            if (roles && roles.includes(role)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    removeBook = () => {
+        axios
+            .delete(BACK_END_SERVER_URL + `/book/${this.state.id}`, {
+                headers: {
+                    'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                    'Accept-Language': getLang()
+                }
+            })
+            .then(res => {
+                this.setState({wasRemoved: true});
+            })
+            .catch(({response}) => {
+                this.setState({removeErrorText: response.data.message});
+            });
+    };
+
+    openClose = () => this.setState({showModalRemove: !this.state.showModalRemove});
 
     getBody(book) {
+        console.log(this.state.book);
         return (
             <div id='book'>
                 <div className='firstPart'>
@@ -137,23 +167,36 @@ class Book extends Component {
                         <div className='buttonGroup'>
                             <Button
                                 className={this.state.book.inLibraryUseOnly ? 'redButton' : 'greenButton'}
-                                style={{cursor: this.isLibrarian() ? 'pointer' : 'default'}}
+                                style={{cursor: this.isHasRole(ROLE_OPERATOR) ? 'pointer' : 'default'}}
                                 onClick={this.addBookToBasket}>
                                 {this.state.book.inLibraryUseOnly ? book.inLibraryUseOnly : book.toBusket}
                             </Button>
-                            {this.isLibrarian() ?
+                            {this.isHasRole(ROLE_OPERATOR) ?
+                                <Button
+                                    as={Link}
+                                    to={`/admin/orderList?bookId=${this.state.book.id}`}>
+                                    {book.findInOrders}
+                                </Button> : false}
+                            {this.isHasRole(ROLE_LIBRARIAN) ?
                                 <React.Fragment>
-                                    <Button
-                                        as={Link}
-                                        to={`/admin/orderList?bookId=${this.state.book.id}`}>
-                                        {book.findInOrders}
-                                    </Button>
                                     <Button
                                         as={Link}
                                         to={`/admin/edit/book/${this.state.book.id}`}>
                                         {book.edit}
                                     </Button>
-                                </React.Fragment> : false}
+                                    <Button
+                                        onClick={this.openClose}>
+                                        {book.remove}
+                                    </Button>
+                                    <ModalYesNo
+                                        size='tiny'
+                                        header='header'
+                                        content={['content']}
+                                        open={this.state.showModalRemove}
+                                        openClose={this.openClose}
+                                        isConfirmed={this.removeBook}/>
+                                </React.Fragment>
+                                : false}
                             {this.state.book.pdfUrl ?
                                 <Button
                                     as={Link}
@@ -169,11 +212,8 @@ class Book extends Component {
                                 </Button>
                                 : false}
                         </div>
-
                         {this.getDesc()}
                     </div>
-
-
                 </div>
                 <div>
                     <Table
@@ -217,7 +257,7 @@ class Book extends Component {
                             {this.state.book.type !== undefined ?
                                 <Table.Row>
                                     <Table.Cell>{book.type}</Table.Cell>
-                                    <Table.Cell>{this.state.book.type}</Table.Cell>
+                                    <Table.Cell>{(new Map(getStrings().bookType)).get(this.state.book.type).name}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
@@ -241,12 +281,12 @@ class Book extends Component {
                             {this.state.book.year ?
                                 <Table.Row>
                                     <Table.Cell>{book.year}</Table.Cell>
-                                    <Table.Cell>{this.state.book.year === -1 ? ' unknown' : this.state.book.year}</Table.Cell>
+                                    <Table.Cell>{this.state.book.year === -1 ? book.unknown : this.state.book.year}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
                             }
-            
+
                             {this.state.book.weight !== undefined ?
                                 <Table.Row>
                                     <Table.Cell>{book.weight}</Table.Cell>
@@ -295,6 +335,15 @@ class Book extends Component {
                                 :
                                 false
                             }
+                            {this.state.book.pdfUrl !== undefined ?
+                                <Table.Row>
+                                    <Table.Cell>{book.pdf}</Table.Cell>
+                                    <Table.Cell><a
+                                        href={BACK_END_SERVER_URL + URL_DOWNLOAD_FILE + this.state.book.pdfUrl}>{book.pdfDownload}</a></Table.Cell>
+                                </Table.Row>
+                                :
+                                false
+                            }
                         </Table.Body>
                     </Table>
                 </div>
@@ -305,22 +354,36 @@ class Book extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE) ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         const notFount =
             (<Message
                 warning
-                header='Book Not found'
-                content='Plz change search query!'
+                header={strings.error.book.notFound}
+                content={this.state.errorText ? this.state.errorText : null}
             />);
         const inBasket =
             (<Message
                 success
-                header='Book In Basket'
-                content='Plz change search query!'
+                header={strings.success.success}
+                content={strings.success.inBasket}
+            />);
+        const removed =
+            (<Message
+                success
+                header={strings.success.success}
+                content={strings.success.wasRemovedBook}
+            />);
+        const removeError =
+            (<Message
+                warning
+                header={strings.error.error}
+                content={this.state.removeErrorText ? this.state.removeErrorText : null}
             />);
         return (
             <Container>
+                {this.state.wasRemoved ? removed : false}
                 {this.state.isBasketSuccess ? inBasket : false}
+                {this.state.removeErrorText ? removeError : false}
                 {this.state.book === null ? notFount : this.getBody(strings.book)}
             </Container>
         );

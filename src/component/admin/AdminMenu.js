@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Input, Menu, Segment} from "semantic-ui-react";
+import {Container, Menu, Segment} from "semantic-ui-react";
 import {Route, Switch} from "react-router";
 import {Link} from "react-router-dom";
 import UserList from "./UserList";
@@ -16,7 +16,10 @@ import {
     DEFAULT_L10N_LANGUAGE,
     LOCAL_STORAGE_UI_LANGUAGE,
     LOCAL_STORAGE_USER_DATA,
-    ROLE_ADMIN, ROLE_COURIER, ROLE_JOURNALIST, ROLE_LIBRARIAN,
+    ROLE_ADMIN,
+    ROLE_COURIER,
+    ROLE_JOURNALIST,
+    ROLE_LIBRARIAN,
     ROLE_OPERATOR
 } from "../../context";
 

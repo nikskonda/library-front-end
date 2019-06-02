@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import NewsCover from "./NewsCover";
 import {Card, Dropdown, Icon, Message, Pagination} from "semantic-ui-react";
 import {
+    DEFAULT_L10N_LANGUAGE,
+    LOCAL_STORAGE_UI_LANGUAGE,
     PAGINATION_BOUNDARY_RANGE,
     PAGINATION_COUNT_IN_DROPDOWN,
     PAGINATION_NEWS_PER_ROW,
@@ -9,6 +11,8 @@ import {
     PAGINATION_SIBLING_RANGE,
     PAGINATION_STEP_IN_DROPDOWN
 } from '../../context';
+import {L10N} from "../../l10n"
+import LocalizedStrings from 'react-localization';
 
 class NewsList extends Component {
 
@@ -49,11 +53,15 @@ class NewsList extends Component {
         return attay;
     };
 
+
+
     render() {
+        let strings = new LocalizedStrings(L10N);
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
         const alert =
             (<Message
                 warning
-                header='News Not found'
+                header={strings.error.news.notFound}
                 content={this.props.errorText}
             />);
         return ( this.props.news && this.props.news.length>0?

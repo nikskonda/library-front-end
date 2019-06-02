@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {BACK_END_SERVER_URL, DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} from "../../context";
 import axios from "axios";
-import {Button, Container, Divider, Form, Grid, SegmentGroup, Message} from "semantic-ui-react";
+import {Button, Container, Divider, Form, Grid, Message, SegmentGroup} from "semantic-ui-react";
 import "./signIn.css"
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
@@ -25,11 +25,11 @@ class SignUp extends Component {
         this.setState({username: value, usernameWasChanged: true});
     };
 
-    isValidUsername = () => {
+    isValidUsername = (text) => {
         if (!this.state.usernameWasChanged) return {value: true};
         let username = this.state.username;
 
-        let message = (<p className='errorMsg'>enter valid (4/{username.length}/30)</p>);
+        let message = (<p className='errorMsg'>{text + username.length}</p>);
         let value = true;
 
         if (!username) {
@@ -49,11 +49,11 @@ class SignUp extends Component {
         this.setState({password: value, passwordWasChanged: true});
     };
 
-    isValidPassword = () => {
+    isValidPassword = (text) => {
         if (!this.state.passwordWasChanged) return {value: true};
         let password = this.state.password;
 
-        let message = (<p className='errorMsg'>enter valid (5/{password.length}/20)</p>);
+        let message = (<p className='errorMsg'>{text + password.length}</p>);
         let value = true;
 
         if (!password) {
@@ -73,11 +73,11 @@ class SignUp extends Component {
         this.setState({confirmPassword: value, confirmPasswordWasChanged: true});
     };
 
-    isValidConfirmPassword = () => {
+    isValidConfirmPassword = (text) => {
         if (!this.state.confirmPasswordWasChanged) return {value: true};
         let password = this.state.confirmPassword;
 
-        let message = (<p className='errorMsg'>enter valid </p>);
+        let message = (<p className='errorMsg'>{text}</p>);
         let value = true;
 
         if (!password) {
@@ -144,8 +144,8 @@ class SignUp extends Component {
                                 className='errorBox'
                                 onDismiss={this.handleDismiss}
                                 error
-                                header='Your user registration was successful'
-                                content='You may now log-in with the username you have chosen'
+                                header={strings.error.user.signUp}
+                                content={this.state.errorMsg}
                             />:false}
                         <Form>
                             <Form.Input
@@ -156,7 +156,7 @@ class SignUp extends Component {
                                 value={this.state.username}
                                 onChange={this.changeUsernameHandler}
                                 error={!this.isValidUsername().value}/>
-                                {this.isValidUsername().value ? false : this.isValidUsername().message}
+                                {this.isValidUsername().value ? false : this.isValidUsername(strings.error.user.username).message}
                             <Form.Input
                                 icon='lock'
                                 iconPosition='left'
@@ -166,7 +166,7 @@ class SignUp extends Component {
                                 value={this.state.password}
                                 onChange={this.changePasswordHandler}
                                 error={!this.isValidPassword().value}/>
-                                    {this.isValidPassword().value ? false : this.isValidPassword().message}
+                                    {this.isValidPassword().value ? false : this.isValidPassword(strings.error.user.password).message}
 
                             <Form.Input
                                 icon='lock'
@@ -177,7 +177,7 @@ class SignUp extends Component {
                                 value={this.state.confirmPassword}
                                 onChange={this.changeConfirmPasswordHandler}
                                 error={!this.isValidConfirmPassword().value}/>
-                                    {this.isValidConfirmPassword().value ? false : this.isValidConfirmPassword().message}
+                                    {this.isValidConfirmPassword().value ? false : this.isValidConfirmPassword(strings.error.user.confirmPassword).message}
                             <Button
                                 className='submit'
                                 content={strings.user.signUp}

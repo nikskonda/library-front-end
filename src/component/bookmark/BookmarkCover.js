@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Button, Card, Image, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE} from "../../context";
+import {Button, Card, Image} from "semantic-ui-react";
+import {BACK_END_SERVER_URL, DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE, URL_DOWNLOAD_FILE} from "../../context";
 import {Link} from "react-router-dom";
 import './Bookmark.css';
 import {L10N} from "../../l10n"

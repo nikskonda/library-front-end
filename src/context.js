@@ -21,12 +21,6 @@ export const BOOK_TYPE_BOOK = 'BOOK';
 export const BOOK_TYPE_COMICS = 'COMICS';
 export const BOOK_TYPE_MAGAZINE = 'MAGAZINE';
 
-export const BOOK_TYPE = [ 
-    [ BOOK_TYPE_BOOK, { name: 'BOOK'}], 
-    [ BOOK_TYPE_COMICS, {name: 'COMICS'}], 
-    [ BOOK_TYPE_MAGAZINE, {name: 'MAGAZINE'}]
-];
-
 
 
 export const ORDER_STATUS_NEW = 'NEW';
@@ -84,3 +78,16 @@ export const PAGINATION_COUNT_IN_DROPDOWN = 5;
 export const PAGINATION_STEP_IN_DROPDOWN = 6; // ROW*PAGINATION_NEWS_PER_ROW;
 
 export const USER_AVATAR_DEFAULT = '/img/user_ava.jpeg';
+
+
+
+export let isHasRole = (role) => {
+    let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+    if (user) {
+        let roles = JSON.parse(user).authorities;
+        if (roles && roles.includes(role)) {
+            return true;
+        }
+    }
+    return false;
+};

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Icon, Item, Label} from "semantic-ui-react";
-import {BACK_END_SERVER_URL, URL_DOWNLOAD_FILE, LOCAL_STORAGE_UI_LANGUAGE, DEFAULT_L10N_LANGUAGE} from "../../context";
+import {BACK_END_SERVER_URL, DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE, URL_DOWNLOAD_FILE} from "../../context";
 import {Link} from "react-router-dom";
 import {L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
@@ -20,6 +20,10 @@ class BasketItem extends Component {
     };
     removeAll = () => {
         this.props.removeAll(this.state.goods.book.id);
+    };
+
+    removeAllButOne = () => {
+        this.props.removeAllButOne(this.state.goods.book.id);
     };
 
     render() {
@@ -71,6 +75,15 @@ class BasketItem extends Component {
                                 labelPosition='right'
                                 onClick={this.removeAll}>
                                 {basket.remove}
+                                <Icon name='minus'/>
+                            </Button>
+                            : false}
+                        {goods.count > 2 ?
+                            <Button
+                                icon
+                                labelPosition='right'
+                                onClick={this.removeAllButOne}>
+                                {basket.removeAllButOne}
                                 <Icon name='minus'/>
                             </Button>
                             : false}

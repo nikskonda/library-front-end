@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
-import {Card, Icon, Message, Pagination, Dropdown} from "semantic-ui-react";
+import {Card, Dropdown, Icon, Message, Pagination} from "semantic-ui-react";
 import BookmarkCover from "./BookmarkCover";
 import './Bookmark.css';
-import {PAGINATION_BOOKMARKS_ROWS,
+import {
     PAGINATION_BOOKMARKS_PER_ROW,
-    PAGINATION_COUNT_IN_DROPDOWN,
-    PAGINATION_STEP_IN_DROPDOWN,
+    PAGINATION_BOOKMARKS_ROWS,
     PAGINATION_BOUNDARY_RANGE,
-    PAGINATION_SIBLING_RANGE,} from './../../context';
+    PAGINATION_COUNT_IN_DROPDOWN,
+    PAGINATION_SIBLING_RANGE,
+    PAGINATION_STEP_IN_DROPDOWN,
+} from './../../context';
 
 class BookmarkList extends Component {
 
