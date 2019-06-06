@@ -77,7 +77,7 @@ class Book extends Component {
     };
 
     addBookToBasket = () => {
-        if (this.state.bookCover.inLibraryUseOnly && !this.isLibrarian()) {
+        if (this.state.book.inLibraryUseOnly && !this.isHasRole(ROLE_OPERATOR)) {
             return;
         }
         const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
@@ -167,7 +167,7 @@ class Book extends Component {
                         <div className='buttonGroup'>
                             <Button
                                 className={this.state.book.inLibraryUseOnly ? 'redButton' : 'greenButton'}
-                                style={{cursor: this.isHasRole(ROLE_OPERATOR) ? 'pointer' : 'default'}}
+                                style={{cursor: !(this.state.book.inLibraryUseOnly && this.isHasRole(ROLE_OPERATOR)) ? 'pointer' : 'default'}}
                                 onClick={this.addBookToBasket}>
                                 {this.state.book.inLibraryUseOnly ? book.inLibraryUseOnly : book.toBusket}
                             </Button>

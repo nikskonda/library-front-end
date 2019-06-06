@@ -206,6 +206,7 @@ export const L10N = {
             newsEDit: 'News edit',
         },
         bookmarks: {
+            open: 'Open Bookmark',
             page: 'Page: ',
             pdfRead: 'Read PDF',
             epubRead: 'Read EPUB',
@@ -478,6 +479,7 @@ export const L10N = {
             newsEDit: 'Редактор новостей',
         },
         bookmarks: {
+            open: 'Открыть закладку',
             page: 'Страница: ',
             pdfRead: 'Читать PDF',
             epubRead: 'Читать EPUB',

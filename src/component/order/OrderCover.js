@@ -17,11 +17,12 @@ import {
     ORDER_STATUS_RETURNED,
     ROLE_COURIER,
     ROLE_LIBRARIAN,
-    URL_DOWNLOAD_FILE
+    URL_DOWNLOAD_FILE,
+    ROLE_OPERATOR
 } from "../../context";
 import OrderStatusStep from "./OrderStatusStep";
 import axios from "axios";
-import {L10N} from "../../l10n"
+import {L10N, getLang} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class OrderCover extends Component {
@@ -109,7 +110,7 @@ class OrderCover extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -129,7 +130,7 @@ class OrderCover extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -149,7 +150,7 @@ class OrderCover extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -172,7 +173,7 @@ class OrderCover extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -194,7 +195,7 @@ class OrderCover extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -218,21 +219,22 @@ class OrderCover extends Component {
         this.addStatus(ORDER_STATUS_RETURN_TO_COURIER);
     };
 
-    isLibrarian = () => {
-        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(ROLE_LIBRARIAN);
-        else return false;
-    }
-    isCourier = () => {
-        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
-        if (user) return user.includes(ROLE_COURIER);
-        else return false;
-    }
     isOwner = () => {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (user && this.props.order.user) return JSON.parse(user).username===this.props.order.user.username;
         else return false;
     }
+
+    isHasRole = (role) => {
+        let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
+        if (user) {
+            let roles = JSON.parse(user).authorities;
+            if (roles && roles.includes(role)) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     buttonsForOrderControl = () => {
         let result;
@@ -242,7 +244,7 @@ class OrderCover extends Component {
         if (statusList[statusList.length - 1].status === (ORDER_STATUS_NEW)) {
             result = (
                 <React.Fragment>
-                    {this.isLibrarian()?
+                    {this.isHasRole(ROLE_OPERATOR)?
                         <React.Fragment>
                             <Button
                                 icon
@@ -259,7 +261,7 @@ class OrderCover extends Component {
                                 {statusText.get(ORDER_STATUS_HANDED_OUT).button}
                             </Button>
                     </React.Fragment>: false}
-                    {this.isLibrarian()||this.isOwner()?
+                    {this.isHasRole(ROLE_OPERATOR)||this.isOwner()?
                     <Button
                         icon
                         labelPosition='right'
@@ -273,7 +275,7 @@ class OrderCover extends Component {
         if (statusList[statusList.length - 1].status === ORDER_STATUS_CONFIRMED) {
             result = (
                 <React.Fragment>
-                    {this.isLibrarian()?
+                    {this.isHasRole(ROLE_OPERATOR)?
                     <Button
                             icon
                             labelPosition='right'
@@ -281,7 +283,7 @@ class OrderCover extends Component {
                             <Icon name={statusText.get(ORDER_STATUS_HANDED_OUT).icon}/>
                             {statusText.get(ORDER_STATUS_HANDED_OUT).button}
                         </Button> : false}
-                    {this.isCourier()?
+                    {this.isHasRole(ROLE_COURIER) || this.isHasRole(ROLE_OPERATOR)?
                     <Button
                         icon
                         labelPosition='right'
@@ -303,7 +305,7 @@ class OrderCover extends Component {
                             <Icon name={statusText.get(ORDER_STATUS_RETURN_TO_COURIER).icon}/>
                             {statusText.get(ORDER_STATUS_RETURN_TO_COURIER).button}
                         </Button> : false}
-                        {this.isLibrarian()?
+                        {this.isHasRole(ROLE_OPERATOR)?
                     <Button
                         icon
                         labelPosition='right'
@@ -336,7 +338,7 @@ class OrderCover extends Component {
                         <Icon name={statusText.get(ORDER_STATUS_RETURN_TO_COURIER).icon}/>
                         {statusText.get(ORDER_STATUS_RETURN_TO_COURIER).button}
                     </Button> : false}
-                    {this.isLibrarian()?
+                    {this.isHasRole(ROLE_OPERATOR)?
                     <Button
                         icon
                         labelPosition='right'
@@ -348,7 +350,7 @@ class OrderCover extends Component {
             );
         }
         if (statusList[statusList.length - 1].status === ORDER_STATUS_RETURN_TO_COURIER) {
-            result = this.isLibrarian()?
+            result = this.isHasRole(ROLE_OPERATOR)?
                     <Button
                         icon
                         labelPosition='right'
@@ -369,7 +371,7 @@ class OrderCover extends Component {
             <Card fluid>
                 <Card.Content className='order'>
                     <OrderStatusStep statusList={order.statusList}/>
-
+                    <Card.Description className='address'>{this.address()}</Card.Description>
                     <Card.Description className='address'>{this.address()}</Card.Description>
                     <Card.Meta className='date'>{this.dateSign()}</Card.Meta>
                     {order.comment ? <p>{order.comment}</p> : false}

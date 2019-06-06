@@ -38,9 +38,38 @@ class PdfReader extends Component {
                     errorTxt: response.data.message,
                 });
             });
+        this.isHasBookmark();
     }
 
-    componentDidMount() {
+    isHasBookmark = () => {
+        if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)){
+            axios
+                .get(BACK_END_SERVER_URL + `/bookmark/book/${this.props.match.params.bookId}`,
+                    {
+                        headers: {
+                            'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
+                            'Content-type': 'application/json',
+                            'Accept-Language': getLang()
+                        }
+                    })
+                .then(res => {
+                    console.log(res.data);
+                    if (res.data!==''){
+                        this.setState({
+                            isHasBookmark:true,
+                            bookmark: res.data.page?res.data.page:null,
+                            bookmarkId: res.data.id});
+                    }
+                })
+                .catch(({response}) => {
+                    this.setState({isHasBookmark:false});
+                });
+        } else {
+            this.setState({isHasBookmark:false});
+        }
+    }
+
+    loadBookmark = () => {
         if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)){
             axios
                 .get(BACK_END_SERVER_URL + `/bookmark/book/${this.props.match.params.bookId}`,
@@ -54,11 +83,13 @@ class PdfReader extends Component {
                 .then(res => {
                     this.setState(
                         {
-                            pageNumber: res.data.page > this.state.totalPage ? this.state.totalPage : res.data.page,
-                            bookmark: res.data.page > this.state.totalPage ? this.state.totalPage : res.data.page,
+                            pageNumber: res.data.page?res.data.page:null,
+                            value: res.data.page?res.data.page:null,
+                            bookmark: res.data.page?res.data.page:null,
                             bookmarkId: res.data.id,
                         }
                     );
+
                 })
                 .catch(({response}) => {
                     this.setState({
@@ -67,9 +98,8 @@ class PdfReader extends Component {
                     });
                 });
         }
+    };
 
-
-    }
 
     nextPage = () => {
         if (this.state.pageNumber < this.state.totalPage) {
@@ -92,7 +122,7 @@ class PdfReader extends Component {
     };
 
     handleOnDocumentComplete = (totalPage) => {
-        this.setState({totalPage: totalPage})
+        this.setState({totalPage: totalPage});
     };
 
     onDragEnd = () => {
@@ -104,6 +134,7 @@ class PdfReader extends Component {
     };
 
     saveBookmark = () => {
+        if (this.state.bookmark === this.state.pageNumber) return;
         axios
             .post(
                 BACK_END_SERVER_URL + `/bookmark`,
@@ -170,6 +201,7 @@ class PdfReader extends Component {
                                     {strings.readingRoom.back}
                                 </Button>
                             </Link>
+                            {localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)?
                             <Button
                                 labelPosition='right'
                                 icon
@@ -179,7 +211,14 @@ class PdfReader extends Component {
                                 {this.state.bookmark === this.state.pageNumber ? <Icon name='bookmark'/> :
                                     <Icon name='bookmark outline'/>}
                                 {strings.readingRoom.createBookmark}
-                            </Button>
+                            </Button> : false}
+                            {this.state.isHasBookmark && this.state.bookmark !== this.state.pageNumber ? 
+                            <Button
+                                floated='right'
+                                onClick={this.loadBookmark}
+                            >
+                                {strings.bookmarks.open}
+                            </Button> : false}
                         </Grid.Row>
                         <Grid.Row>
                             <PDFReader
