@@ -1,0 +1,17 @@
+#modal .header, #modal .content, #modal .actions{
+    background-color: #d9e8a675;
+}
+
+#modal .content .errorMsg{
+    color: #9f3a38;
+}
+
+#modal .content input, #modal .content textarea{
+    background-color: #f4f4db;
+}
+
+#modal .content .halfWindow{
+    width: 50%;
+    padding-left: .5em;
+    padding-right: .5em;
+}

@@ -10,7 +10,7 @@ import axios from "axios";
 import OrderList from "../order/OrderList";
 import {Dropdown} from "semantic-ui-react";
 import "./../order/OrderList.css"
-import {L10N} from "../../l10n"
+import {getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class AdminOrders extends Component {
@@ -110,7 +110,7 @@ class AdminOrders extends Component {
     };
 
     statusOptions = (orderStatus, all) => {
-        let array = [{key: 'ALL', text: all, value: 'ALL'}];
+        let array = [{key: all, text: all, value: 'ALL'}];
 
         orderStatus.forEach(status => array.push({key: status[0], text: status[1].text, value: status[0]}));
         // Array.from( new Map(ORDER_STATUS).values()).map((value, i) => array.push({key: i, text: value.text, value: value.text}));
@@ -122,14 +122,13 @@ class AdminOrders extends Component {
     };
 
     render() {
-        let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
+        let strings = getStrings();
+        return (
             <div id='orderList'>
                 <Dropdown
-                    placeholder='Select status'
                     fluid
                     selection
-                    defaultValue={strings.orders.all}
+                    defaultValue={'ALL'}
                     options={this.statusOptions(strings.orderStatus, strings.orders.all)}
                     onChange={this.handleChangeStatus}
                 />

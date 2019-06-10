@@ -17,7 +17,7 @@ import queryString from "query-string";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
 import UserItem from "./UserItem";
 import './UserList.css';
-import {L10N} from "../../l10n"
+import {getLang, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class UserList extends Component {
@@ -63,7 +63,7 @@ class UserList extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -122,11 +122,11 @@ class UserList extends Component {
             <div id='userList'>
                         <Input
                             className='search'
-                        type='text'
+                            type='text'
                             placeholder={strings.userList.searchPlaceholder}
                             action
                             fluid
-                            clearable
+                            // clearable
                             value={this.state.searchString}
                             onChange={this.handleSearchChange}>
                             <input/>

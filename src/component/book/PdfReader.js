@@ -67,7 +67,7 @@ class PdfReader extends Component {
         } else {
             this.setState({isHasBookmark:false});
         }
-    }
+    };
 
     loadBookmark = () => {
         if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)){
@@ -170,6 +170,15 @@ class PdfReader extends Component {
             });
     };
 
+
+    handleDismissSuccess = () => {
+        this.setState({bookmarkSuccessAlert: false});
+    };
+
+    handleDismissError = () => {
+        this.setState({bookmarkErrorAlert: false});
+    };
+
     render() {
         let strings = getStrings();
         const alert =
@@ -177,17 +186,20 @@ class PdfReader extends Component {
                 warning
                 header={strings.error.book.notFound}
                 content={this.state.errorText}
+                onDismiss={this.handleDismissError}
             />);
         const bookmarkSuccessAlert =
             (<Message
                 positive
                 header={strings.success.bookmarkCreated}
+                onDismiss={this.handleDismissSuccess}
             />);
         const bookmarkErrorAlert =
             (<Message
                 negative
                 header={strings.error.bookmark.didntCreate}
                 content={this.state.errorText}
+                onDismiss={this.handleDismissError}
             />);
         return (this.state.pdfUrl ?
                 <Container id='readingRoom'>

@@ -119,8 +119,8 @@ class UserSettings extends Component {
     changeUserData = () => {
         let params = {
             username: this.state.username,
-            firstName: this.state.firstName === '' ? null : this.state.firstName,
-            lastName: this.state.lastName === '' ? null : this.state.lastName,
+            // firstName: this.state.firstName === '' ? null : this.state.firstName,
+            // lastName: this.state.lastName === '' ? null : this.state.lastName,
             email: this.state.email === '' ? null : this.state.email,
             registrationAddress: this.state.registrationAddress,
         };
@@ -163,14 +163,18 @@ class UserSettings extends Component {
     };
 
     isDisableButton = () => {
-        return this.isValidFirstName().value &&
+        return
+            this.isValidFirstName().value &&
             this.isValidLastName().value &&
             this.isValidEmail().value &&
             this.wasChanged();
     };
 
-    handleDismiss = () => {
-        this.setState({errorMsg: null});
+    handleDismissE = () => {
+        this.setState({isErrorA: false});
+    };
+    handleDismissS = () => {
+        this.setState({isSuccess: false});
     };
 
     render() {
@@ -178,14 +182,14 @@ class UserSettings extends Component {
         strings.setLanguage(JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, ''));
         const successAlert =
             (<Message
-                onDismiss={this.handleDismiss}
+                onDismiss={this.handleDismissS}
                 success
                 header={strings.success.success}
                 content={strings.success.userData}
             />);
         const errorAlert =
             (<Message
-                onDismiss={this.handleDismiss}
+                onDismiss={this.handleDismissE}
                 error
                 header={strings.error.error}
                 content={this.state.errorMsg}
@@ -200,7 +204,7 @@ class UserSettings extends Component {
                         readOnly
                         placeholder={strings.user.username}
                         value={this.state.username}/>
-                    <Form.Input
+                    {/*<Form.Input
                         label={strings.user.firstName}
                         placeholder={strings.user.firstName}
                         value={this.state.firstName}
@@ -214,8 +218,10 @@ class UserSettings extends Component {
                         value={this.state.lastName}
                         onChange={this.changeLastNameHandle}
                         error={!this.isValidLastName().value}/>
-                    {this.isValidLastName().value ? false : this.isValidLastName(strings.error.user.lastName).message}
+                    {this.isValidLastName().value ? false : this.isValidLastName(strings.error.user.lastName).message} */}
 
+                    <AddressForm returnAddress={this.getAddress} defaultAddress={this.state.registrationAddress}
+                                 userId={this.state.userId}/>
                     <Form.Input
                         label={strings.user.email}
                         placeholder={strings.user.email}
@@ -223,8 +229,6 @@ class UserSettings extends Component {
                         onChange={this.changeEmailHandle}
                         error={!this.isValidEmail().value}/>
                     {this.isValidEmail().value ? false : this.isValidEmail(strings.error.user.email).message}
-                    <AddressForm returnAddress={this.getAddress} defaultAddress={this.state.registrationAddress}
-                                 userId={this.state.userId}/>
                     {this.state.userData ?
                         <Button
                             className='submitButton'

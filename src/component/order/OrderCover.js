@@ -223,7 +223,7 @@ class OrderCover extends Component {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
         if (user && this.props.order.user) return JSON.parse(user).username===this.props.order.user.username;
         else return false;
-    }
+    };
 
     isHasRole = (role) => {
         let user = localStorage.getItem(LOCAL_STORAGE_USER_DATA);
@@ -371,7 +371,7 @@ class OrderCover extends Component {
             <Card fluid>
                 <Card.Content className='order'>
                     <OrderStatusStep statusList={order.statusList}/>
-                    <Card.Description className='address'>{this.address()}</Card.Description>
+                    <Card.Description className='address'>{this.isHasRole(ROLE_OPERATOR) ? <Link to={`/admin/orderList?userId=${order.user.id}`}>{order.user.username}</Link>: order.user.username}</Card.Description>
                     <Card.Description className='address'>{this.address()}</Card.Description>
                     <Card.Meta className='date'>{this.dateSign()}</Card.Meta>
                     {order.comment ? <p>{order.comment}</p> : false}

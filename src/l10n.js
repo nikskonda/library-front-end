@@ -72,8 +72,10 @@ export const L10N = {
             notFound: "News not found"
         },
         book: {
+            createNew: 'Create new: ',
             searchPlaceholder: "Search ...",
             search: "Search",
+            clear: 'Clear',
             toBusket: "To Busket",
             inLibraryUseOnly: 'In library use only',
             addedToBasket: 'Current count in basket: ',
@@ -115,6 +117,7 @@ export const L10N = {
             unknown: "unknown"
         },
         orders: {
+            notFound: 'Orders not found',
             showDetails: 'Show Details',
             hideDetails: 'Hide Details',
             total: 'Total',
@@ -179,6 +182,7 @@ export const L10N = {
             removeAll: 'Remove All',
             checkout: 'Checkout',
             hide: 'Hide address form',
+            deliveryCost: 'Delivery cost 5 BYN',
         },
         address: {
             selectAddress: 'Select Address',
@@ -220,7 +224,7 @@ export const L10N = {
             firstName: 'First Name',
             lastName: 'Last Name',
             email: 'Email',
-            changeData: 'Change',
+            changeData: 'Save Changes',
             or: 'OR',
         },
         readingRoom: {
@@ -249,7 +253,28 @@ export const L10N = {
                 errorWikiLink: 'Link should be less than 255 symbols. You typed ',
                 create: 'Create'
             },
-
+            genre: {
+                header: 'Add Genre',
+                content: 'Are you want create: '
+            },
+            org: {
+                header: 'Add Organization',
+                content: 'Are you want create: '
+            },
+            publishingHouse: {
+                header: 'Add Publishing House',
+                title: 'Title',
+                errorTitle: 'Title should be less than 40 symbols. You typed ',
+                description: 'Description',
+                errorDescription: 'Description should be less than 600 symbols. You typed ',
+                siteLink: 'SiteLink',
+                errorSiteLink: 'Link should be less than 255 symbols. You typed ',
+            },
+            role: {
+                header: 'Role',
+                add: 'Are you want add role:',
+                remove: 'Are you want remove role:',
+            }
 
         },
         success: {
@@ -345,8 +370,10 @@ export const L10N = {
             notFound: "Новость не найдена"
         },
         book: {
+            createNew: 'Новый: ',
             searchPlaceholder: "Поиск ...",
             search: "Поиск",
+            clear: 'Очистить',
             toBusket: "В корзину",
             inLibraryUseOnly: 'Только в библиотеке',
             addedToBasket: 'На данный момент в корзине: ',
@@ -388,6 +415,7 @@ export const L10N = {
             unknown: "не известен"
         },
         orders: {
+            notFound: 'Заказов не найдено',
             showDetails: 'Показать детали',
             hideDetails: 'Скрыть детали',
             total: 'Всего',
@@ -452,6 +480,7 @@ export const L10N = {
             removeAll: 'Удалить все',
             checkout: 'Оформить',
             hide: 'Скрыть форму ввода адреса',
+            deliveryCost: 'Стоимость доставки 5 BYN',
         },
         address: {
             selectAddress: 'Выберите адрес',
@@ -493,7 +522,7 @@ export const L10N = {
             firstName: 'Имя',
             lastName: 'Фамилия',
             email: 'Email',
-            changeData: 'Изменить',
+            changeData: 'Применить изменения',
             or: 'ИЛИ',
         },
         readingRoom: {
@@ -510,18 +539,41 @@ export const L10N = {
             removeBook: 'Вы действительно хотите удалить книгу "',
             removeNews: 'Вы действительно хотите удалить новость "',
             removeEnd: '"?',
+            create: 'Создать',
             author: {
                 header: 'Автор',
                 firstName: 'Имя',
                 lastName: 'Фамилия',
                 description: 'Описание',
-                wikiLink: 'Ссылка на ВИКИПЕДИЮ',
+                wikiLink: 'Ссылка на Википедию',
                 errorFirstName: 'Имя должно быть менее 30 символов. Вы набрали ',
                 errorLastName: 'Фамилия должна быть менее 30 символов. Вы набрали ',
                 errorDescription: 'Описание должно быть менее 500 символов. Вы набрали ',
-                errorWikiLink: 'Имя должно быть менее 255 символов. Вы набрали ',
+                errorWikiLink: 'Ссылка должна быть менее 255 символов. Вы набрали ',
                 create: 'Создать'
             },
+            genre: {
+                header: 'Добавить Жанр',
+                content: 'Вы хотите создать: '
+            },
+            org: {
+                header: 'Добавить Организацию',
+                content: 'Вы хотите создать: '
+            },
+            publishingHouse: {
+                header: 'Добавить Издательский Дом',
+                title: 'Название',
+                errorTitle: 'Название олжно быть менее 40 символов. Вы набрали ',
+                description: 'Описание',
+                errorDescription: 'Описание должно быть менее 600 символов. Вы набрали ',
+                siteLink: 'Ссылка на сайт',
+                errorSiteLink: 'Ссылка должна быть менее 255 символов. Вы набрали ',
+            },
+            role: {
+                header: 'Роль',
+                add: 'Вы хотите добавить роль:',
+                remove: 'Вы ходите удалить роль:',
+            }
         },
         success: {
             success: 'Успех',

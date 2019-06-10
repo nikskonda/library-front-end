@@ -207,7 +207,7 @@ class BookCover extends Component {
 class Genre extends Component {
 
     addGenre = () => {
-        this.props.addGenre(this.props.genre.name);
+        this.props.addGenre([this.props.genre.name]);
     };
 
     render() {

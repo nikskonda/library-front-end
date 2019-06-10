@@ -2,6 +2,11 @@
     margin: 20px 0;
 }
 
+#readingRoom .message{
+    width: 100%;
+    text-align: center;
+}
+
 #readingRoom .grid button{
     background-color: #cacf98;
 }

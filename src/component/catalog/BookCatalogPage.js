@@ -81,8 +81,17 @@ class BookCatalogPage extends Component {
                 authors: this.state.authors,
             }
         }
+        this.setState({
+            searchString: params.searchString,
+            number: params.number,
+            size: params.size,
+            sort: params.sort,
+            direction: params.direction,
+            genres: params.genres,
+            authors: params.authors,
+        }, this.loadBooks);
         this.props.history.push({search: queryString.stringify(params)});
-        this.loadBooks();
+
         window.scrollTo(0, 0)
     };
 
@@ -158,6 +167,19 @@ class BookCatalogPage extends Component {
 
     };
 
+    clearParams = () => {
+        let params = {
+            searchString: '',
+            number: 1,
+            size: this.state.size,
+            sort: this.state.sort,
+            direction: this.state.direction,
+            genres: [],
+            authors: [],
+        };
+        this.changeUrl(params);
+    };
+
     changeSearchOption = (event, {value}) => {
         this.setState({selectedSearchOption: value});
     };
@@ -189,6 +211,12 @@ class BookCatalogPage extends Component {
                                             onClick={this.searchBooks}
                                         >
                                             {strings.book.search}
+                                        </Button>
+                                        <Button
+                                            type='submit'
+                                            onClick={this.clearParams}
+                                        >
+                                            {strings.book.clear}
                                         </Button>
                                     </Input>
                                 </div>

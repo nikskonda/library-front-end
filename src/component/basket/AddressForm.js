@@ -8,7 +8,7 @@ import {
     LOCAL_STORAGE_UI_LANGUAGE
 } from "../../context";
 import "./AddressForm.css"
-import {L10N} from "../../l10n"
+import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class AddressForm extends Component {
@@ -22,7 +22,7 @@ class AddressForm extends Component {
         showStateList: false,
         showCityList: false,
 
-        country: {name: 'qwe'},
+        country: {name: ''},
         countryList: [],
         countrySearchList: [],
         countrySearchString: '',
@@ -58,6 +58,7 @@ class AddressForm extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.defaultAddress) {
+            console.log(nextProps.defaultAddress);
             this.setState({
                 country: nextProps.defaultAddress.city.state.country || this.state.country,
                 state: nextProps.defaultAddress.city.state || this.state.state,
@@ -67,16 +68,23 @@ class AddressForm extends Component {
                 postalCode: nextProps.defaultAddress.postalCode || this.state.postalCode,
                 phone: nextProps.defaultAddress.phone || this.state.phone,
                 addressDesc: nextProps.defaultAddress.address || this.state.addressDesc,
-            });
+                showStateList: nextProps.defaultAddress.city.state.country ? true : false,
+                showCityList: nextProps.defaultAddress.city.state ? true : false,
+            }, this.loadCityAndState);
         }
-        if (nextProps.userId && nextProps.userId !== this.state.usetId) {
-            this.setState({usetId: nextProps.userId}, this.loadAddressList);
+        if (nextProps.userId && nextProps.userId !== this.state.userId) {
+            this.setState({userId: nextProps.userId}, this.loadAddressList);
         }
     }
 
     componentWillMount() {
         this.loadAddressList();
         this.loadCountryList();
+    }
+
+    loadCityAndState(){
+        this.loadStateList();
+        this.loadCityList();
     }
 
     addressToText = (address) => {
@@ -92,7 +100,7 @@ class AddressForm extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     }
                 })
             .then(res => {
@@ -287,6 +295,7 @@ class AddressForm extends Component {
         }
         if (city.name === '' || state.name === '' || country.name === '') {
             value = false;
+            console.log("n"+city.name);
         }
         return {value: value, message: message};
     };
@@ -444,12 +453,12 @@ class AddressForm extends Component {
     };
 
     wasChanged = () => {
-        return this.state.cityWasChanged &&
-            this.state.firstNameWasChanged &&
-            this.state.lastNameWasChanged &&
-            this.state.phoneWasChanged &&
-            this.state.postalCodeWasChanged &&
-            this.state.addressDescWasChanged;
+        return (this.state.cityWasChanged  || this.state.city) &&
+            (this.state.firstNameWasChanged || this.state.firstName) &&
+            (this.state.lastNameWasChanged || this.state.lastName) &&
+                (this.state.phoneWasChanged || this.state.phone) &&
+                    (this.state.postalCodeWasChanged || this.state.postalCode) &&
+                        (this.state.addressDescWasChanged || this.state.addressDesc);
     };
 
     isDisableButton = () => {
@@ -469,9 +478,9 @@ class AddressForm extends Component {
     };
 
     render() {
-        let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE) ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        let strings = getStrings();
         let address = strings.address;
+        console.log(this.state);
         return (
             <div id='addressForm'>
                 {this.state.errorMsg ?

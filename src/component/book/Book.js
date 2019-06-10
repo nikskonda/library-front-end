@@ -15,7 +15,6 @@ import StarRatings from "react-star-ratings";
 import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 import ModalYesNo from "../ModalYesNo";
-import {string} from "prop-types";
 
 class Book extends Component {
 

@@ -163,11 +163,14 @@ class BasketPage extends Component {
                                         />
                                     )}
                                 </Item.Group>
+                                <div>
                                 <Button
                                     className='showAddresButton'
                                     onClick={this.viewAddressFields}>
                                     {this.state.showAddressField? strings.basket.hide:strings.basket.checkout}
                                 </Button>
+                                    <span>{strings.basket.deliveryCost}</span>
+                                </div>
                                 {this.state.showAddressField ? <AddressForm returnAddress={this.getAddress}/> : false}
                             </React.Fragment>
                             :

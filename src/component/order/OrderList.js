@@ -9,6 +9,7 @@ import {
     PAGINATION_SIBLING_RANGE,
     PAGINATION_STEP_IN_DROPDOWN
 } from '../../context';
+import {getStrings} from "../../l10n";
 
 class OrderList extends Component {
 
@@ -44,18 +45,12 @@ class OrderList extends Component {
         this.loadSizeList();
     };
 
-    handlePaginationChange = (event, {activePage}) => {
-        this.props.setActivePage(activePage);
-    };
-
-    
-
     render() {
+        let strings = getStrings();
         const alert =
             (<Message
                 warning
-                header='Orders Not found'
-                content='Plz change search query!'
+                header={strings.orders.notFound}
             />);
         return ( this.props.orders ?
             <React.Fragment>

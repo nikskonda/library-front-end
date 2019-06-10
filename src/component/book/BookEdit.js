@@ -10,11 +10,13 @@ import {
 // https://react.semantic-ui.com
 import {Button, Container, Dropdown, Form, Input, Message, Modal, TextArea} from "semantic-ui-react";
 import './BookEdit.css';
+import './../Modal.css';
 import FileDropBox from './../FileDropBox'
 import ModalYesNo from './../ModalYesNo';
 import {Link} from "react-router-dom";
 import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
+import {instanceOf} from "prop-types";
 
 class BookEdit extends Component {
 
@@ -358,7 +360,7 @@ class BookEdit extends Component {
     };
     
     handleChangeGenres = (event, {searchQuery, value}) => {
-        this.setState({genreSearchString: searchQuery, genres: value, genresWasChanged: true});
+        this.setState({genreSearchString: '', genres: value, genresWasChanged: true});
     };
 
     isValidGenres= (text) => {
@@ -403,15 +405,19 @@ class BookEdit extends Component {
     };
 
     handleAdditionGenre = (event, {value}) => {
+        this.state.genres.pop();
+        let genreModal = getStrings().modal.genre;
         this.setState({
             newGenre: value,
-            header: 'addgenre',
-            content: ['addgenre', value],
+            header: genreModal.header,
+            content: [genreModal.content, value],
             modalAction: this.addGenre,
         }, this.openClose);
     };
 
     addGenre = () => {
+        console.log(this.state.genres);
+
         axios
             .post(BACK_END_SERVER_URL + `/book/genre`,
                 {
@@ -437,7 +443,7 @@ class BookEdit extends Component {
                         id: res.data.id,
                         name: res.data.name,
                     }, ...this.state.genres]
-                });
+                }, this.handleSearchChangeGenres(null, {searchQuery: ''}));
             })
             .catch(({response}) => {
                 this.setState({errorAlert: true, errorText: response.data.message})
@@ -469,11 +475,11 @@ class BookEdit extends Component {
     };
 
     handleChangeAuthors = (event, {searchQuery, value}) => {
-        this.setState({authorSearchString: searchQuery, authors: value});
+        this.setState({authors: value}, this.handleSearchChangeAuthors(null, {searchQuery: ''}));
     };
 
     handleChangeTranslators = (event, {searchQuery, value}) => {
-        this.setState({translatorSearchString: searchQuery, translators: value});
+        this.setState({translators: value}, this.handleSearchChangeTranslators(null, {searchQuery: ''}));
     };
 
     handleSearchChangeAuthors = (event, {searchQuery}) => {
@@ -609,10 +615,11 @@ class BookEdit extends Component {
     };
 
     handleAdditionProducer = (event, {value}) => {
+        let orgModal = getStrings().modal.org;
         this.setState({
             newProducer: value,
-            header: 'addProducer',
-            content: ['addProducer', value],
+            header: orgModal.header,
+            content: [orgModal.content, value],
             modalAction: this.addProducer,
         }, this.openClose);
     };
@@ -651,10 +658,11 @@ class BookEdit extends Component {
     };
 
     handleAdditionImporter = (event, {value}) => {
+        let orgModal = getStrings().modal.org;
         this.setState({
-            newProducer: value,
-            header: 'addImporter',
-            content: ['addImporter', value],
+            newImporter: value,
+            header: orgModal.header,
+            content: [orgModal.content, value],
             modalAction: this.addImporter,
         }, this.openClose);
     };
@@ -663,7 +671,7 @@ class BookEdit extends Component {
         axios
             .post(BACK_END_SERVER_URL + `/book/organization`,
                 {
-                    title: this.state.newProducer
+                    title: this.state.newImporter
                 },
                 {
                     headers: {
@@ -680,7 +688,7 @@ class BookEdit extends Component {
                         key: res.data.id,
                         text: res.data.title,
                         value: res.data
-                    }, ...this.state.producerList],
+                    }, ...this.state.importerList],
                     importer: {
                         id: res.data.id,
                         title: res.data.title,
@@ -845,12 +853,20 @@ class BookEdit extends Component {
     };
 
     openClose = () => this.setState({showModal: !this.state.showModal});
-    openCloseAddAuthor = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor});
+    openCloseAddAuthor = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'author'});
+    openCloseAddTranslator = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'translator'});
     openCloseAddPH = () => this.setState({showModalAddPH: !this.state.showModalAddPH});
 
-    isCreatedAuthor = (flag, searchQuery) => {
+    isCreatedAuthor = (flag, searchQuery, type) => {
         if (flag) {
-            this.handleSearchChangeAuthors(null, {searchQuery});
+            if (type==='author'){
+                this.state.authors.pop();
+                this.handleSearchChangeAuthors(null, {searchQuery});
+            } else {
+                this.state.translators.pop();
+                this.handleSearchChangeTranslators(null, {searchQuery});
+            }
+
         } else {
             this.setState({showModalAddAuthor: false});
         }
@@ -882,24 +898,25 @@ class BookEdit extends Component {
 
 
     isDisableButton = () => {
-        return this.isValidISBN() &&
-            this.isValidCount() &&
-            this.isValidRating() &&
-            this.isValidAgeRestriction() &&
-            this.isValidTitle() &&
-            this.isValidGenres() &&
-            this.isValidDescription &&
-            this.isValidLanguage() &&
-            this.isValidPages() &&
-            this.isValidSize() &&
-            this.isValidThumbnail() &&
-            this.isValidPicture() &&
+        return this.isValidISBN().value &&
+            this.isValidCount().value &&
+            this.isValidRating().value &&
+            this.isValidAgeRestriction().value &&
+            this.isValidTitle().value &&
+            this.isValidGenres().value &&
+            this.isValidDescription().value &&
+            this.isValidLanguage().value &&
+            this.isValidPages().value &&
+            this.isValidSize().value &&
+            this.isValidThumbnail().value &&
+            this.isValidPicture().value &&
+            (this.state.id || (
             this.state.languageWasChanged &&
             this.state.titleWasChanged &&
             this.state.descriptionWasChanged &&
             this.state.genresWasChanged &&
             this.state.thumbnailUrlWasChanged &&
-            this.state.pictureUrlWasChanged;
+            this.state.pictureUrlWasChanged));
     };
 
     getBookTypes = () => {
@@ -943,6 +960,7 @@ class BookEdit extends Component {
                     <Form id='bookEdit'>
 
                         <Dropdown
+
                             id="bookLangDropdown"
                             button
                             className='icon'
@@ -981,6 +999,7 @@ class BookEdit extends Component {
                                     label={strings.book.authors}
                                     control={Dropdown}
 
+                                    lazyLoad
                                     multiple
                                     clearable
                                     onChange={this.handleChangeAuthors}
@@ -992,7 +1011,7 @@ class BookEdit extends Component {
                                     selection
                                     value={this.state.authors}
                                     allowAdditions
-                                    additionLabel={<i style={{color: 'red'}}>New author: </i>}
+                                    additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
                                     onAddItem={this.openCloseAddAuthor}
                                 />
                             </div>
@@ -1002,6 +1021,7 @@ class BookEdit extends Component {
                                     label={strings.book.genres}
                                     control={Dropdown}
 
+                                    lazyLoad
                                     multiple
                                     clearable
                                     onChange={this.handleChangeGenres}
@@ -1013,20 +1033,22 @@ class BookEdit extends Component {
                                     selection
                                     value={this.state.genres}
                                     allowAdditions
-                                    additionLabel={<i style={{color: 'red'}}>New Genre: </i>}
+                                    additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
                                     onAddItem={this.handleAdditionGenre}
                                     error={!this.isValidGenres().value}/>
                                 {this.isValidGenres().value ? false : this.isValidGenres(strings.error.book.genres).message}
                             </div>
 
                         </Form.Group>
-                        <AddAuthorModal size='tiny' open={this.state.showModalAddAuthor}
+                        <AddAuthorModal size='tiny' open={this.state.showModalAddAuthor} type={this.state.authorType}
                                         openClose={this.openCloseAddAuthor} isCreated={this.isCreatedAuthor}/>
                         <Form.Group>
                             <div className="threeFour">
                                 <Form.Field
                                     label={strings.book.translators}
                                     control={Dropdown}
+
+                                    lazyLoad
                                     multiple
                                     clearable
                                     onChange={this.handleChangeTranslators}
@@ -1038,8 +1060,8 @@ class BookEdit extends Component {
                                     selection
                                     value={this.state.translators}
                                     allowAdditions
-                                    additionLabel={<i style={{color: 'red'}}>New trans: </i>}
-                                    onAddItem={this.openCloseAddAuthor}
+                                    additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
+                                    onAddItem={this.openCloseAddTranslator}
                                 />
                             </div>
 
@@ -1047,6 +1069,7 @@ class BookEdit extends Component {
                                 <Form.Field
                                     label={strings.book.year}
                                     control={Dropdown}
+                                    lazyLoad
 
                                     clearable
                                     onChange={this.handleChangeYear}
@@ -1181,6 +1204,7 @@ class BookEdit extends Component {
                         </Form.Group>
                         <Form.Group>
                             <Form.Dropdown
+                                lazyLoad
                                 width={8}
                                 label={strings.book.publishingHouse}
                                 fluid
@@ -1194,7 +1218,7 @@ class BookEdit extends Component {
                                 selection
                                 value={this.state.publishingHouse}
                                 allowAdditions
-                                additionLabel={<i style={{color: 'red'}}>New publishingHouse: </i>}
+                                additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
                                 onAddItem={this.openCloseAddPH}
                             />
                             <AddPHModal size='tiny' open={this.state.showModalAddPH} openClose={this.openCloseAddPH}
@@ -1213,6 +1237,7 @@ class BookEdit extends Component {
 
                         <Form.Group>
                             <Form.Dropdown
+                                lazyLoad
                                 width={8}
                                 label={strings.book.producer}
                                 fluid
@@ -1226,10 +1251,11 @@ class BookEdit extends Component {
                                 selection
                                 value={this.state.producer}
                                 allowAdditions
-                                additionLabel={<i style={{color: 'red'}}>New producer: </i>}
+                                additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
                                 onAddItem={this.handleAdditionProducer}
                             />
                             <Form.Dropdown
+                                lazyLoad
                                 width={8}
                                 label={strings.book.importer}
                                 fluid
@@ -1243,7 +1269,7 @@ class BookEdit extends Component {
                                 selection
                                 value={this.state.importer}
                                 allowAdditions
-                                additionLabel={<i style={{color: 'red'}}>New importer: </i>}
+                                additionLabel={<i style={{color: 'red'}}>{strings.book.createNew}</i>}
                                 onAddItem={this.handleAdditionImporter}
                             />
                         </Form.Group>
@@ -1289,20 +1315,84 @@ class AddPHModal extends Component {
         this.setState({title: nextProps.title})
     }
 
-    hanbleChangeTitle = (event, {value}) => {
-        this.setState({title: value});
+    handleChangeTitle = (event, {value}) => {
+        this.setState({title: value, titleWasChanged: true});
     };
 
-    hanbleChangeDesc = (event, {value}) => {
-        this.setState({description: value});
+    isValidTitle = (text) => {
+        if (!this.state.titleWasChanged) return {value: true};
+        let title = this.state.title;
+
+        let message = (<p className='errorMsg'>{text + title.length}</p>);
+        let value = true;
+
+        if (!title) {
+            value = false;
+        } else {
+            if (title.length === 0) {
+                value = false;
+            }
+
+            if (title.length > 40) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
-    hanbleChangeSiteLink = (event, {value}) => {
-        this.setState({siteLink: value});
+    handleChangeDesc = (event, {value}) => {
+        this.setState({description: value, descriptionWasChanged: true});
+    };
+
+    isValidDesc = (text) => {
+        if (!this.state.descriptionWasChanged || !this.state.description) return {value: true};
+        let description = this.state.description;
+
+        let message = (<p className='errorMsg'>{text + description.length}</p>);
+        let value = true;
+
+        if (!description) {
+            value = false;
+        } else {
+            if (description.length === 0) {
+                value = false;
+            }
+
+            if (description.length > 600) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
+    };
+
+    handleChangeSiteLink = (event, {value}) => {
+        this.setState({siteLink: value, siteLinkWasChanged:true});
+    };
+
+    isValidSiteLink = (text) => {
+        if (!this.state.siteLinkWasChanged || !this.state.siteLink) return {value: true};
+        let siteLink = this.state.siteLink;
+
+        let message = (<p className='errorMsg'>{text + siteLink.length}</p>);
+        let value = true;
+
+        if (!siteLink) {
+            value = false;
+        } else {
+            if (siteLink.length === 0) {
+                value = false;
+            }
+
+            if (siteLink.length > 255) {
+                value = false;
+            }
+        }
+        return {value: value, message: message};
     };
 
     successCreated = () => {
         this.props.isCreated(true, this.state.title);
+        this.props.openClose();
     };
 
     createPH = () => {
@@ -1312,7 +1402,7 @@ class AddPHModal extends Component {
             headers: {
                 'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                 'Content-type': 'application/json',
-                // 'Accept-Language': locale.tag || ''
+                'Accept-Language': getLang()
             },
             data: {
                 title: this.state.title === '' ? null : this.state.title,
@@ -1330,37 +1420,50 @@ class AddPHModal extends Component {
 
     };
 
+    isDisabled = () => {
+        return this.isValidTitle().value &&
+            this.isValidDesc().value &&
+            this.isValidSiteLink().value &&
+            (this.state.titleWasChanged);
+    };
+
     render() {
+        let strings = getStrings();
         return (
-            <Modal size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
-                <Modal.Header>AddPH</Modal.Header>
+            <Modal id='modal' size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
+                <Modal.Header>{strings.modal.publishingHouse.header}</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         <Form>
                             <Form.Input
                                 fluid
-                                label='title'
-                                placeholder='First name'
+                                label={strings.modal.publishingHouse.title}
+                                placeholder={strings.modal.publishingHouse.title}
                                 value={this.state.title}
-                                onChange={this.hanbleChangeTitle}
-                            />
+                                onChange={this.handleChangeTitle}
+                                error={!this.isValidTitle().value}/>
+                            {this.isValidTitle().value ? false : this.isValidTitle(strings.modal.publishingHouse.errorTitle).message}
                             <Form.TextArea
-                                label='desc'
+                                label={strings.modal.publishingHouse.description}
+                                placeholder={strings.modal.publishingHouse.description}
                                 value={this.state.description}
-                                onChange={this.hanbleChangeDesc}/>
+                                onChange={this.handleChangeDesc}
+                                error={!this.isValidDesc().value}/>
+                            {this.isValidDesc().value ? false : this.isValidDesc(strings.modal.publishingHouse.errorDescription).message}
                             <Form.Input
                                 fluid
-                                label='siteLink'
-                                placeholder='siteLink'
+                                label={strings.modal.publishingHouse.siteLink}
+                                placeholder={strings.modal.publishingHouse.siteLink}
                                 value={this.state.siteLink}
-                                onChange={this.hanbleChangeSiteLink}
-                            />
+                                onChange={this.handleChangeSiteLink}
+                                error={!this.isValidSiteLink().value}/>
+                            {this.isValidSiteLink().value ? false : this.isValidSiteLink(strings.modal.publishingHouse.errorSiteLink).message}
                         </Form>
                     </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button negative onClick={this.props.openClose}>Cancel</Button>
-                    <Button positive icon='checkmark' labelPosition='right' content='Create' onClick={this.createPH}/>
+                    <Button negative onClick={this.props.openClose}>{strings.modal.cancel}</Button>
+                    <Button positive icon='checkmark' labelPosition='right' content={strings.modal.create} onClick={this.createPH} disabled={!this.isDisabled()}/>
                 </Modal.Actions>
                 <Modal.Actions>
                 </Modal.Actions>
@@ -1433,8 +1536,8 @@ class AddAuthorModal extends Component {
     };
 
     isValidDesc = (text) => {
-        if (!this.state.descriptionWasChanged) return {value: true};
         let description = this.state.description;
+        if (!this.state.descriptionWasChanged || !description) return {value: true};
 
         let message = (<p className='errorMsg'>{text + description.length}</p>);
         let value = true;
@@ -1458,8 +1561,9 @@ class AddAuthorModal extends Component {
     };
 
     isValidWikiLink = (text) => {
-        if (!this.state.wikiLinkWasChanged) return {value: true};
         let wikiLink = this.state.wikiLink;
+        if (!this.state.wikiLinkWasChanged || !wikiLink) return {value: true};
+
 
         let message = (<p className='errorMsg'>{text + wikiLink.length}</p>);
         let value = true;
@@ -1479,7 +1583,8 @@ class AddAuthorModal extends Component {
     };
 
     successCreated = () => {
-        this.props.isCreated(true, this.state.firstName + ' ' + this.state.lastName);
+        this.props.isCreated(true, this.state.firstName + ' ' + this.state.lastName, this.props.type);
+        this.props.openClose();
     };
 
     createAuthor = () => {
@@ -1509,39 +1614,44 @@ class AddAuthorModal extends Component {
     };
 
     isDisabled = () => {
-        return this.isValidWikiLink() &&
-            this.isValidDesc() &&
-            this.isValidLastName() &&
-            this.isValidFirstName &&
+        return this.isValidWikiLink().value &&
+            this.isValidDesc().value &&
+            this.isValidLastName().value &&
+            this.isValidFirstName().value &&
             (this.state.firstNameWasChanged || this.state.lastNameWasChanged);
     };
 
     render() {
         let strings = getStrings();
         return (
-            <Modal size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
-                <Modal.Header>{strings.modal.addAuthor}</Modal.Header>
+            <Modal id='modal' size={this.props.size} open={this.props.open} onClose={this.props.openClose}>
+                <Modal.Header>{strings.modal.author.header}</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         <Form>
-                            <Form.Group widths='equal'>
-                                <Form.Input
-                                    fluid
-                                    label={strings.modal.author.firstName}
-                                    placeholder={strings.modal.author.firstName}
-                                    value={this.state.firstName}
-                                    onChange={this.handleChangeFirstName}
-                                    error={!this.isValidFirstName().value}/>
-                                {this.isValidFirstName().value ? false : this.isValidFirstName(strings.error.modal.errorFirstName).message}
+                            <Form.Group>
+                                <div className='halfWindow'>
+                                    <Form.Input
+                                        fluid
+                                        label={strings.modal.author.firstName}
+                                        placeholder={strings.modal.author.firstName}
+                                        value={this.state.firstName}
+                                        onChange={this.handleChangeFirstName}
+                                        error={!this.isValidFirstName().value}/>
+                                    {this.isValidFirstName().value ? false : this.isValidFirstName(strings.modal.author.errorFirstName).message}
+                                </div>
 
-                                <Form.Input
-                                    fluid
-                                    label={strings.modal.author.lastName}
-                                    placeholder={strings.modal.author.lastName}
-                                    value={this.state.lastName}
-                                    onChange={this.handleChangeLastName}
-                                    error={!this.isValidLastName().value}/>
-                                {this.isValidLastName().value ? false : this.isValidLastName(strings.error.modal.errorFirstName).message}
+                                <div className='halfWindow'>
+                                    <Form.Input
+                                        fluid
+                                        label={strings.modal.author.lastName}
+                                        placeholder={strings.modal.author.lastName}
+                                        value={this.state.lastName}
+                                        onChange={this.handleChangeLastName}
+                                        error={!this.isValidLastName().value}/>
+                                    {this.isValidLastName().value ? false : this.isValidLastName(strings.modal.author.errorLastName).message}
+                                </div>
+
 
                             </Form.Group>
                             <Form.TextArea
@@ -1550,7 +1660,7 @@ class AddAuthorModal extends Component {
                                 value={this.state.description}
                                 onChange={this.handleChangeDesc}
                                 error={!this.isValidDesc().value}/>
-                            {this.isValidDesc().value ? false : this.isValidDesc(strings.error.modal.errorFirstName).message}
+                            {this.isValidDesc().value ? false : this.isValidDesc(strings.modal.author.errorDescription).message}
 
                             <Form.Input
                                 fluid
@@ -1559,7 +1669,7 @@ class AddAuthorModal extends Component {
                                 value={this.state.wikiLink}
                                 onChange={this.handleChangeWikiLink}
                                 error={!this.isValidWikiLink().value}/>
-                            {this.isValidWikiLink().value ? false : this.isValidWikiLink(strings.error.modal.errorFirstName).message}
+                            {this.isValidWikiLink().value ? false : this.isValidWikiLink(strings.modal.author.errorWikiLink).message}
                         </Form>
                     </Modal.Description>
                 </Modal.Content>
@@ -1571,9 +1681,7 @@ class AddAuthorModal extends Component {
                             labelPosition='right'
                             content={strings.modal.author.create}
                             onClick={this.createAuthor}
-                            disabled={!this.isDisabled}/>
-                </Modal.Actions>
-                <Modal.Actions>
+                            disabled={!this.isDisabled()}/>
                 </Modal.Actions>
             </Modal>
         );

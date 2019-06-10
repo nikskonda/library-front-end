@@ -28,6 +28,12 @@ class GenreList extends Component {
             });
     };
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.selected && nextProps.selected.length>0 && nextProps.selected[0]) {
+            this.setState({activeGenre: nextProps.selected[0]});
+        }
+    }
+
     handleItemClick = (e, {name}) => {
         if (this.state.activeGenre === name){
             this.props.setGenres([]);

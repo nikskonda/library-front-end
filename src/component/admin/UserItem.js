@@ -9,13 +9,13 @@ import {
     LOCAL_STORAGE_UI_LANGUAGE,
     LOCAL_STORAGE_USER_DATA,
     ROLE_ADMIN,
-    ROLE_LIBRARIAN, ROLE_OPERATOR,
+    ROLE_LIBRARIAN, ROLE_OPERATOR, ROLE_USER,
     URL_DOWNLOAD_FILE,
     USER_AVATAR_DEFAULT
 } from "../../context";
 import ModalYesNo from "../ModalYesNo";
 import {Link} from "react-router-dom";
-import {L10N} from "../../l10n"
+import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class UserItem extends Component {
@@ -27,6 +27,7 @@ class UserItem extends Component {
 
     componentWillMount(){
         this.loadBasket();
+        let roles = new Map(getStrings().role);
         axios
             .get(BACK_END_SERVER_URL + '/user/role',
                 {
@@ -39,7 +40,7 @@ class UserItem extends Component {
             )
             .then(res => {
                 let array = [];
-                res.data.map(role => array.push({key: role.id, text: role.authority, value: role.authority}));
+                res.data.map(role => array.push({key: role.id, text: roles.get(role.authority).text, value: role.authority}));
                 this.setState({roleList: array});
             })
             .catch(function (error) {
@@ -81,7 +82,7 @@ class UserItem extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -165,7 +166,7 @@ class UserItem extends Component {
                         <p>{this.address(user.registrationAddress)}</p>
                     </Item.Description>
                     <Item.Extra>
-                        {this.isHasRole(ROLE_LIBRARIAN)?
+                        {this.isHasRole(ROLE_OPERATOR)?
                         <Button
                             icon
                             labelPosition='right'
@@ -227,7 +228,7 @@ class RoleList extends Component {
 
     state = {
         roleSearchString: '',
-        newAuthority: '',
+        newAuthority: 'USER',
         roleSearchList: [],
         showModal: false,
     };
@@ -237,7 +238,7 @@ class RoleList extends Component {
 
         nextProps.roleList.forEach(role => {
             let flag = true;
-            nextProps.user.authorities.forEach(userRole => {if (userRole.authority===role.text) flag=false});
+            nextProps.user.authorities.forEach(userRole => {if (userRole.authority===role.value) flag=false});
             if (flag){
                 roleSearchList.push(role);
             }
@@ -276,7 +277,7 @@ class RoleList extends Component {
                     headers: {
                         'Authorization': 'Bearer  ' + localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN),
                         'Content-type': 'application/json',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     },
                 }
             )
@@ -293,7 +294,9 @@ class RoleList extends Component {
     render() {
         let user = this.props.user;
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        return (
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        let roleColor = new Map(strings.role);
+        return (
             <React.Fragment>
                 {user.authorities.map(role => <Role key={role.id} username={user.username} role={role} refresh={this.props.refresh} />)}
                 {this.state.roleSearchList && this.state.roleSearchList.length>0 ? 
@@ -308,7 +311,7 @@ class RoleList extends Component {
                     text={strings.userList.role}
                     value={this.state.newAuthority}
                     /> : false}
-                <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.addAuthority} />
+                <ModalYesNo size='tiny' header={strings.modal.role.header} content={[strings.modal.role.add, roleColor.get(this.state.newAuthority).text]} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.addAuthority} />
             </React.Fragment>
             );
     };
@@ -346,14 +349,15 @@ class Role extends Component {
 
     render() {
         let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let roleColor = new Map(strings.role);
+        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
+        let roleColor = new Map(strings.role);
         let role = this.props.role;
         return (
             <React.Fragment>
-                <ModalYesNo size='tiny' header='header' content={['content']} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.removeAuthority} />
+                <ModalYesNo size='tiny' header={strings.modal.role.header} content={[strings.modal.role.remove, roleColor.get(role.authority).text]} open={this.state.showModal} openClose={this.openClose} isConfirmed={this.removeAuthority} />
                 <Label as='a' tag color={roleColor.get(role.authority).color}>
                     {roleColor.get(role.authority).text}
-                    <Icon name='delete' onClick={this.openClose}/>
+                    {role.authority === ROLE_USER ? false : <Icon name='delete' onClick={this.openClose}/>}
                 </Label>
             </React.Fragment>
             );
