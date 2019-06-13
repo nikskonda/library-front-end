@@ -97,7 +97,12 @@ class BasketPage extends Component {
     };
 
     viewAddressFields = () => {
-        this.setState({showAddressField: !this.state.showAddressField})
+        if (localStorage.getItem(LOCAL_STORAGE_OAUTH2_ACCESS_TOKEN)){
+            this.setState({showAddressField: !this.state.showAddressField})
+        } else {
+            this.props.history.push('/signIn')
+        }
+        
     };
 
     createOrder = (address) => {
@@ -117,6 +122,7 @@ class BasketPage extends Component {
                 }
             )
             .then(res => {
+                localStorage.setItem(LOCAL_STORAGE_BASKET, JSON.stringify([]));
                 this.props.history.push('/order/user')
             })
             .catch(({response}) => {

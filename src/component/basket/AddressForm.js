@@ -293,6 +293,7 @@ class AddressForm extends Component {
         if (!city || !state || !country) {
             value = false;
         }
+        console.log(city.name === '');
         if (city.name === '' || state.name === '' || country.name === '') {
             value = false;
             console.log("n"+city.name);
@@ -453,7 +454,7 @@ class AddressForm extends Component {
     };
 
     wasChanged = () => {
-        return (this.state.cityWasChanged  || this.state.city) &&
+        return (this.state.cityWasChanged  || (this.state.city && this.state.city.name!=='')) &&
             (this.state.firstNameWasChanged || this.state.firstName) &&
             (this.state.lastNameWasChanged || this.state.lastName) &&
                 (this.state.phoneWasChanged || this.state.phone) &&
@@ -462,8 +463,9 @@ class AddressForm extends Component {
     };
 
     isDisableButton = () => {
-        return this.state.willNew ?
-            this.isValidCity().value &&
+        console.log("dis");
+        return this.state.willNew ? 
+            this.isValidCity(null).value &&
             this.isValidFirstName().value &&
             this.isValidLastName().value &&
             this.isValidPhone().value &&
@@ -513,7 +515,7 @@ class AddressForm extends Component {
                             search
                             searchQuery={this.state.addressSearchString}
                             selection
-                            //value={this.state.address}
+                            value={this.props.defaultAddress}
                         />
                     </Form>
                     :

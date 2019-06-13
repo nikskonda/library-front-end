@@ -16,7 +16,7 @@ import ModalYesNo from './../ModalYesNo';
 import {Link} from "react-router-dom";
 import {getLang, getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
-import {instanceOf} from "prop-types";
+import {instanceOf, object} from "prop-types";
 
 class BookEdit extends Component {
 
@@ -255,7 +255,7 @@ class BookEdit extends Component {
         if (!rating) {
             value = false;
         } else {
-            if (rating<0 && rating>100) {
+            if (rating<0 || rating>100) {
                 value = false;
             }
         }
@@ -360,7 +360,7 @@ class BookEdit extends Component {
     };
     
     handleChangeGenres = (event, {searchQuery, value}) => {
-        this.setState({genreSearchString: '', genres: value, genresWasChanged: true});
+        this.setState({genreSearchString: '', genres: value, genresWasChanged: true}, this.clearGenres);
     };
 
     isValidGenres= (text) => {
@@ -405,8 +405,8 @@ class BookEdit extends Component {
     };
 
     handleAdditionGenre = (event, {value}) => {
-        this.state.genres.pop();
         let genreModal = getStrings().modal.genre;
+        this.handleSearchChangeGenres(null, {searchQuery: ''})
         this.setState({
             newGenre: value,
             header: genreModal.header,
@@ -416,8 +416,6 @@ class BookEdit extends Component {
     };
 
     addGenre = () => {
-        console.log(this.state.genres);
-
         axios
             .post(BACK_END_SERVER_URL + `/book/genre`,
                 {
@@ -443,7 +441,7 @@ class BookEdit extends Component {
                         id: res.data.id,
                         name: res.data.name,
                     }, ...this.state.genres]
-                }, this.handleSearchChangeGenres(null, {searchQuery: ''}));
+                });
             })
             .catch(({response}) => {
                 this.setState({errorAlert: true, errorText: response.data.message})
@@ -786,8 +784,9 @@ class BookEdit extends Component {
     };
 
     handleLoadFilePdf = () => {
+        
         let data = new FormData();
-        data.append('file', this.state.picture);
+        data.append('file', this.state.pdf);
         axios
             .post(BACK_END_SERVER_URL + `/file/upload`,
                 data,
@@ -799,6 +798,7 @@ class BookEdit extends Component {
                     },
                 })
             .then(res => {
+                console.log(res);
                 this.setState({
                     pdfUrl: res.data.fileName, pdfUrlWasChanged: true
                 })
@@ -807,6 +807,12 @@ class BookEdit extends Component {
                 this.setState({errorAlert: true, errorText: response.data.message})
             });
     };
+
+    clearGenres = () => {
+        let array = [];
+        this.state.genres.map(genre => {if (genre instanceof Object) array.push(genre);});
+        this.setState({genres: array});
+    }
 
     handleButtonSubmit = () => {
         let url = this.state.id ? '/book/' + this.state.id : '/book';
@@ -852,18 +858,22 @@ class BookEdit extends Component {
             });
     };
 
-    openClose = () => this.setState({showModal: !this.state.showModal});
-    openCloseAddAuthor = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'author'});
-    openCloseAddTranslator = () => this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'translator'});
+    openClose = () => this.setState({showModal: !this.state.showModal}, this.clearGenres);
+    openCloseAddAuthor = () => {
+        this.state.authors.pop();
+        this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'author'});
+    };
+    openCloseAddTranslator = () => {
+        this.state.translators.pop();
+        this.setState({showModalAddAuthor: !this.state.showModalAddAuthor, authorType: 'translator'});
+    };
     openCloseAddPH = () => this.setState({showModalAddPH: !this.state.showModalAddPH});
 
     isCreatedAuthor = (flag, searchQuery, type) => {
         if (flag) {
             if (type==='author'){
-                this.state.authors.pop();
                 this.handleSearchChangeAuthors(null, {searchQuery});
             } else {
-                this.state.translators.pop();
                 this.handleSearchChangeTranslators(null, {searchQuery});
             }
 
@@ -932,9 +942,7 @@ class BookEdit extends Component {
     };
 
     render() {
-        let strings = new LocalizedStrings(L10N);
-        strings.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE) ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);
-
+        let strings = getStrings();
         const notFound = (
             <Message
                 warning

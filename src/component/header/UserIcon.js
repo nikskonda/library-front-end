@@ -52,7 +52,7 @@ class UserIcon extends Component {
     render() {
         let string = new LocalizedStrings(L10N);
         string.setLanguage(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)?JSON.parse(localStorage.getItem(LOCAL_STORAGE_UI_LANGUAGE)).tag.replace(/-/g, '') : DEFAULT_L10N_LANGUAGE);        let options = [
-            {key: 'user', text: (<Link to='/account'>{string.menu.account}</Link>), icon: 'user'},
+            // {key: 'user', text: (<Link to='/account'>{string.menu.account}</Link>), icon: 'user'},
             {key: 'orders', text: (<Link to='/order/user'>{string.menu.orders}</Link>), icon: 'shopping cart'},
             {key: 'bookmarks', text: (<Link to='/bookmarks'>{string.menu.bookmarks}</Link>), icon: 'bookmark'},
             {key: 'settings', text: (<Link to='/user/settings'>{string.menu.settings}</Link>), icon: 'settings'},

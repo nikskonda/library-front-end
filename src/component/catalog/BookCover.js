@@ -20,6 +20,7 @@ class BookCover extends Component {
     state = {
         bookCover: this.props.bookCover,
         countInBasket: 0,
+        authorName: null,
     };
 
     componentWillMount() {
@@ -46,42 +47,7 @@ class BookCover extends Component {
     componentWillReceiveProps(nextProps) {
         this.setState({bookCover: nextProps.bookCover});
     }
-
-    getAuthor = (author, i, array, book) => {
-        let authorName = !author.firstName ?
-            author.lastName :
-            (!author.lastName ?
-                author.firstName :
-                author.firstName + ' ' + author.lastName);
-        return (
-            <Popup
-                className='authorInfo'
-                key={author.id}
-                trigger={<span className='authorName'>{authorName + (i !== array.length - 1 ? ', ' : '')}</span>}
-                hoverable
-                on='click'
-                hideOnScroll
-            >
-                <Header as='h4'>{authorName}</Header>
-                {author.description !== undefined ? <p>{author.description}</p> : false}
-                {author.wikiLink !== undefined ?
-                    <Button
-                        fluid
-                        as='a'
-                        href={author.wikiLink}
-                    >{book.wiki}</Button> : false}
-
-                <Button
-                    fluid
-                    as={Link}
-                    to={`/catalog?authors=${authorName}`}
-                >
-                    {book.findByAuthor}
-                </Button>
-            </Popup>
-        );
-    };
-
+    
     addBookToBasket = () => {
         if (this.state.bookCover.inLibraryUseOnly && !isHasRole(ROLE_OPERATOR)) {
             return;
@@ -125,7 +91,13 @@ class BookCover extends Component {
                         </Link>
                         <Card.Meta>
                             {bookCover.authors !== undefined ? bookCover.authors.map(
-                                (author, i, array) => this.getAuthor(author, i, array, strings.book)) : false}
+                                (author, i, array) => 
+                                <Author
+                                    author={author}
+                                    isLast={i === array.length - 1}
+                                    book={strings.book}
+                                    setAuthor={this.props.setAuthor}
+                                />) : false}
                             {bookCover.year && bookCover.year !== -1 ? ', ' + bookCover.year : false}
                         </Card.Meta>
                         <Card.Description>
@@ -215,6 +187,56 @@ class Genre extends Component {
         return <Label key={genre.id} basic onClick={this.addGenre}>{genre.name}</Label>;
     }
 
+}
+
+class Author extends Component {
+   
+
+    componentWillMount(){
+        let author = this.props.author;
+        let authorName = !author.firstName ?
+            author.lastName :
+            (!author.lastName ?
+                author.firstName :
+                author.firstName + ' ' + author.lastName);
+        this.setState({authorName: authorName});
+    }
+
+    setAuthor = () => {
+        this.props.setAuthor(this.state.authorName);
+    }
+
+   render () {
+        let author = this.props.author;
+        return (
+            <Popup
+                className='authorInfo'
+                key={author.id}
+                trigger={<span className='authorName'>{this.state.authorName + (!this.props.isLast ? ', ' : '')}</span>}
+                hoverable
+                on='click'
+                hideOnScroll
+            >
+                <Header as='h4'>{this.state.authorName}</Header>
+                {author.description !== undefined ? <p>{author.description}</p> : false}
+                {author.wikiLink !== undefined ?
+                    <Button
+                        fluid
+                        as='a'
+                        href={author.wikiLink}
+                    >{this.props.book.wiki}</Button> : false}
+
+                <Button
+                    fluid
+                    onClick={this.setAuthor}
+                >
+                    {this.props.book.findByAuthor}
+                </Button>
+            </Popup>
+        );
+    }
+
+    
 }
 
 export default BookCover;

@@ -34,9 +34,10 @@ class OrderCover extends Component {
 
     componentWillMount(){
         let totalCount = 0;
-        this.props.order.details.forEach(detail => {
-            totalCount+=detail.count;
-        });
+        if (this.props.order.details)
+            this.props.order.details.forEach(detail => {
+                totalCount+=detail.count;
+            });
         this.setState({totalBooks: totalCount});
     }
 
@@ -61,6 +62,11 @@ class OrderCover extends Component {
 
     changeShowDetails = () => {
         this.setState({showDetails: !this.state.showDetails});
+    };
+
+    setUserId = () => {
+        if (this.isHasRole(ROLE_OPERATOR))
+            this.props.setUserId(this.props.order.user.id)
     };
 
     getOrderDetailTable = (order) => {
@@ -371,7 +377,7 @@ class OrderCover extends Component {
             <Card fluid>
                 <Card.Content className='order'>
                     <OrderStatusStep statusList={order.statusList}/>
-                    <Card.Description className='address'>{this.isHasRole(ROLE_OPERATOR) ? <Link to={`/admin/orderList?userId=${order.user.id}`}>{order.user.username}</Link>: order.user.username}</Card.Description>
+                    <Card.Description className='address' onClick={this.setUserId} style={{cursor: 'pointer'}}>{order.user.username}</Card.Description>
                     <Card.Description className='address'>{this.address()}</Card.Description>
                     <Card.Meta className='date'>{this.dateSign()}</Card.Meta>
                     {order.comment ? <p>{order.comment}</p> : false}

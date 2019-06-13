@@ -54,7 +54,7 @@ class BookCatalogPage extends Component {
             direction: params.direction || this.state.direction,
         });
         if (params.genres) this.state.genres.push(params.genres);
-        if (params.authors) this.state.genres.push(params.authors);
+        if (params.authors) this.state.authors.push(params.authors);
     }
 
 
@@ -81,6 +81,7 @@ class BookCatalogPage extends Component {
                 authors: this.state.authors,
             }
         }
+        console.log(params);
         this.setState({
             searchString: params.searchString,
             number: params.number,
@@ -92,7 +93,7 @@ class BookCatalogPage extends Component {
         }, this.loadBooks);
         this.props.history.push({search: queryString.stringify(params)});
 
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 400)
     };
 
     addGenre = (genreName) => {
@@ -103,6 +104,10 @@ class BookCatalogPage extends Component {
 
     setGenres = (genres) => {
         this.setState({genres: genres, number: 1}, this.changeUrl);
+    };
+
+    setAuthor = (author) => {
+        this.setState({authors: author, number: 1}, this.changeUrl);
     };
 
     setActivePage = (page) => {
@@ -143,8 +148,7 @@ class BookCatalogPage extends Component {
                     totalPages: res.data.totalPages,
                 });
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(({response}) => {
                 // this.setState({errorText: response.data.message});
             });
     };
@@ -154,17 +158,7 @@ class BookCatalogPage extends Component {
     };
 
     searchBooks = () => {
-        let params = {
-            searchString: this.state.searchString,
-            number: 1,
-            size: this.state.size,
-            sort: this.state.sort,
-            direction: this.state.direction,
-            genres: [],
-            authors: [],
-        };
-        this.changeUrl(params);
-
+        this.setState({number: 1}, this.changeUrl);
     };
 
     clearParams = () => {
@@ -229,6 +223,7 @@ class BookCatalogPage extends Component {
                                     size={this.state.size}
                                     setSize={this.setSize}
                                     errorText={this.state.errorText}
+                                    setAuthor={this.setAuthor}
                                 />
                             </div>
                         </Grid.Column>

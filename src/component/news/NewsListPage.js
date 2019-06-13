@@ -63,9 +63,15 @@ class NewsListPage extends Component {
                 direction: this.state.direction,
             }
         }
+        this.setState({
+            searchString: this.state.searchString,
+                number: this.state.number,
+                size: this.state.size,
+                sort: this.state.sort,
+                direction: this.state.direction,
+        }, this.loadNews);
         this.props.history.push({search: queryString.stringify(params)});
-        this.loadNews();
-
+        window.scrollTo(0, 400)
     };
 
     setActivePage = (page) => {
@@ -73,7 +79,7 @@ class NewsListPage extends Component {
     };
 
     setSize = (size) => {
-        this.setState({size: size}, this.changeUrl);
+        this.setState({size: size, number: 1}, this.changeUrl);
     };
 
     loadNews = () => {

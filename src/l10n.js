@@ -214,6 +214,7 @@ export const L10N = {
             page: 'Page: ',
             pdfRead: 'Read PDF',
             epubRead: 'Read EPUB',
+            notFound: "You don't have bookmarks",
         },
         user: {
             username: 'Username',
@@ -512,6 +513,7 @@ export const L10N = {
             page: 'Страница: ',
             pdfRead: 'Читать PDF',
             epubRead: 'Читать EPUB',
+            notFound: "У вас пока нет закладок",
         },
         user: {
             username: 'Имя пользователя',

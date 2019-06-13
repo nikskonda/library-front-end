@@ -12,6 +12,7 @@ import {Dropdown} from "semantic-ui-react";
 import "./../order/OrderList.css"
 import {getStrings, L10N} from "../../l10n"
 import LocalizedStrings from 'react-localization';
+import {withRouter} from 'react-router-dom'
 
 class AdminOrders extends Component {
 
@@ -45,12 +46,38 @@ class AdminOrders extends Component {
         }, this.loadOrders);
     }
 
+    changeUrl = (params) => {
+        if (!params){
+            params = {
+                number: this.state.number,
+                size: this.state.size,
+                sort: this.state.sort,
+                direction: this.state.direction,
+                status: this.state.status,
+                bookId: this.state.bookId,
+                userId: this.state.userId,
+            }
+        }
+        this.setState({
+                number: params.number,
+                size: params.size,
+                sort: params.sort,
+                direction: params.direction,
+                status: params.status,
+                bookId: params.bookId,
+                userId: params.userId,
+        }, this.loadOrders);
+        this.props.history.push({search: queryString.stringify(params)});
+        this.loadOrders();
+
+    };
+
     setActivePage = (page) => {
         this.setState({number: page}, this.loadOrders);
     };
 
     setSize = (size) => {
-        this.setState({size: size}, this.changeUrl);
+        this.setState({size: size, number: 1}, this.loadOrders);
     };
 
     loadOrders = () => {
@@ -63,17 +90,7 @@ class AdminOrders extends Component {
             }
         }
         this.loadOrdersByUrl(url);
-        this.props.changeUrl(
-            {
-                number: this.state.number,
-                size: this.state.size,
-                sort: this.state.sort,
-                direction: this.state.direction,
-                status: this.state.status,
-                userId: this.state.userId,
-                bookId: this.state.bookId,
-            }
-        )
+        this.props.changeUrl();
     };
 
 
@@ -98,6 +115,7 @@ class AdminOrders extends Component {
                 }
             )
             .then(res => {
+                console.log(res);
                 this.setState({
                     number: res.data.number + 1,
                     orders: res.data.content,
@@ -118,8 +136,12 @@ class AdminOrders extends Component {
     };
 
     handleChangeStatus = (e, {value}) => {
-        this.setState({status: value}, this.loadOrders);
+        this.setState({status: value, number: 1}, this.loadOrders);
     };
+
+    setUserId = (id) => {
+        this.setState({status: 'ALL', number: 1, userId: id}, this.changeUrl);
+    }
 
     render() {
         let strings = getStrings();
@@ -131,8 +153,7 @@ class AdminOrders extends Component {
                     defaultValue={'ALL'}
                     options={this.statusOptions(strings.orderStatus, strings.orders.all)}
                     onChange={this.handleChangeStatus}
-                />
-                
+                /> 
                 <OrderList
                         activePage={this.state.number}
                         orders={this.state.orders}
@@ -140,12 +161,13 @@ class AdminOrders extends Component {
                         setActivePage={this.setActivePage}
                         refresh={this.loadOrders}
                         size={this.state.size}
-                            setSize={this.setSize}
-                            errorText={this.state.errorText}
+                        setSize={this.setSize}
+                        errorText={this.state.errorText}
+                        setUserId={this.setUserId}
                 />
             </div>
         );
     };
 }
 
-export default AdminOrders;
+export default withRouter(AdminOrders);

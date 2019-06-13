@@ -31,12 +31,8 @@ class OrderListPage extends Component {
             sort: params.sort || this.state.sort,
             direction: params.direction || this.state.direction,
             status: params.status || this.state.status,
-        });
+        }, this.loadOrders);
     }
-
-    componentDidMount() {
-        this.loadOrders();
-    };
 
     changeUrl = (params) => {
         if (!params){
@@ -48,8 +44,15 @@ class OrderListPage extends Component {
                 status: this.state.status,
             }
         }
+        this.setState({
+            number: params.number,
+            size: params.size,
+            sort: params.sort,
+            direction: params.direction,
+            status: params.status,
+        }, this.loadOrders);
         this.props.history.push({search: queryString.stringify(params)});
-        this.loadOrders();
+        
 
     };
 
@@ -58,7 +61,7 @@ class OrderListPage extends Component {
     };
 
     setSize = (size) => {
-        this.setState({size: size}, this.changeUrl);
+        this.setState({size: size, number: 1}, this.changeUrl);
     };
 
     loadOrders = () => {

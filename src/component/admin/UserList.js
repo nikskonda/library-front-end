@@ -96,7 +96,7 @@ class UserList extends Component {
 
 
     handleChangeSize = (event, {value}) => {
-        this.setState({size: value}, this.loadUserList);
+        this.setState({size: value, number: 1}, this.loadUserList);
     };
 
     loadSizeList = () => {

@@ -119,6 +119,7 @@ class UserSettings extends Component {
     changeUserData = () => {
         let params = {
             username: this.state.username,
+            avatarUrl: this.state.userData.avatarUrl,
             // firstName: this.state.firstName === '' ? null : this.state.firstName,
             // lastName: this.state.lastName === '' ? null : this.state.lastName,
             email: this.state.email === '' ? null : this.state.email,
@@ -163,11 +164,12 @@ class UserSettings extends Component {
     };
 
     isDisableButton = () => {
-        return
-            this.isValidFirstName().value &&
-            this.isValidLastName().value &&
-            this.isValidEmail().value &&
-            this.wasChanged();
+
+        return this.isValidEmail().value &&
+        this.wasChanged();
+            // this.isValidFirstName().value &&
+            // this.isValidLastName().value &&
+            
     };
 
     handleDismissE = () => {

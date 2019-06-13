@@ -10,6 +10,7 @@ import {
     PAGINATION_SIBLING_RANGE,
     PAGINATION_STEP_IN_DROPDOWN,
 } from './../../context';
+import {getStrings, L10N} from "../../l10n"
 
 class BookmarkList extends Component {
 
@@ -44,11 +45,11 @@ class BookmarkList extends Component {
     };
 
     render() {
+        let strings = getStrings();
         const alert =
             (<Message
                 warning
-                header='bookmarks Not found'
-                content='Plz change search query!'
+                header={strings.bookmarks.notFound}
             />);
         return ( this.props.bookmarks ?
             <React.Fragment>

@@ -37,6 +37,24 @@ class Book extends Component {
             .catch(({response}) => {
                 if (response) this.setState({errorText: response.data.message});
             });
+        const basketStr = localStorage.getItem(LOCAL_STORAGE_BASKET);
+        let basket = [];
+        if (basketStr) {
+            basket = JSON.parse(basketStr);
+            let flag = true;
+            for (let i = 0; i < basket.length; i++) {
+                if (basket[i].book.id === Number(this.props.id)) {
+                    this.setState({countInBasket: basket[i].count});
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                this.setState({countInBasket: 0});
+            }
+        } else {
+            this.setState({countInBasket: 0});
+        }
     }
 
     getAuthor = (author, i, array, book) => {
@@ -87,19 +105,22 @@ class Book extends Component {
             for (let i = 0; i < basket.length; i++) {
                 if (basket[i].book.id === this.state.book.id) {
                     basket[i].count++;
+                    this.setState({countInBasket: basket[i].count});
                     flag = false;
                     break;
                 }
             }
             if (flag) {
                 basket.push({book: this.state.book, count: 1});
+                this.setState({countInBasket: 1});
             }
         } else {
             basket.push({book: this.state.book, count: 1});
+            this.setState({countInBasket: 1});
         }
         localStorage.setItem(LOCAL_STORAGE_BASKET, JSON.stringify(basket));
-        this.setState({isBasketSuccess: true});
     };
+
 
     getDesc = () => {
         if (this.state.book.description){
@@ -139,7 +160,7 @@ class Book extends Component {
     openClose = () => this.setState({showModalRemove: !this.state.showModalRemove});
 
     getBody(book) {
-        console.log(this.state.book);
+        let strings = getStrings();
         return (
             <div id='book'>
                 <div className='firstPart'>
@@ -164,12 +185,43 @@ class Book extends Component {
                         <Header
                             as='h1'>{this.state.book.title.toUpperCase() + (this.state.book.year && this.state.book.year !== -1 ? ', ' + this.state.book.year : '')}</Header>
                         <div className='buttonGroup'>
-                            <Button
-                                className={this.state.book.inLibraryUseOnly ? 'redButton' : 'greenButton'}
-                                style={{cursor: !(this.state.book.inLibraryUseOnly && this.isHasRole(ROLE_OPERATOR)) ? 'pointer' : 'default'}}
-                                onClick={this.addBookToBasket}>
-                                {this.state.book.inLibraryUseOnly ? book.inLibraryUseOnly : book.toBusket}
-                            </Button>
+                            {!this.state.book.inLibraryUseOnly ?
+                                    <Popup
+                                        trigger={
+                                            <Button
+                                                className='greenButton'
+                                                onClick={this.addBookToBasket}
+                                            >{strings.book.toBusket}</Button>
+                                        }
+                                        content={strings.book.addedToBasket + this.state.countInBasket}
+                                        on='hover'
+                                        hideOnScroll
+                                    /> :
+                                    (this.isHasRole(ROLE_OPERATOR) ?
+                                            <Popup
+                                                trigger={
+                                                    <Button
+                                                        style={{cursor: 'pointer'}}
+                                                        className='redButton'
+                                                        onClick={this.addBookToBasket}
+                                                    >
+                                                        {strings.book.inLibraryUseOnly}
+                                                    </Button>
+
+                                                }
+                                                content={strings.book.addedToBasket + this.state.countInBasket}
+                                                on='hover'
+                                                hideOnScroll
+                                            />
+                                            :
+                                            <Button
+                                                style={{cursor: 'default'}}
+                                                className='redButton'
+                                            >
+                                                {strings.book.inLibraryUseOnly}
+                                            </Button>
+                                    )
+                                }
                             {this.isHasRole(ROLE_OPERATOR) ?
                                 <Button
                                     as={Link}
@@ -189,8 +241,8 @@ class Book extends Component {
                                     </Button>
                                     <ModalYesNo
                                         size='tiny'
-                                        header='header'
-                                        content={['content']}
+                                        header={strings.modal.remove}
+                                        content={[strings.modal.removeBook, this.state.book.title]}
                                         open={this.state.showModalRemove}
                                         openClose={this.openClose}
                                         isConfirmed={this.removeBook}/>
@@ -232,7 +284,13 @@ class Book extends Component {
                             {this.state.book.authors !== undefined ?
                                 <Table.Row>
                                     <Table.Cell>{book.authors}</Table.Cell>
-                                    <Table.Cell>{this.state.book.authors ? this.state.book.authors.map((author, i, array) => this.getAuthor(author, i, array, book)) : false}</Table.Cell>
+                                    <Table.Cell>{this.state.book.authors ? this.state.book.authors.map((author, i, array) =>
+                                    <Author
+                                        author={author}
+                                        isLast={i === array.length - 1}
+                                        book={strings.book}
+                                        setAuthor={this.props.setAuthor}
+                                    />) : false}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
@@ -240,7 +298,13 @@ class Book extends Component {
                             {this.state.book.translators !== undefined ?
                                 <Table.Row>
                                     <Table.Cell>{book.translators}</Table.Cell>
-                                    <Table.Cell>{this.state.book.translators ? this.state.book.translators.map((translator, i, array) => this.getAuthor(translator, i, array, book)) : false}</Table.Cell>
+                                    <Table.Cell>{this.state.book.translators ? this.state.book.translators.map((translator, i, array) =>
+                                    <Author
+                                        author={translator}
+                                        isLast={i === array.length - 1}
+                                        book={strings.book}
+                                        setAuthor={this.props.setAuthor}
+                                    />) : false}</Table.Cell>
                                 </Table.Row>
                                 :
                                 false
@@ -387,6 +451,57 @@ class Book extends Component {
             </Container>
         );
     }
+}
+
+class Author extends Component {
+   
+
+    componentWillMount(){
+        let author = this.props.author;
+        let authorName = !author.firstName ?
+            author.lastName :
+            (!author.lastName ?
+                author.firstName :
+                author.firstName + ' ' + author.lastName);
+        this.setState({authorName: authorName});
+    }
+
+    setAuthor = () => {
+        this.props.setAuthor(this.state.authorName);
+    }
+
+   render () {
+        let author = this.props.author;
+        return (
+            <Popup
+                className='authorInfo'
+                key={author.id}
+                trigger={<span className='authorName'>{this.state.authorName + (!this.props.isLast ? ', ' : '')}</span>}
+                hoverable
+                on='click'
+                hideOnScroll
+            >
+                <Header as='h4'>{this.state.authorName}</Header>
+                {author.description !== undefined ? <p>{author.description}</p> : false}
+                {author.wikiLink !== undefined ?
+                    <Button
+                        fluid
+                        as='a'
+                        href={author.wikiLink}
+                    >{this.props.book.wiki}</Button> : false}
+
+                <Button
+                    fluid
+                    as={Link}
+                    to={`/catalog?authors=`+this.state.authorName}
+                >
+                    {this.props.book.findByAuthor}
+                </Button>
+            </Popup>
+        );
+    }
+
+    
 }
 
 export default Book;

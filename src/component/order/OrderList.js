@@ -26,7 +26,7 @@ class OrderList extends Component {
     } 
 
     handleChangeSize = (event, {value}) => {
-        this.props.setSize(value);
+        this.props.setSize(Number(value));
         this.setState({size: value});
     };
 
@@ -41,8 +41,11 @@ class OrderList extends Component {
     };
 
     handlePaginationChange = (event, {activePage}) => {
-        this.props.setActivePage(activePage);
-        this.loadSizeList();
+        console.log(activePage);
+        if (activePage){
+            this.props.setActivePage(activePage);
+            this.loadSizeList();
+        }
     };
 
     render() {
@@ -55,11 +58,17 @@ class OrderList extends Component {
         return ( this.props.orders ?
             <React.Fragment>
                 <Card.Group>
-                    {this.props.orders.map((order) => <OrderCover key={order.id} order={order} refresh={this.props.refresh}/>)}
+                    {this.props.orders.map((order) =>
+                    <OrderCover
+                        key={order.id}
+                        order={order}
+                        refresh={this.props.refresh}
+                        setUserId={this.props.setUserId}
+                    />)}
                 </Card.Group>
                 <div className='orderPagination'>
                     <Pagination
-                        activePage={this.props.number}
+                        activePage={this.props.activePage}
                         boundaryRange={PAGINATION_BOUNDARY_RANGE}
                         onPageChange={this.handlePaginationChange}
                         size='small'

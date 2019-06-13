@@ -63,6 +63,7 @@ class BookList extends Component {
                             key={book.id}
                             bookCover={book}
                             addGenre={this.props.addGenre}
+                            setAuthor={this.props.setAuthor}
                         />)}
                 </Card.Group>
                 {this.props.books && this.props.books.length > 0 ?

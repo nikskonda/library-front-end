@@ -48,12 +48,17 @@ class SignIn extends Component {
             if (!username) {
                 value = false;
             } else {
+                let re = /^[a-z]*$/;
+                if (!re.test(username)) {
+                    value = false;
+                }
                 if (username.length < 4) {
                     value = false;
                 }
                 if (username.length > 30) {
                     value = false;
                 }
+                
             }
             return {value: value, message: message};
         };
@@ -133,7 +138,7 @@ class SignIn extends Component {
 
             })
             .catch(({response}) => {
-                this.setState({errorMsg: response.data.error_description});
+                this.setState({errorMsg: response.data.error_description==='exception.notFound.user'?'Введены недействительные данные' : response.data.error_description});
             });
     };
 

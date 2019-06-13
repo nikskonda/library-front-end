@@ -79,7 +79,7 @@ class FileDropBox extends Component {
                         accepts={this.props.accepts}
                         //accepts={['image/*', '.pdf', 'audio/*']}
                         maxFile={1}
-                        maxFileSize={10000000}
+                        maxFileSize={900000000000}
                         minFileSize={0}
                         clickable
                     >

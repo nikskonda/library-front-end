@@ -50,3 +50,7 @@
     background-color: #F4f4db;
 }
 
+
+#book .authorName{
+    cursor: pointer;
+}

@@ -3,7 +3,7 @@ import {BACK_END_SERVER_URL, DEFAULT_L10N_LANGUAGE, LOCAL_STORAGE_UI_LANGUAGE} f
 import axios from "axios";
 import {Button, Container, Divider, Form, Grid, Message, SegmentGroup} from "semantic-ui-react";
 import "./signIn.css"
-import {L10N} from "../../l10n"
+import {L10N, getLang} from "../../l10n"
 import LocalizedStrings from 'react-localization';
 
 class SignUp extends Component {
@@ -35,6 +35,10 @@ class SignUp extends Component {
         if (!username) {
             value = false;
         } else {
+            let re = /^[a-z]*$/;
+            if (!re.test(username)) {
+                value = false;
+            }
             if (username.length < 4) {
                 value = false;
             }
@@ -103,7 +107,7 @@ class SignUp extends Component {
                 {
                     headers: {
                         'Content-type': 'application/json; charset=utf-8',
-                        // 'Accept-Language': locale.tag || ''
+                        'Accept-Language': getLang()
                     }
                 }
             )

@@ -159,7 +159,7 @@ class PdfReader extends Component {
                     bookmark: res.data.page,
                     bookmarkId: res.data.id,
                     bookmarkSuccessAlert: true,
-                });
+                }, this.isHasBookmark);
 
             })
             .catch(({response}) => {
